@@ -6,6 +6,8 @@ import  axios  from 'axios';
 
 
 const SignUp = () => {
+    const url = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
     const [firstname, setFirstname] = useState('');
     const [lastname, setLastname] = useState('');
     const [contactnumber, setContactNumber] = useState('');
@@ -52,7 +54,7 @@ const SignUp = () => {
         try {
             try {
                 // Check email availability
-                await axios.post(`http://localhost:5000/user/check_email`, { email });
+                await axios.post(`${url}/user/check_email`, { email });
                 setEmailError('');
             } catch (err) {
                 if (err.response?.status === 409) {
@@ -64,7 +66,7 @@ const SignUp = () => {
 
             try {
                 // Check username availability
-                await axios.post(`http://localhost:5000/user/check_username`, { username });
+                await axios.post(`${url}/user/check_username`, { username });
                 setUsernameError('');
             } catch (err) {
                 if (err.response?.status === 409) {
@@ -74,7 +76,7 @@ const SignUp = () => {
                 }
             }
 
-            const res = await axios.post(`http://localhost:5000/otp/send_otp`, { email });
+            const res = await axios.post(`${url}/otp/send_otp`, { email });
             if (res.status === 200) {
                 setOtpForm(true)
             }

@@ -15,6 +15,8 @@ const Home = () => {
   const { user } = useSession();
   const navigate = useNavigate();
 
+  const url = import.meta.env.VITE_API_URL || 'http://localhost:5173';
+
   // Displays the arrays of cat image
   const [catList, setCatList] = useState([]);
   const [selectedImage] = useState(null);
@@ -22,7 +24,7 @@ const Home = () => {
   useEffect(() => {
     const fetchCats = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/cat/catlist/limit`);
+        const response = await axios.get(`${url}/cat/catlist/limit`);
 
         const formattedCats = response.data.map(cat => ({
           ...cat,

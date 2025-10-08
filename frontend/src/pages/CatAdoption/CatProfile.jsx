@@ -13,6 +13,7 @@ import { useSession } from '../../context/SessionContext';
 
 
 const CatProfile = () => {
+    const url = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
     const { user } = useSession();
     const [showAlert, setShowAlert] = useState(false);
@@ -42,7 +43,7 @@ const CatProfile = () => {
     useEffect(() => {
         const fetchCat = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/cat/catlist');
+                const response = await axios.get(`${url}/cat/catlist`);
                 const cats = response.data;
 
                 setCatInfo(cats);
@@ -67,10 +68,10 @@ const CatProfile = () => {
 
             try {
             const catId = catInfo[currentCatIndex].cat_id;
-            const response = await axios.get(`http://localhost:5000/cat/image/${catId}`);
+            const response = await axios.get(`${url}/cat/image/${catId}`);
             const imageUrls = response.data.map(filename => ({
                 filename: filename,
-                url: `http://localhost:5000/FileUploads/cats/${filename}`
+                url: `${url}/FileUploads/cats/${filename}`
             }));
 
             setCatImage(imageUrls);

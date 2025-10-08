@@ -14,6 +14,7 @@ import { useSession } from '../context/SessionContext'
 import Whisker from '../components/Whisker'
 
 const CatAdoption = () => {
+  const url = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   const { user } = useSession();
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ const CatAdoption = () => {
   useEffect(() => {
     const fetchCats = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/cat/catlist`);
+        const response = await axios.get(`${url}/cat/catlist`);
 
         const formattedCats = response.data.map(cat => ({
           ...cat,

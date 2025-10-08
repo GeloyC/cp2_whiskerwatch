@@ -18,6 +18,7 @@ import Whisker from '../components/Whisker';
 
 
 const Feeding = () => {
+  const url = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   const { user } = useSession();
   const [userData, setUserData] = useState(null);
@@ -57,7 +58,7 @@ const Feeding = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/user/profile', {
+        const response = await axios.get(`${url}/user/profile`, {
           withCredentials: true,
         });
 
@@ -118,7 +119,7 @@ const Feeding = () => {
     formData.append('user_id', userData.user_id);
 
     try {
-      await axios.post(`http://localhost:5000/user/feeding/form`, formData, {
+      await axios.post(`${url}/user/feeding/form`, formData, {
         headers: {'Content-Type': 'multipart/form-data' },
       });
 
@@ -147,7 +148,7 @@ const Feeding = () => {
     if (!user?.user_id) return;
 
     try {
-      const response = await axios.get(`http://localhost:5000/admin/feeding_date/${user.user_id}`);
+      const response = await axios.get(`${url}/admin/feeding_date/${user.user_id}`);
       const dateString = response.data.feeding_date; // Format: 'YYYY-MM-DD'
       const { has_report } = response.data;
 
@@ -174,10 +175,10 @@ const Feeding = () => {
       if (!user?.user_id) return;
 
       try {
-        const response = await axios.get(`http://localhost:5000/admin/feeding_date/${user.user_id}`);
+        const response = await axios.get(`${url}/admin/feeding_date/${user.user_id}`);
         const feedingData = response.data;
 
-        const reportResponse = await axios.get(`http://localhost:5000/user/has_report/${user.user_id}`);
+        const reportResponse = await axios.get(`${url}/user/has_report/${user.user_id}`);
         const { hasReport } = reportResponse.data;
 
         setFeedingDate(feedingData.feeding_date);
