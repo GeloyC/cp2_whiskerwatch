@@ -53,12 +53,6 @@ import AssignNewAdmin from './pages/Admin/Manage/AssignNewAdmin';
 
 import CatProfileProperty from './pages/Admin/CatProfileProperty/CatProfileProperty';
 import CatProfileCreate from './pages/Admin/CatProfileProperty/CatProfileCreate';
-// import HeadVolunteerDashboard from './pages/HeadVolunteer/HeadVolunteerDashboard';
-// import HeadVolunteerMainPage from './pages/HeadVolunteer/HeadVolunteerMainPage';
-// import HeadVolunteerProfile from './pages/HeadVolunteer/HeadVolunteerProfile';
-// import AdoptionApplication from './pages/HeadVolunteer/AdoptionApplication';
-// import FeederApplication from './pages/HeadVolunteer/FeederApplication';
-// import ApplicationFeederView from './pages/HeadVolunteer/ApplicationFeederView';
 import FeedingReport from './pages/Feeding/FeedingReport';
 import TermsCondition from './layout/TermsCondition';
 
