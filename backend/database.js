@@ -7,17 +7,12 @@ dotenv.config();
 let db;
 export async function connectDB() {
   try {
-    const caCert = fs.readFileSync(new URL('./ca-certificate.crt', import.meta.url));
-
     db = mysql.createPool({
       host: process.env.DB_HOST,
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      port: 25060,
-      ssl: {
-        ca: caCert,
-      },
+      port: 3306,
     });
 
     console.log('✅ Connected to MySQL database!');
