@@ -15,14 +15,6 @@ import { Link } from "@react-email/components";
 const AdminRoute = Router();
 AdminRoute.use(express.json());
 
-AdminRoute.use(
-    cors({ origin: "https://www.whiskerwatch.site",
-        credentials: true,
-        methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-        allowedHeaders: ['Content-Type', 'Authorization'],
-    }), 
-);
-
 
 
 const __filename = fileURLToPath(import.meta.url);

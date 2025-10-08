@@ -19,32 +19,7 @@ import { sendMail } from "./OTP.js";
 const UserRoute = Router();
 UserRoute.use(express.json());
 
-UserRoute.use(
-    cors({ origin: "https://www.whiskerwatch.site",
-      credentials: true,
-      methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-      allowedHeaders: ['Content-Type', 'Authorization'],
-    }), 
-);
 
-UserRoute.use(
-  cors({
-    origin: [/http:\/\/localhost:\d+$/], // allow any localhost:port
-    // credentials: true,
-  })
-);
-
-UserRoute.use(session({
-  secret: process.env.SESSION_SECRET || 'your_secret_key', 
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    httpOnly: true,           // prevent JS access to cookie
-    secure: false,            // true if using HTTPS
-    sameSite: 'lax',          // allow session in cross-site (for dev)
-    maxAge: 1000 * 60 * 60 * 24 // 1 day
-  }
-}));
 
 
 const __filename = fileURLToPath(import.meta.url);
