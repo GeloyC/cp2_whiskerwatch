@@ -1,15 +1,5 @@
 {
     "version": 2,
-    "builds": [
-        {
-            "src": "frontend/package.json",
-            "use": "@vercel/node",
-            "config": {
-                "distDir": "dist",
-                "buildCommand": "cd frontend && npm install && npm run build"
-            }
-        }
-    ],
     "routes": [
         {
             "src": "/(.*)",
