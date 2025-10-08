@@ -5,24 +5,16 @@ import path from "path";
 
 export default defineConfig({
   plugins: [tailwindcss(), react()],
-  base: "/",
-  root: ".",
+  base: "./", // <-- important for relative paths in Vercel
+  root: ".", 
   publicDir: "public",
   build: {
     outDir: "dist",
+    emptyOutDir: true // ensures old files don’t linger
   },
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "src"),
-    },
-  },
-  server: {
-    proxy: {
-      "/api": {
-        target: "http://localhost:5000",
-        changeOrigin: true,
-        secure: false,
-      },
-    },
-  },
+      "@": path.resolve(__dirname, "src")
+    }
+  }
 });
