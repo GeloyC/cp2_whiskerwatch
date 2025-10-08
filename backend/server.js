@@ -32,20 +32,26 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 
-// const allowedOrigins = [
-//   'http://localhost:5173',
-//   'https://www.whiskerwatch.site',
-//   'https://cp2-whiskerwatch-zo9p-m9krajk2w-whisker-watch.vercel.app'
-// ];
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://whiskerwatch.site',
+  'https://www.whiskerwatch.site',
+  'https://whiskerwatch-cp2-4qdb0i38l-whisker-watch.vercel.app',
+];
 
-app.use(cors({
-  origin: [
-    'http://localhost:5173', // local dev
-    'https://www.whiskerwatch.site', // your production frontend
-    'https://whiskerwatch.site',     // non-www version (just in case)
-  ],
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.error('❌ Blocked by CORS:', origin);
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+  })
+);
 
 
 app.use(
