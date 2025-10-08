@@ -33,7 +33,7 @@ const __dirname = path.dirname(__filename);
 
 
 app.use(
-  cors({ origin: "https://www.whiskerwatch.site/",
+  cors({ origin: "https://www.whiskerwatch.site",
     credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],

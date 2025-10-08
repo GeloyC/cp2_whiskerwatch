@@ -23,12 +23,7 @@ AdminRoute.use(
     }), 
 );
 
-AdminRoute.use(
-cors({
-    origin: [/http:\/\/localhost:\d+$/], // allow any localhost:port
-    // credentials: true,
-})
-);
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
