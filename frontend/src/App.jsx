@@ -60,6 +60,7 @@ import CatProfileCreate from './pages/Admin/CatProfileProperty/CatProfileCreate'
 // import FeederApplication from './pages/HeadVolunteer/FeederApplication';
 // import ApplicationFeederView from './pages/HeadVolunteer/ApplicationFeederView';
 import FeedingReport from './pages/Feeding/FeedingReport';
+import TermsCondition from './layout/TermsCondition';
 
 const App = () => {
   const router = createBrowserRouter(
@@ -94,6 +95,8 @@ const App = () => {
         <Route path="login" element={<Login />} />
         <Route path="adminlogin" element={<AdminLogin />} />
         <Route path="signup" element={<SignUp />} />
+        <Route path="termscondition" element={<TermsCondition/>} />
+
 
         {/* Admin Routes */}
         <Route path="dashboard" element={<Dashboard />} />

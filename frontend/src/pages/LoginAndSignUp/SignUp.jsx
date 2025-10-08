@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import  axios  from 'axios';
 
@@ -200,17 +200,21 @@ const SignUp = () => {
                             className={password === confirmPassword ? 'border-b-2 border-b-[#A8784F] p-2 grid-col placeholder-[#A3A3A3] text-[#B5C04A]' : 'border-b-2 border-b-[#A8784F] p-2 grid-col placeholder-[#A3A3A3] text-[#000000]'} />
                         <input type="password" placeholder='Confirm Password' value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required
                             className={password === confirmPassword ? 'border-b-2 border-b-[#A8784F] p-2 grid-col placeholder-[#A3A3A3] text-[#B5C04A]' : 'border-b-2 border-b-[#A8784F] p-2 grid-col placeholder-[#A3A3A3] text-[#d23f07]'} />
-                    
+                        
                         <div className='flex flex-col items-center gap-3 col-span-2'>
-                            <label className='text-[#DC8801] text-[14px]'>{error || emailError || usernameError}</label>
-                            <button type='Submit' disabled={loading} className='p-2 px-4 bg-[#B5C04A] min-w-[125px] text-[#FFF] rounded-[50px] hover:bg-[#889132] active:scale-97 cursor-pointer'> {loading ? 'Sending OTP...' : 'Continue'} </button>
+                            <div className='flex flex-col'>
+                                <span>By Continuing, you agree to our <Link to='/termscondition' className='text-[#DC8801] underline hover:text-[#B67101] active:text-[#DC8801]'>Terms and Conditions</Link>
+                                </span>
+                                <label className='text-[#DC8801] text-[14px]'>{error || emailError || usernameError}</label>
+                                <button type='Submit' disabled={loading} className='p-2 px-4 bg-[#B5C04A] min-w-[125px] text-[#FFF] rounded-[50px] hover:bg-[#889132] active:scale-97 cursor-pointer'> {loading ? 'Sending OTP...' : 'Continue'} </button>
+                            </div>
                             <span className='text-center'>
                                 Already a member of WhiskerWatch?
                                 <Link to="/login" className='font-normal md:font-bold hover:underline text-[#B5C04A]'> Log in </Link>
                                 instead!
                                 </span>
                         </div>
-
+                        
                     </form>
                 )}
                 
@@ -234,7 +238,6 @@ const SignUp = () => {
                 )}
                 
             </div>
-
         </div>
     )
 }
