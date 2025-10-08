@@ -14,7 +14,8 @@ export async function connectDB() {
     database: process.env.DB_NAME,
     port: 25060,
     ssl: {
-      rejectUnauthorized: false, //  Allow self-signed certificate
+      minVersion: 'TLSv1.2',
+      rejectUnauthorized: false,
     },
 });
     console.log('Connected to MySQL database!');
