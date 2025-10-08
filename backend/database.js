@@ -1,6 +1,8 @@
 import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
 
+const ca = fs.readFileSync('./config/ca-certificate.crt');
+
 // Load environment variables
 dotenv.config();
 
@@ -13,10 +15,7 @@ export async function connectDB() {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     port: 25060,
-    ssl: {
-      minVersion: 'TLSv1.2',
-      rejectUnauthorized: false,
-    },
+    ssl: { ca },
 });
     console.log('Connected to MySQL database!');
   } catch (err) {
