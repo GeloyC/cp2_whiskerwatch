@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+*{
+    margin: 0;
+    font-family: "Inter", sans-serif;;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    display: none;
+    -webkit-appearance: none;
+}
+
+/* Remove spinners for Firefox */
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.scrollable-hide-scroll {
+    @apply overflow-auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* IE and Edge */
+}
+
+.scrollable-hide-scroll::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+/* In your CSS file or inside a <style> block */
+.scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: #a0aec0; /* Tailwind's gray-400 */
+    border-radius: 0.25rem;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+}
+
