@@ -13,7 +13,8 @@ import { useSession } from '../../context/SessionContext';
 
 
 const CatProfile = () => {
-    const url = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    // const url = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    const url = `https://whiskerwatch-0j6g.onrender.com`;
 
     const { user } = useSession();
     const [showAlert, setShowAlert] = useState(false);

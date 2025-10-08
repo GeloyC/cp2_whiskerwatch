@@ -13,6 +13,7 @@ import { useSession } from '../../context/SessionContext';
 
 
 const AdopteeForm = () => {
+    const url = `https://whiskerwatch-0j6g.onrender.com`;
     
     const [imageSrc, setImageSrc] = useState('/assets/icons/id-card.png');
     const [foundOut, setFoundOut] = useState('');
@@ -37,7 +38,7 @@ const AdopteeForm = () => {
 
         const fetchProfile = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/cat/catprofile/${cat_id}`);
+                const response = await axios.get(`${url}/cat/catprofile/${cat_id}`);
                 setCatprofile(response.data)
 
             } catch(err) {
@@ -108,7 +109,7 @@ const AdopteeForm = () => {
         formData.append('cat_id',catprofile.cat_id);
 
         try {
-            await axios.post(`http://localhost:5000/user/adoption/form`, formData, {
+            await axios.post(`${url}/user/adoption/form`, formData, {
                 headers: {'Content-Type': 'multipart/form-data' },
             });
             setSubmitMessage("Application submitted successfully!");

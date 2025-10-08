@@ -18,7 +18,8 @@ import Whisker from '../components/Whisker';
 
 
 const Feeding = () => {
-  const url = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  // const url = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const url = `https://whiskerwatch-0j6g.onrender.com`;
 
   const { user } = useSession();
   const [userData, setUserData] = useState(null);

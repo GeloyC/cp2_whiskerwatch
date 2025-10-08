@@ -9,7 +9,7 @@ import { useSession } from "../../context/SessionContext";
 // Admin user have separate access for login user/ admin user
 
 const Login = () => {
-  const url = `https://cp2-whiskerwatch.onrender.com`;
+  const url = `https://whiskerwatch-0j6g.onrender.com`;
 
   const navigate = useNavigate();
   const { setUser } = useSession();

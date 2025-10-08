@@ -6,7 +6,7 @@ const SessionContext = createContext();
 export const useSession = () => useContext(SessionContext);
 
 export const SessionProvider = ({ children }) => {
-    const url = `https://cp2-whiskerwatch.onrender.com`;
+    const url = `https://whiskerwatch-0j6g.onrender.com`;
 
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);

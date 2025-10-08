@@ -6,7 +6,7 @@ import  axios  from 'axios';
 
 
 const SignUp = () => {
-    const url = `https://cp2-whiskerwatch.onrender.com`;
+    const url = `https://whiskerwatch-0j6g.onrender.com`;
 
     const [firstname, setFirstname] = useState('');
     const [lastname, setLastname] = useState('');

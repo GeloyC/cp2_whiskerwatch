@@ -14,7 +14,7 @@ import { useSession } from '../context/SessionContext'
 import Whisker from '../components/Whisker'
 
 const CatAdoption = () => {
-  const url = `https://cp2-whiskerwatch.onrender.com`;
+  const url = `https://whiskerwatch-0j6g.onrender.com`;
 
   const { user } = useSession();
   const navigate = useNavigate();

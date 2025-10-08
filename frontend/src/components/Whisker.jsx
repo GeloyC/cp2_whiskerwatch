@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom';
 
 
 const Whisker = () => {
+  const url = `https://whiskerwatch-0j6g.onrender.com`;
+
   const [whiskerVisible, setWhiskerVisible] = useState(true);
   const { user, whiskerUpdateTrigger } = useSession();
   const [points, setPoints] = useState(0);
@@ -14,7 +16,7 @@ const Whisker = () => {
     const fetchWhiskerPoints = async () => {
       if (!user?.user_id) return;
       try {
-        const response = await axios.get(`http://localhost:5000/whisker/whiskermeter/${user.user_id}`);
+        const response = await axios.get(`${url}/whisker/whiskermeter/${user.user_id}`);
         setPoints(response.data.points);
         
         console.log(points)

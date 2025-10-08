@@ -13,6 +13,8 @@ import axios from 'axios';
 
 
 const Donate = () => {
+  const url = `https://whiskerwatch-0j6g.onrender.com`;
+
   const { user, fetchNotifications , triggerWhiskerUpdate} = useSession();
 
   const [donateItem, setDonateItem] = useState({
@@ -180,7 +182,7 @@ const Donate = () => {
       }
       formData.append('items', JSON.stringify(donationItems));
 
-      const response = await axios.post('http://localhost:5000/donate/donation_data', formData, {
+      const response = await axios.post(`${url}/donate/donation_data`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         }

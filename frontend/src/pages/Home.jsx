@@ -15,7 +15,7 @@ const Home = () => {
   const { user } = useSession();
   const navigate = useNavigate();
 
-  const url = `https://cp2-whiskerwatch.onrender.com`;
+  const url = `https://whiskerwatch-0j6g.onrender.com`;
 
   // Displays the arrays of cat image
   const [catList, setCatList] = useState([]);
