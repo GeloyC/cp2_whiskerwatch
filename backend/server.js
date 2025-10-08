@@ -33,12 +33,13 @@ const __dirname = path.dirname(__filename);
 
 
 app.use(
-  cors({ origin: "http://localhost:5173",
+  cors({ origin: "https://www.whiskerwatch.site/",
     credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   }), 
 );
+
 
 app.use(
   "/uploads/cats",
@@ -75,12 +76,7 @@ app.use(cookieParser());
 app.use('/FileUploads', express.static(path.join(__dirname, 'FileUploads')));
 
 
-app.use(
-  cors({
-    origin: [/http:\/\/localhost:\d+$/], // allow any localhost:port
-    // credentials: true,
-  })
-);
+
 app.use(express.json());
 
 
@@ -140,17 +136,16 @@ app.post('/upload/file', upload.single('document') ,  async (req, res) => {
 
 
 
-
-
-
-
 // Global error handler
 app.use((err, req, res, next) => {
   console.error("Global error:", err.stack);
   res.status(500).json({ error: "Something went wrong on the server" });
 });
-app.listen(port, () => {
-  console.log(`Backend server running on http://localhost:${port}`);
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT}`);
 });
 
 

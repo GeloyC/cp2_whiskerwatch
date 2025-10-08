@@ -15,7 +15,7 @@ const Home = () => {
   const { user } = useSession();
   const navigate = useNavigate();
 
-  const url = import.meta.env.VITE_API_URL || 'http://localhost:5173';
+  const url = `https://cp2-whiskerwatch.onrender.com`;
 
   // Displays the arrays of cat image
   const [catList, setCatList] = useState([]);
@@ -29,7 +29,7 @@ const Home = () => {
         const formattedCats = response.data.map(cat => ({
           ...cat,
           thumbnail: cat.thumbnail
-            ? `http://localhost:5000/FileUploads/cats/${cat.thumbnail}`
+            ? `${url}/FileUploads/cats/${cat.thumbnail}`
             : null
         }));
 

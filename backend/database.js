@@ -15,6 +15,9 @@ export async function connectDB() {
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0,
+      ssl: {
+        ca: fs.readFileSync(new URL('./ca.pem', import.meta.url))
+      }
     });
     console.log('Connected to MySQL database!');
   } catch (err) {

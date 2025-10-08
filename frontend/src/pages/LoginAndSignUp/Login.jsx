@@ -9,6 +9,8 @@ import { useSession } from "../../context/SessionContext";
 // Admin user have separate access for login user/ admin user
 
 const Login = () => {
+  const url = `https://cp2-whiskerwatch.onrender.com`;
+
   const navigate = useNavigate();
   const { setUser } = useSession();
 
@@ -39,7 +41,7 @@ const Login = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/user/login",
+        `${url}/user/login`,
         { email, password },
         { withCredentials: true }
       );
@@ -95,7 +97,7 @@ const Login = () => {
     
 
     try {
-      const res = await axios.post(`http://localhost:5000/otp/send_otp`, { email });
+      const res = await axios.post(`${url}/otp/send_otp`, { email });
 
       if (res.status === 200) {
         setStep('verify');
@@ -122,7 +124,7 @@ const Login = () => {
     }
 
     try{
-      const res = await axios.post(`http://localhost:5000/user/reset_password`, { email, password, otp });
+      const res = await axios.post(`${url}/user/reset_password`, { email, password, otp });
 
       if (res.status === 200) {
         console.log('Password reset successful. Please log in.');

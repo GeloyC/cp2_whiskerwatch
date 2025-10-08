@@ -6,7 +6,7 @@ import  axios  from 'axios';
 
 
 const SignUp = () => {
-    const url = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    const url = `https://cp2-whiskerwatch.onrender.com`;
 
     const [firstname, setFirstname] = useState('');
     const [lastname, setLastname] = useState('');

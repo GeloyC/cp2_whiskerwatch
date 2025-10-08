@@ -14,7 +14,7 @@ import { useSession } from '../context/SessionContext'
 import Whisker from '../components/Whisker'
 
 const CatAdoption = () => {
-  const url = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const url = `https://cp2-whiskerwatch.onrender.com`;
 
   const { user } = useSession();
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ const CatAdoption = () => {
         const formattedCats = response.data.map(cat => ({
           ...cat,
           thumbnail: cat.thumbnail
-            ? `http://localhost:5000/FileUploads/cats/${cat.thumbnail}`
+            ? `${url}/FileUploads/cats/${cat.thumbnail}`
             : null
         }));
 
