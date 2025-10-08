@@ -58,7 +58,7 @@ const SignUp = () => {
                 setEmailError('');
             } catch (err) {
                 if (err.response?.status === 409) {
-                    setEmailError(err.response.data.message); // ✅ This will now work
+                    setEmailError(err.response.data.message); 
                     setLoading(false);
                     return;
                 }
@@ -70,7 +70,7 @@ const SignUp = () => {
                 setUsernameError('');
             } catch (err) {
                 if (err.response?.status === 409) {
-                    setUsernameError(err.response.data.message); // ✅ This will now work
+                    setUsernameError(err.response.data.message); 
                     setLoading(false);
                     return;
                 }
