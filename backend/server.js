@@ -3,7 +3,6 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import session from "express-session";
-import cookieParser from 'cookie-parser';
 
 import { connectDB } from "./database.js"
 import CatRoute from './routes/Cat.js'
@@ -38,6 +37,7 @@ const allowedOrigins = [
   'https://cp2-whiskerwatch-blue.vercel.app',
   'https://cp2-whiskerwatch-git-main-whisker-watch.vercel.app',
   'https://cp2-whiskerwatch-9r5t0mvm6-whisker-watch.vercel.app',
+  'https://whiskerwatch-cp2-1ttub3rge-whisker-watch.vercel.app',
 ];
 
 app.use(
@@ -54,6 +54,12 @@ app.use(
   })
 );
 
+app.use((req, res, next) => {
+  console.log('Request Origin:', req.headers.origin);
+  next();
+});
+
+
 
 app.use(
   "/uploads/cats",
@@ -62,6 +68,7 @@ app.use(
 
 
 await connectDB()
+app.use(express.json({limit: '10mb'}));
 
 app.use(session({
   secret: process.env.SESSION_SECRET || 'your_secret_key',
@@ -75,6 +82,10 @@ app.use(session({
   }
 }));
 
+
+app.use('/FileUploads', express.static(path.join(__dirname, 'FileUploads')));
+
+
 app.use('/cat', CatRoute)
 app.use('/user', UserRoute)
 app.use('/admin', AdminRoute)
@@ -83,15 +94,6 @@ app.use('/donate', DonationRoute);
 app.use('/adopt', HVAdoptionRoute);
 app.use('/otp', otpRoute);
 
-
-
-app.use(express.json({limit: '10mb'}));
-app.use(cookieParser());
-app.use('/FileUploads', express.static(path.join(__dirname, 'FileUploads')));
-
-
-
-app.use(express.json());
 
 
 
