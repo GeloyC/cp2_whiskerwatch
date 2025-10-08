@@ -20,10 +20,10 @@ const UserRoute = Router();
 UserRoute.use(express.json());
 
 UserRoute.use(
-    cors({ origin: "http://localhost:5173",
-        credentials: true, 
-        methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-        allowedHeaders: ['Content-Type', 'Authorization'],
+    cors({ origin: "https://www.whiskerwatch.site",
+      credentials: true,
+      methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
     }), 
 );
 

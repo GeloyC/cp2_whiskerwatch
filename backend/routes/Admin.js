@@ -16,8 +16,8 @@ const AdminRoute = Router();
 AdminRoute.use(express.json());
 
 AdminRoute.use(
-    cors({ origin: "http://localhost:5173",
-        credentials: true, 
+    cors({ origin: "https://www.whiskerwatch.site",
+        credentials: true,
         methods: ['GET', 'POST', 'PATCH', 'DELETE'],
         allowedHeaders: ['Content-Type', 'Authorization'],
     }), 
