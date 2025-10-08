@@ -17,14 +17,14 @@ const CommunityGuide = () => {
   const { user } = useSession();
 
   return (
-    <div className='flex flex-col justify-start items-center min-h-screen'>
+    <div className='flex flex-col justify-start items-center min-h-screen w-auto'>
       <CatBot message={`Community Guidelines!! Best to follow them all the time.`}/>
       <NavigationBar />
 
       <Whisker />
 
-      <div className='flex items-start justify-center h-screen w-auto xl:w-[1000px] lg:w-[1000px] xl:pt-10 lg:pt-10 md:pt-0'>
-        <div className='flex flex-col h-full xl:h-auto lg:h-auto md:h-full'>
+      <div className='flex items-start justify-center h-screen w-full xl:w-[1000px] lg:w-[1000px] xl:pt-10 lg:pt-10 md:pt-0'>
+        <div className='flex flex-col h-full xl:h-auto lg:h-auto md:h-full w-full'>
           <div className='flex flex-col h-full w-auto'>
             <div className='relative flex flex-col  w-auto h-full bg-[#FFF] p-10 xl:rounded-[25px] lg:rounded-[25px] gap-10'>
 
@@ -65,18 +65,18 @@ const CommunityGuide = () => {
 
               </div>
 
-              <div className='flex items-start gap-5'>
+              {/* <div className='flex items-start gap-5'>
                 <div className='flex size-12 p-2 xl:size-17 lg:size-17 md:size-15 xl:p-4 lg:p-3 bg-[#f3e0c3] object-fill rounded-[75px]'>
                   <img src="/assets/icons/canned-food.png" alt="id" className='min-w-full min-h-full object-cover'/>
-                  {/* <img src="src/assets/icons/check.png" alt="check mark" className='absolute bottom-[-10%] right-[-10%] w-[35px] h-auto'/> */}
+                  
                 </div>
 
-                <div className='flex flex-col items-start w-full gap-2'>
-                  <label className='font-bold border-b-2 border-b-[#DC8801] pb-2'>Please don't feed them food that's meant for humans. If you wish to donate CAT FOOD, please coordinate with our volunteers.</label>
+                <div className='flex flex-col items-start w-auto gap-2'>
+                  <label className='font-bold border-b-2 border-b-[#DC8801] pb-2'>Only official volunteers are allowed to feed the cats at the designated time and place.</label>
                   <label className='leading-tight italic text-[#8f8f8f] text-[14px]'>Ang mga opisyal na voluteer lang ang puwedeng magpakain sa mga pusa sa tamang oras at lugar.</label>
                 </div>
 
-              </div>
+              </div> */}
               
             </div>
           </div>
