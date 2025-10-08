@@ -34,7 +34,7 @@ const __dirname = path.dirname(__filename);
 
 const allowedOrigins = [
   'https://www.whiskerwatch.site',
-  'https://cp2-whiskerwatch-v1ky.vercel.app',
+  'https://cp2-whiskerwatch-zo9p.vercel.app',
   'http://localhost:5173' // For local dev
 ];
 app.use(cors({
