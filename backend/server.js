@@ -1,11 +1,14 @@
-// server.js
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import session from "express-session";
+import multer from "multer";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
-import { connectDB } from "./database.js"
-import CatRoute from './routes/Cat.js'
+import { connectDB } from "./database.js";
+import CatRoute from "./routes/Cat.js";
 import UserRoute from "./routes/User.js";
 import AdminRoute from "./routes/Admin.js";
 import WhiskerMeterRoute from "./routes/WhiskerMeter.js";
@@ -13,31 +16,21 @@ import DonationRoute from "./routes/Donation.js";
 import HVAdoptionRoute from "./routes/AdoptionHV.js";
 import otpRoute from "./routes/OTP.js";
 
-
-import multer from 'multer';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-
-
-
 dotenv.config();
 const app = express();
 
 // ---------------- PATH UTILS ---------------- //
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-
+// ---------------- CORS ---------------- //
 const allowedOrigins = [
-  'http://localhost:5173',
-  'https://whiskerwatch.site',
-  'https://cp2-whiskerwatch-blue.vercel.app',
-  'https://cp2-whiskerwatch-git-main-whisker-watch.vercel.app',
-  'https://cp2-whiskerwatch-9r5t0mvm6-whisker-watch.vercel.app',
-  'https://whiskerwatch-cp2-1ttub3rge-whisker-watch.vercel.app',
+  "http://localhost:5173",
+  "https://whiskerwatch.site",
+  "https://cp2-whiskerwatch-blue.vercel.app",
+  "https://cp2-whiskerwatch-git-main-whisker-watch.vercel.app",
+  "https://cp2-whiskerwatch-9r5t0mvm6-whisker-watch.vercel.app",
+  "https://whiskerwatch-cp2-1ttub3rge-whisker-watch.vercel.app",
 ];
 
 app.use(
@@ -46,8 +39,8 @@ app.use(
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        console.error('❌ Blocked by CORS:', origin);
-        callback(new Error('Not allowed by CORS'));
+        console.error("Blocked by CORS:", origin);
+        callback(new Error("Not allowed by CORS"));
       }
     },
     credentials: true,
@@ -55,113 +48,86 @@ app.use(
 );
 
 app.use((req, res, next) => {
-  console.log('Request Origin:', req.headers.origin);
+  console.log("Request Origin:", req.headers.origin);
   next();
 });
 
+app.use(express.json({ limit: "10mb" }));
 
+// ---------------- DB CONNECTION ---------------- //
+await connectDB();
 
+// ---------------- SESSION ---------------- //
 app.use(
-  "/uploads/cats",
-  express.static(path.join(process.cwd(), "FileUploads/cats"))
+  session({
+    secret: process.env.SESSION_SECRET || "your_secret_key",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 1000 * 60 * 60 * 24,
+    },
+  })
 );
 
+// ---------------- ROUTES ---------------- //
+app.use("/cat", CatRoute);
+app.use("/user", UserRoute);
+app.use("/admin", AdminRoute);
+app.use("/whisker", WhiskerMeterRoute);
+app.use("/donate", DonationRoute);
+app.use("/adopt", HVAdoptionRoute);
+app.use("/otp", otpRoute);
 
-await connectDB()
-app.use(express.json({limit: '10mb'}));
+// ---------------- STATIC FILES ---------------- //
+app.use("/uploads/cats", express.static(path.join(process.cwd(), "FileUploads/cats")));
+app.use("/FileUploads", express.static(path.join(__dirname, "FileUploads")));
 
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'your_secret_key',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production', 
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', 
-    maxAge: 1000 * 60 * 60 * 24,
-  }
-}));
-
-
-app.use('/FileUploads', express.static(path.join(__dirname, 'FileUploads')));
-
-
-app.use('/cat', CatRoute)
-app.use('/user', UserRoute)
-app.use('/admin', AdminRoute)
-app.use('/whisker', WhiskerMeterRoute);
-app.use('/donate', DonationRoute);
-app.use('/adopt', HVAdoptionRoute);
-app.use('/otp', otpRoute);
-
-
-
-
-const port = process.env.PORT || 5000;
-
-
-
+// ---------------- FILE UPLOAD ---------------- //
 const storage = multer.diskStorage({
   destination: function (req, file, callback) {
-    const dir = path.join(process.cwd(), "FileUploads/cats")
-
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    } 
+    const dir = path.join(process.cwd(), "FileUploads/cats");
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     callback(null, dir);
   },
-
   filename: function (req, file, callback) {
     callback(null, Date.now() + path.extname(file.originalname));
   },
 });
 
-
 const upload = multer({
   storage,
-  fileFilter: function(req, file, callback) {
+  fileFilter: function (req, file, callback) {
     if (
-      file.mimetype === 'image/jpeg' ||
-      file.mimetype === 'image/png' ||
-      file.mimetype === 'application/pdf' 
+      file.mimetype === "image/jpeg" ||
+      file.mimetype === "image/png" ||
+      file.mimetype === "application/pdf"
     ) {
-      callback(null, true)
+      callback(null, true);
     } else {
-      // req.err = 'File is invalid!'
-      // callback(null, false)
-
       if (!req.invalidFiles) req.invalidFiles = [];
       req.invalidFiles.push(file.originalname);
       callback(null, false);
-    };
+    }
   },
 });
 
-
-// POST REQUEST: Upload image to a file path 'FileUploads'
-app.post('/upload/file', upload.single('document') ,  async (req, res) => {
-  console.log(req.file)
-
-  if (req.err) {
-    return res.status(422).json({message: req.err}) 
-  }
-
-  return res.status(200).json({message: 'File uploaded succesfully!'})
+app.post("/upload/file", upload.single("document"), async (req, res) => {
+  console.log(req.file);
+  if (req.err) return res.status(422).json({ message: req.err });
+  return res.status(200).json({ message: "File uploaded successfully!" });
 });
 
-
-
-
-// Global error handler
+// ---------------- ERROR HANDLER ---------------- //
 app.use((err, req, res, next) => {
   console.error("Global error:", err.stack);
   res.status(500).json({ error: "Something went wrong on the server" });
 });
 
+// ---------------- SERVER START ---------------- //
 const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on port ${PORT}`);
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on port ${PORT}`);
 });
-
-
