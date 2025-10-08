@@ -35,7 +35,7 @@ const __dirname = path.dirname(__filename);
 const allowedOrigins = [
   'http://localhost:5173',
   'https://www.whiskerwatch.site',
-  'https://cp2-whiskerwatch-zo9p-m9krajk2w-whisker-watch.vercel.app/'
+  'https://cp2-whiskerwatch-zo9p-m9krajk2w-whisker-watch.vercel.app'
 ];
 
 app.use(cors({
@@ -66,14 +66,14 @@ app.use(
 await connectDB()
 
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'your_secret_key', 
+  secret: process.env.SESSION_SECRET || 'your_secret_key',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    httpOnly: true,           // prevent JS access to cookie
-    secure: false,            // true if using HTTPS
-    sameSite: 'lax',          // allow session in cross-site (for dev)
-    maxAge: 1000 * 60 * 60 * 24 // 1 day
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production', 
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', 
+    maxAge: 1000 * 60 * 60 * 24,
   }
 }));
 
