@@ -422,6 +422,7 @@ UserRoute.post('/reset_password', async (req, res) => {
 UserRoute.get('/api/session', (req, res) => {
   const token = req.cookies.token || (req.headers.authorization?.split(' ')[1] || '');
   console.log('Received token:', token); // Debug token
+  console.log('Request headers:', req.headers); // Debug all headers
   if (!token) {
     console.log('No token found in request');
     return res.json({ loggedIn: false, user: null });
