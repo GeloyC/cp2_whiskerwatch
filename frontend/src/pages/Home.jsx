@@ -24,7 +24,7 @@ const Home = () => {
   useEffect(() => {
     const fetchCats = async () => {
       try {
-        const response = await axios.get(`${url}/cat/catlist/limit`);
+        const response = await axios.get(`cat/catlist/limit`);
 
         const formattedCats = response.data.map(cat => ({
           ...cat,

@@ -54,7 +54,7 @@ const SignUp = () => {
         try {
             try {
                 // Check email availability
-                await axios.post(`${url}/user/check_email`, { email });
+                await axios.post(`user/check_email`, { email });
                 setEmailError('');
             } catch (err) {
                 if (err.response?.status === 409) {
@@ -66,7 +66,7 @@ const SignUp = () => {
 
             try {
                 // Check username availability
-                await axios.post(`${url}/user/check_username`, { username });
+                await axios.post(`user/check_username`, { username });
                 setUsernameError('');
             } catch (err) {
                 if (err.response?.status === 409) {
