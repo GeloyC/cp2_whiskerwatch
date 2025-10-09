@@ -16,6 +16,26 @@ const AdminRoute = Router();
 AdminRoute.use(express.json());
 
 
+const allowedOrigins = [
+    'http://localhost:5173',
+    'https://whiskerwatch.site',
+    'https://whiskerwatch-cp2.vercel.app'
+];
+
+// CORS setup
+AdminRoute.use(cors({
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.some(o => 
+            typeof o === "string" ? o === origin : o.test(origin))) {
+        callback(null, true);
+        } else {
+        console.error("❌ Blocked by CORS:", origin);
+        callback(new Error("Not allowed by CORS"));
+        }
+    }
+}));
+
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
