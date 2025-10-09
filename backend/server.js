@@ -25,23 +25,25 @@ const __dirname = path.dirname(__filename);
 
 // ---------------- CORS ---------------- //
 const allowedOrigins = [
-  'http://localhost:5173',
-  'https://whiskerwatch.site',
-  'https://whiskerwatch-cp2.vercel.app'
+  "http://localhost:5173",
+  "https://whiskerwatch.site",
+  "https://whiskerwatch-cp2.vercel.app"
 ];
 
-// CORS setup
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.some(o => 
-        typeof o === "string" ? o === origin : o.test(origin))) {
-      callback(null, true);
-    } else {
-      console.error("❌ Blocked by CORS:", origin);
-      callback(new Error("Not allowed by CORS"));
-    }
-  }
-}));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        console.error("❌ Blocked by CORS:", origin);
+        return callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 
 
 
