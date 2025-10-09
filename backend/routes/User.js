@@ -206,7 +206,8 @@ UserRoute.post('/signup', async (req, res) => {
       }
     );
 
-    if (!captchaResponse.data.success || captchaResponse.data.score < 0.5) {
+    console.log('Google reCAPTCHA Response:', captchaResponse.data);
+    if (!captchaResponse.data.success || captchaResponse.data.score < 0.3) {
       return res.status(400).json({ message: 'CAPTCHA verification failed. Are you a bot?' });
     }
 
