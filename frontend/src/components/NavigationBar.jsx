@@ -13,6 +13,8 @@ const pageStyling = 'hidden xl:flex lg:flex md:flex sm:hidden items-center justi
 const pageCurrent = 'hidden xl:flex lg:flex md:flex sm:hidden items-center justify-center box-content h-full px-[10px] py-[6px] rounded-[10px] hover:bg-[#DC8801] text-[#FFF] hover:cursor-pointer active:bg-[#FFF] active:text-[#DC8801] active:cursor-pointer bg-[#DC8801]';
 
 const NavigationBar = () => {
+  const url = `https://whiskerwatch-0j6g.onrender.com`;
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -35,7 +37,7 @@ const NavigationBar = () => {
       if (!user) return;
 
       try {
-        const response = await axios.get('http://localhost:5000/user/profile', { 
+        const response = await axios.get(`${url}/user/profile`, { 
           withCredentials: true,
         });
 
@@ -145,7 +147,7 @@ const NavigationBar = () => {
                   active:scale-95 active:bg-white/50'>
                     <img src={
                       profileImage
-                        ? `http://localhost:5000/FileUploads/${profileImage}`
+                        ? `${url}/FileUploads/${profileImage}`
                         : "/assets/icons/account.png"
                     } alt="" />
                   </div>
