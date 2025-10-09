@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 const AssignNewAdmin = () => {
+    const url = `https://whiskerwatch-0j6g.onrender.com`;
+    
 
     const [users, setUsers] = useState([]);
     const [searchInput, setSearchInput] = useState('');
@@ -10,7 +12,7 @@ const AssignNewAdmin = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/admin/manage/non_admin`);
+                const response = await axios.get(`${url}/admin/manage/non_admin`);
 
                 setUsers(response.data);
                 response.data.forEach(user => console.log(user.email));
@@ -25,7 +27,7 @@ const AssignNewAdmin = () => {
     const assignAdmin = async (event, user_id) => { 
         event.preventDefault();
         try {
-            const response = await axios.patch('http://localhost:5000/admin/manage/update_admin', {
+            const response = await axios.patch(`${url}/admin/manage/update_admin`, {
                 user_id,  // <-- send in body here
             });
             console.log('Update success:', response.data);

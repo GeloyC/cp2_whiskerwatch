@@ -9,6 +9,8 @@ import axios from 'axios'
 // After adoption -- Certificate will be picked up by adopter
 
 const AdoptersList = () => {
+  const url = `https://whiskerwatch-0j6g.onrender.com`;
+    
   const { user, logout, loading: sessionLoading } = useSession();
   const [adopters, setAdopters] = useState([]);
 
@@ -17,7 +19,7 @@ const AdoptersList = () => {
   useEffect(() => {
     const fetchAdopter = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/admin/adopters');
+        const response = await axios.get(`${url}/admin/adopters`);
         setAdopters(response.data);
         
       } catch (err) {
@@ -46,7 +48,7 @@ const AdoptersList = () => {
     certificateForm.append('adoption_id', adoptee.adoption_id);
 
     try {
-      const response = await axios.post('http://localhost:5000/admin/upload_certificate', certificateForm, {
+      const response = await axios.post(`${url}/admin/upload_certificate`, certificateForm, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -118,7 +120,7 @@ const AdoptersList = () => {
 
                       {/* CREATE A GET REQUEST FOR THE FILE LINK ON Admin.js */}
                       {adoptee.certificate ? (
-                        <a href={`http://localhost:5000/FileUploads/certificate/${adoptee.certificate}`} target='_blank' 
+                        <a href={`${url}/FileUploads/certificate/${adoptee.certificate}`} target='_blank' 
                         type="image/png" className='flex items-center justify-between self-start gap-3 p-1 pl-4 pr-4 bg-[#FDF5D8] text-[#2F2F2F] rounded-[10px] hover:underline border-dashed border-2 border-[#595959]'>
                         View Certificate
                         </a>

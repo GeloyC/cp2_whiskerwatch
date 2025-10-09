@@ -6,6 +6,8 @@ import { useSession } from '../../../context/SessionContext'
 import axios from 'axios';
 
 const Report = () => {
+    const url = `https://whiskerwatch-0j6g.onrender.com`;
+    
     const { user } = useSession();
     const [searchInput, setSearchInput] = useState('');
 
@@ -14,7 +16,7 @@ const Report = () => {
     useEffect(() => {
         const fetchReport = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/user/feeding_reports`);
+                const response = await axios.get(`${url}/user/feeding_reports`);
                 console.log(response.data)
                 setReports(response.data)
             } catch (err) {

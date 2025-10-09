@@ -6,6 +6,8 @@ import axios from 'axios';
 import { useSession } from '../context/SessionContext';
 
 const AdminSideBar = ({className}) => {
+  const url = `https://whiskerwatch-0j6g.onrender.com`;
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -26,7 +28,7 @@ const AdminSideBar = ({className}) => {
         if (!user) return;
 
         try {
-          const res = await axios.get('http://localhost:5000/user/profile', {
+          const res = await axios.get(`${url}/user/profile`, {
             withCredentials: true,
           });
           setProfileImage(res.data.profile_image || null); // Set filename or null
@@ -206,7 +208,7 @@ const AdminSideBar = ({className}) => {
               <img
                 src={
                   profileImage
-                    ? `http://localhost:5000/FileUploads/${profileImage}`
+                    ? `${url}/FileUploads/${profileImage}`
                     : '/assets/icons/account.png'
                 }
                 alt="account"

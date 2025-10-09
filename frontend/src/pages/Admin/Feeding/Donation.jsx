@@ -5,6 +5,8 @@ import { useSession } from '../../../context/SessionContext'
 import axios from 'axios'
 
 const Donation = () => {
+  const url = `https://whiskerwatch-0j6g.onrender.com`;
+    
   const { user, logout, loading: sessionLoading } = useSession();
 
   const [donation, setDonate] = useState([]);
@@ -14,7 +16,7 @@ const Donation = () => {
   useEffect(() => {
     const fetchDonation = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/donate/donation_list`);
+        const response = await axios.get(`${url}/donate/donation_list`);
         console.log('Donation date: ', response.data)
         setDonate(response.data)
       } catch (err) {
@@ -87,7 +89,7 @@ const Donation = () => {
                       <td>{donate.quantity}</td>
                       <td>
                         {donate.item_description || 
-                        <a href={`http://localhost:5000/FileUploads/donation_image/${donate.donation_image}`} target='_blank' className='hover:underline'>{donate.donation_image}</a>}
+                        <a href={`${url}/FileUploads/donation_image/${donate.donation_image}`} target='_blank' className='hover:underline'>{donate.donation_image}</a>}
                       </td>
                       {/* <td>{donate.donation_image || 'No Image'}</td> */}
 

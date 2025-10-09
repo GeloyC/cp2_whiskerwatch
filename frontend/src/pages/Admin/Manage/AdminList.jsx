@@ -5,6 +5,8 @@ import axios from 'axios'
 import AssignNewAdmin from './AssignNewAdmin'
 
 export const AdminList = () => {
+  const url = `https://whiskerwatch-0j6g.onrender.com`;
+    
 
   const [assignVisible, setAssignVisible] = useState(false);
   const [updateRoleVisible, setUpdateRoleVisible] = useState(false);
@@ -14,7 +16,7 @@ export const AdminList = () => {
   useEffect(() => {
     const fetchAdmin = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/admin/manage/adminlist');
+        const response = await axios.get(`${url}/admin/manage/adminlist`);
         setAdminlist(response.data);
 
         console.log(response.data)

@@ -11,22 +11,6 @@ const otpRoute = express();
 otpRoute.use(express.json());
 
 
-otpRoute.use(
-    cors({ origin: "http://localhost:5173",
-        credentials: true, 
-        methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-        allowedHeaders: ['Content-Type', 'Authorization'],
-    }), 
-);
-
-otpRoute.use(
-    cors({
-        origin: [/http:\/\/localhost:\d+$/], // allow any localhost:port
-        // credentials: true,
-    })
-);
-
-
 // Generates OTP - super straight forward 
 function generateOTP() {
   return Math.floor(100000 + Math.random() * 900000).toString();

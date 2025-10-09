@@ -5,6 +5,8 @@ import axios from 'axios';
 
 
 const CatProfileProperty = () => {
+    const url = `https://whiskerwatch-0j6g.onrender.com`;
+    
 
     const location = useLocation();
     const [catprofile, setCatprofile] = useState({
@@ -34,7 +36,7 @@ const CatProfileProperty = () => {
 
         const fetchProfile = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/cat/catprofile/${cat_id}`);
+                const response = await axios.get(`${url}/cat/catprofile/${cat_id}`);
                 console.log(response.data.date_created)
                 setCatprofile(response.data)
                 setOriginalCatprofile(response.data)
@@ -53,7 +55,7 @@ const CatProfileProperty = () => {
 
         const fetchAdoptionHistory = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/cat/adoption_history/${cat_id}`);
+                const response = await axios.get(`${url}/cat/adoption_history/${cat_id}`);
                 console.log(response.data)
                 setAdoptionHistory(response.data);
             } catch(err) {
@@ -75,7 +77,7 @@ const CatProfileProperty = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.patch(`http://localhost:5000/cat/update/${cat_id}`, {
+            const response = await axios.patch(`${url}/cat/update/${cat_id}`, {
                 name: catprofile.name,
                 gender: catprofile.gender,
                 age: catprofile.age,
@@ -135,7 +137,7 @@ const CatProfileProperty = () => {
             });
 
             const response = await axios.post(
-                `http://localhost:5000/cat/uploadcatimages/${cat_id}`,
+                `${url}/cat/uploadcatimages/${cat_id}`,
                 formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
@@ -157,11 +159,11 @@ const CatProfileProperty = () => {
     // Fetching Image data of the CAT
     const fetchCatImage = async () => {
         try {
-            const response = await axios.get(`http://localhost:5000/cat/image/${cat_id}`);
+            const response = await axios.get(`${url}/cat/image/${cat_id}`);
 
             const imageUrls = response.data.map(filename => ({
                 filename: filename,
-                url: `http://localhost:5000/FileUploads/cats/${filename}`
+                url: `${url}/FileUploads/cats/${filename}`
             }));
 
             setCatImage(imageUrls);
@@ -172,7 +174,7 @@ const CatProfileProperty = () => {
 
     const handleDeleteImage = async (filename) => {
     try {
-        await axios.delete(`http://localhost:5000/cat/image/${filename}`);
+        await axios.delete(`${url}/cat/image/${filename}`);
             console.log(`Deleted image: ${filename}`);
             fetchCatImage(); // Refresh the image list
 

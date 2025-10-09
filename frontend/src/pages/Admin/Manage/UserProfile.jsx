@@ -4,6 +4,8 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
 const UserProfile = () => {
+    const url = `https://whiskerwatch-0j6g.onrender.com`;
+    
     
     const { user_id } = useParams();
     const [profile, setProfile] = useState({
@@ -27,16 +29,16 @@ const UserProfile = () => {
         if (!user_id) return;
         const fetchUserProfile = async () => {
             try {   
-                const response = await axios.get(`http://localhost:5000/admin/manage/userprofile/${user_id}`);
+                const response = await axios.get(`${url}/admin/manage/userprofile/${user_id}`);
                 setProfile(response.data);
                 setUserOriginal(response.data);
 
                 console.log(response.data)
 
-                const profileImage = await axios.get(`http://localhost:5000/user/profile`, { withCredentials: true })
+                const profileImage = await axios.get(`${url}/user/profile`, { withCredentials: true })
                 setProfileImage(profileImage.data)
 
-                const certificateResponse = await axios.get(`http://localhost:5000/admin/adopters_certificate/${user_id}`);
+                const certificateResponse = await axios.get(`${url}/admin/adopters_certificate/${user_id}`);
                 const certificates = certificateResponse.data;
                 console.log('Certificate: ', certificates)
 
@@ -57,7 +59,7 @@ const UserProfile = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.patch(`http://localhost:5000/admin/manage/userupdate/${user_id}`, {
+            const response = await axios.patch(`${url}/admin/manage/userupdate/${user_id}`, {
                 firstname: profile.firstname,
                 lastname: profile.lastname,
                 role: profile.role,
@@ -109,7 +111,7 @@ const UserProfile = () => {
 
                             <div className='flex gap-3 items-center'>
                                 <div className='flex w-[250px] h-[250px] object-fit rounded-[10px] overflow-hidden'>
-                                    <img src={`http://localhost:5000/FileUploads/${profile.profile_image}`} alt="User profile image" className="bg-[#a3a3a3] w-full h-full object-cover"/>
+                                    <img src={`${url}/FileUploads/${profile.profile_image}`} alt="User profile image" className="bg-[#a3a3a3] w-full h-full object-cover"/>
                                 </div>
 
                             </div>
@@ -164,7 +166,7 @@ const UserProfile = () => {
                                         userCertificates.map((cert, index) => (
                                             <a
                                                 key={index}
-                                                href={`http://localhost:5000/FileUploads/certificate/${cert.certificate}`}
+                                                href={`${url}/FileUploads/certificate/${cert.certificate}`}
                                                 target='_blank'
                                                 rel='noopener noreferrer'
                                                 className='flex items-center justify-between self-start min-w-[300px] gap-3 p-2 pl-4 pr-4 bg-[#FDF5D8] text-[#2F2F2F] rounded-[10px] hover:underline border-dashed border-2 border-[#595959]'

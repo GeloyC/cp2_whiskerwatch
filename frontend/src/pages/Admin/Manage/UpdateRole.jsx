@@ -4,6 +4,8 @@ import axios from 'axios';
 import { useSession } from '../../../context/SessionContext';
 
 const UpdateRole = () => {
+    const url = `https://whiskerwatch-0j6g.onrender.com`;
+    
     const location = useLocation();
     const navigate = useNavigate();
     const { user } = useSession();
@@ -22,7 +24,7 @@ const UpdateRole = () => {
     useEffect(() => {
         const fetchUser = async (user_id) => {
             try {
-                const response = await axios.get(`http://localhost:5000/admin/manage/role/${user?.user_id}`);
+                const response = await axios.get(`${url}/admin/manage/role/${user?.user_id}`);
 
                 setRole(response.data.role)
                 setRoleOriginal(response.data.role)
@@ -39,7 +41,7 @@ const UpdateRole = () => {
         event.preventDefault();
 
         try {
-            const response = await axios.patch(`http://localhost:5000/admin/manage/update/${user?.user_id}`, {
+            const response = await axios.patch(`${url}/admin/manage/update/${user?.user_id}`, {
                 firstname: user.firstname,
                 lastname: user.lastname,
                 role: role

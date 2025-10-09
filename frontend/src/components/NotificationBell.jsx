@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useSession } from '../context/SessionContext';
 
 const NotificationBell = () => {
+  const url = `https://whiskerwatch-0j6g.onrender.com`;
+
   const { user, notifications = [], fetchNotifications } = useSession(); // Default to empty array
   const [isOpen, setIsOpen] = useState(false);
 
@@ -20,7 +22,7 @@ const NotificationBell = () => {
 
   const markAsRead = async (id) => {
     try {
-      await axios.patch(`http://localhost:5000/user/notifications/mark_read/${id}`);
+      await axios.patch(`${url}/user/notifications/mark_read/${id}`);
       await fetchNotifications(user.user_id);
     } catch (err) {
       console.error('Failed to mark as read:', err);
@@ -29,7 +31,7 @@ const NotificationBell = () => {
 
   const deleteNotification = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/user/notifications/delete/${id}`);
+      await axios.delete(`${url}/user/notifications/delete/${id}`);
       await fetchNotifications(user.user_id); 
     } catch (err) {
       console.error('Failed to delete notification:', err);

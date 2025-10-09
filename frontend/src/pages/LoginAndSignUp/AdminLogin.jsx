@@ -10,6 +10,8 @@ import { useSession } from '../../context/SessionContext';
 // Remove Dropdown selection: Head_volunteer => Email, Admin => Username
 
 const AdminLogin = () => {
+    const url = `https://whiskerwatch-0j6g.onrender.com`;
+    
     const navigate = useNavigate();
 
     const [username, setUsername] = useState('');
@@ -23,7 +25,7 @@ const AdminLogin = () => {
         event.preventDefault();
         try {
         const response = await axios.post(
-            'http://localhost:5000/user/adminlogin',
+            `${url}/user/adminlogin`,
             { username, password },
             { withCredentials: true }
         );

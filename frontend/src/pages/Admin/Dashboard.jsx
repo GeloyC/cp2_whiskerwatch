@@ -7,6 +7,8 @@ import { useSession } from '../../context/SessionContext'
 import HeadVolunteerSideBar from '../../components/HeadVolunteerSideBar'
 
 const Dashboard = () => {
+  const url = `https://whiskerwatch-0j6g.onrender.com`;
+
   const { user, logout, loading: sessionLoading } = useSession();
 
   const [cats, setCats] = useState(0);
@@ -37,7 +39,7 @@ const Dashboard = () => {
 
   const fetchCats = async () => {
     try {
-      const catnumber = await axios.get('http://localhost:5000/cat/list');
+      const catnumber = await axios.get(`${url}/cat/list`);
 
       setCats(catnumber.data.length)
     } catch (err) {
@@ -47,7 +49,7 @@ const Dashboard = () => {
 
   const fetchNewCats = async () => {
     try {
-      const newCats = await axios.get('http://localhost:5000/cat/adopted');
+      const newCats = await axios.get(`${url}/cat/adopted`);
       setNewCats(newCats.data.length)
     } catch(err) {
       console.error('Error fetching new cats: ', err);
@@ -56,7 +58,7 @@ const Dashboard = () => {
 
   const fetchAdoptedCats = async () => {
     try {
-      const adopted_cat = await axios.get('http://localhost:5000/cat/adopted');
+      const adopted_cat = await axios.get(`${url}/cat/adopted`);
       setAdoptedCats(adopted_cat.data.length)
     } catch (err) {
 
@@ -65,7 +67,7 @@ const Dashboard = () => {
 
   const fetchNewAdoptedCats = async () => {
   try {
-    const res = await axios.get('http://localhost:5000/cat/adopted_cats/month');
+    const res = await axios.get(`${url}/cat/adopted_cats/month`);
     setNewAdoptedCats(res.data.length); // Assuming you track this in state
   } catch (err) {
     console.error('Error fetching adopted cats:', err);
@@ -75,7 +77,7 @@ const Dashboard = () => {
 
   const fetchUsers = async () => {
     try {
-      const usernumber = await axios.get('http://localhost:5000/admin/manage/users');
+      const usernumber = await axios.get(`${url}/admin/manage/users`);
 
       setUsers(usernumber.data.length) 
     } catch (err) {
@@ -86,7 +88,7 @@ const Dashboard = () => {
 
   const fetchNewUsers = async () => {
     try {
-      const newUsers = await axios.get(`http://localhost:5000/user/all_users`);
+      const newUsers = await axios.get(`${url}/user/all_users`);
       setNewUsers(newUsers.data.length)
     } catch (err) {
       console.error('Error fetching new users: ', err);
@@ -97,7 +99,7 @@ const Dashboard = () => {
 
   const fetchAdopters = async () => {
     try {
-      const userAdopters = await axios.get('http://localhost:5000/admin/adopters')
+      const userAdopters = await axios.get(`${url}/admin/adopters`)
       setAdopters(userAdopters.data.length)
     } catch (err) {
       console.error('Error fetching adopters: ', err);
@@ -106,7 +108,7 @@ const Dashboard = () => {
 
   const fetchNewAdopters = async () => {
     try {
-      const userAdopters = await axios.get('http://localhost:5000/admin/adopters')
+      const userAdopters = await axios.get(`${url}/admin/adopters`);
       setAdoptersMonth(userAdopters.data.length)
     } catch (err) {
       console.error('Error fetching adopters: ', err);
@@ -116,7 +118,7 @@ const Dashboard = () => {
 
   const fetchDonationSummary = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/donate/money_donations_summary');
+      const res = await axios.get(`${url}/donate/money_donations_summary`);
 
 
       setTotalMoney(res.data.total_money_donated);

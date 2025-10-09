@@ -4,6 +4,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import axios from 'axios';
 
 const AdminCatProfile = () => {
+  const url = `https://whiskerwatch-0j6g.onrender.com`;
+    
 
   const [cats, setCats] = useState([]);
   const [searchInput, setSearchInput] = useState('');
@@ -11,7 +13,7 @@ const AdminCatProfile = () => {
  
   const fetchCat = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/cat/list`);
+      const response = await axios.get(`${url}/cat/list`);
       setCats(response.data)
     }catch(err) {
       console.error('Error fetching cat:', err);
@@ -25,7 +27,7 @@ const AdminCatProfile = () => {
 
   const handleDeleteCatProfile = async (cat_id) => {
     try {
-      await axios.delete(`http://localhost:5000/cat/delete_cat/${cat_id}`);
+      await axios.delete(`${url}/cat/delete_cat/${cat_id}`);
 
       fetchCat();
     } catch (err) {

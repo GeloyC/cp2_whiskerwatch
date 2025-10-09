@@ -6,6 +6,8 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 
 const FeedingVolunteers = () => {
+  const url = `https://whiskerwatch-0j6g.onrender.com`;
+    
   const { user, logout, loading: sessionLoading } = useSession();
     const [searchInput, setSearchInput] = useState('');
 
@@ -15,7 +17,7 @@ const FeedingVolunteers = () => {
   useEffect(() => {
     const fetchFeeders = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/admin/feeders');
+        const response = await axios.get(`${url}/admin/feeders`);
         setFeeders(response.data);
         console.log(response.data)
         
@@ -48,7 +50,7 @@ const FeedingVolunteers = () => {
       }
       
 
-      await axios.patch('http://localhost:5000/admin/feeders/feeding_date', {
+      await axios.patch(`${url}/admin/feeders/feeding_date`, {
         feeding_date,
         feeder_id
       });
@@ -56,7 +58,7 @@ const FeedingVolunteers = () => {
       alert('Feeding date updated successfully!');
       console.log(feeding_date)
       // Refetch data or update UI as needed
-      const response = await axios.get('http://localhost:5000/admin/feeders');
+      const response = await axios.get(`${url}/admin/feeders`);
       setFeeders(response.data);
 
     } catch (error) {

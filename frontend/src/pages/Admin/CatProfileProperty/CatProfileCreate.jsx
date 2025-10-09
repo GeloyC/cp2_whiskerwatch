@@ -4,6 +4,8 @@ import { Link,  useNavigate } from 'react-router-dom'
 import axios from 'axios';
 
 const CatProfileCreate = () => {
+    const url = `https://whiskerwatch-0j6g.onrender.com`;
+    
 
     const [name, setName] = useState('');
     const [age, setAge] = useState('');
@@ -21,7 +23,7 @@ const CatProfileCreate = () => {
         event.preventDefault();
 
         try {
-            const response = await axios.post('http://localhost:5000/cat/create', {
+            const response = await axios.post(`${url}/cat/create`, {
                 name, age, gender, sterilization_status, description
             });
             console.log('Signup response:', response.data);
@@ -70,7 +72,7 @@ const CatProfileCreate = () => {
             });
 
             const response = await axios.post(
-                `http://localhost:5000/cat/uploadcatimages/${cat_id}`,
+                `${url}/cat/uploadcatimages/${cat_id}`,
                 formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'

@@ -6,13 +6,16 @@ import HeadVolunteerSideBar from '../../../components/HeadVolunteerSideBar'
 import { useSession } from '../../../context/SessionContext'
 
 const AdopterApplication = () => {
+  const url = `https://whiskerwatch-0j6g.onrender.com`;
+    
+
   const { user, logout, loading: sessionLoading } = useSession();
   const [applicant, setApplicant] = useState([]);
 
   useEffect(() => {
     const fetchApplications = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/admin/adoption/application`);
+        const response = await axios.get(`${url}/admin/adoption/application`);
         setApplicant(response.data)
       } catch(err) {
           console.error('Error retrieving application data: ', err)

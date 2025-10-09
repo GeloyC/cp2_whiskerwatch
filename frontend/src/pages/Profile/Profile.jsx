@@ -17,6 +17,8 @@ import { useSession } from '../../context/SessionContext'
 // Certicate to be emailed upon successful adoption
 
 const Profile = () => {
+    const url = `https://whiskerwatch-0j6g.onrender.com`;
+
     const location = useLocation();
     const [profile, setProfile] = useState([]);
     const [updateProfile, setUpdateProfile] = useState(false);
@@ -34,12 +36,12 @@ const Profile = () => {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/user/profile`, {
+                const response = await axios.get(`${url}/user/profile`, {
                     withCredentials: true
                 }); 
                 const res = JSON.stringify(response.data)
 
-                const certificateResponse = await axios.get(`http://localhost:5000/admin/adopters_certificate/${user?.user_id}`);
+                const certificateResponse = await axios.get(`${url}/admin/adopters_certificate/${user?.user_id}`);
                 const certificates = certificateResponse.data;
                 setUserCertificates(certificates);
 
@@ -89,7 +91,7 @@ const Profile = () => {
                 formData.append('old_image', profile.old_image || '');
             }
 
-            const response = await axios.patch('http://localhost:5000/user/profile/update', formData, {
+            const response = await axios.patch(`${url}/user/profile/update`, formData, {
                 withCredentials: true,
                 headers: {
                     'Content-Type': 'multipart/form-data'
@@ -101,7 +103,7 @@ const Profile = () => {
 
 
             // AFTER REPLACING SOME INFOS ON THE UPDATE VIEW, REFETCH THE DATA TO SEE CHANGES ON THE READ VIEW
-            const updated = await axios.get('http://localhost:5000/user/profile', { withCredentials: true });
+            const updated = await axios.get(`${url}/user/profile`, { withCredentials: true });
 
             setProfile(updated.data);
             setOriginalProfile(updated.data);
@@ -139,7 +141,7 @@ const Profile = () => {
         const fetchWhiskerPoints = async () => {
         if (!user?.user_id) return;
         try {
-            const response = await axios.get(`http://localhost:5000/whisker/whiskermeter/${user.user_id}`);
+            const response = await axios.get(`${url}/whisker/whiskermeter/${user.user_id}`);
             setPoints(response.data.points || 0);
 
             
@@ -188,7 +190,7 @@ const Profile = () => {
                                             <div className='relative flex flex-col p-[2%] xl:flex-row lg:flex-row gap-5'>
                                                 <div className='flex flex-row xl:flex-col lg:flex-col gap-3 justify-center'>
                                                     <div className='flex w-[250px] h-[250px] bg-[#B5C04A] rounded-sm p-2'>
-                                                        <img src={`${`http://localhost:5000/FileUploads/${profile.profile_image}` || '/assets/UserProfile/default_profile_image.jpg'}`} alt="" className='w-full h-full object-cover'/>
+                                                        <img src={`${`${url}/FileUploads/${profile.profile_image}` || '/assets/UserProfile/default_profile_image.jpg'}`} alt="" className='w-full h-full object-cover'/>
                                                     </div>
 
                                                     <div className='flex flex-row gap-2'>
@@ -247,7 +249,7 @@ const Profile = () => {
                                                             userCertificates.map((cert, index) => (
                                                                 <a
                                                                     key={index}
-                                                                    href={`http://localhost:5000/FileUploads/certificate/${cert.certificate}`}
+                                                                    href={`${url}/FileUploads/certificate/${cert.certificate}`}
                                                                     target='_blank'
                                                                     rel='noopener noreferrer'
                                                                     className='flex items-center justify-between self-start min-w-[300px] gap-3 p-2 pl-4 pr-4 bg-[#E3E697] text-[#2F2F2F] rounded-[10px] hover:underline border-dashed border-2 border-[#99A339]'
@@ -280,7 +282,7 @@ const Profile = () => {
                                                     profile.profile_image?.startsWith('blob:') 
                                                     ? profile.profile_image
                                                     : profile.profile_image
-                                                        ? `http://localhost:5000/FileUploads/${profile.profile_image}` || '/assets/UserProfile/default_profile_image.jpg'
+                                                        ? `${url}/FileUploads/${profile.profile_image}` || '/assets/UserProfile/default_profile_image.jpg'
                                                         : '/assets/UserProfile/default_profile_image.jpg'} alt="" 
                                                 className='w-full h-full object-cover'/>
                                             </div>

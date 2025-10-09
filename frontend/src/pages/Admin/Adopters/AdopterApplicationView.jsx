@@ -6,6 +6,9 @@ import { Link, useParams } from 'react-router-dom'
 import axios from 'axios'
 
 const AdopterApplicationView = () => {
+    const url = `https://whiskerwatch-0j6g.onrender.com`;
+    
+
     const { user, logout, loading: sessionLoading } = useSession();
     const { application_id } = useParams();
 
@@ -16,7 +19,7 @@ const AdopterApplicationView = () => {
     useEffect(() => {
         const fetchApplications = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/admin/adoption_form/${application_id}`);
+                const response = await axios.get(`${url}/admin/adoption_form/${application_id}`);
                 setApplicant(response.data);
             } catch(err) {
                 console.error('Error fetching user:', err.response?.data || err.message);
@@ -29,7 +32,7 @@ const AdopterApplicationView = () => {
     const handleUpdateStatus = async (status) => {
 
         try {
-            const response = await axios.patch(`http://localhost:5000/admin/adoption_form/status_update/${applicant.application_id}`,
+            const response = await axios.patch(`${url}/admin/adoption_form/status_update/${applicant.application_id}`,
                 { status }, { withCredentials:true }
             );
 
@@ -99,12 +102,12 @@ const AdopterApplicationView = () => {
 
                         {applicant.application_form && (
                             <object
-                                data={`http://localhost:5000/FileUploads/adoption_form/${applicant.application_form}`}
+                                data={`${url}/FileUploads/adoption_form/${applicant.application_form}`}
                                 type="application/pdf"
                                 width="100%"
                                 height="600px" >
                                 <p> Your browser does not support embedded PDFs.
-                                    <a href={`http://localhost:5000/FileUploads/adoption_form/${applicant.application_form}`} target="_blank" rel="noopener noreferrer">
+                                    <a href={`${url}/FileUploads/adoption_form/${applicant.application_form}`} target="_blank" rel="noopener noreferrer">
                                         Click here to download the PDF.
                                     </a>
                                 </p>

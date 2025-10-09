@@ -7,6 +7,8 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 
 const FeedingApplicationView = () => {
+    const url = `https://whiskerwatch-0j6g.onrender.com`;
+    
     const { user, logout, loading: sessionLoading } = useSession();
 
     const { application_id } = useParams();
@@ -17,7 +19,7 @@ const FeedingApplicationView = () => {
     useEffect(() => {
         const fetchApplications = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/admin/form/${application_id}`, {
+                const response = await axios.get(`${url}/admin/form/${application_id}`, {
                     withCredentials: true
                 });
                 console.log(response.data)
@@ -34,7 +36,7 @@ const FeedingApplicationView = () => {
     const handleUpdateStatus = async (status) => {
 
         try {
-            await axios.patch(`http://localhost:5000/admin/form/status_update/${applicant.application_id}`,
+            await axios.patch(`${url}/admin/form/status_update/${applicant.application_id}`,
                 { status }, 
                 { withCredentials: true }
             );
@@ -103,12 +105,12 @@ const FeedingApplicationView = () => {
 
                             {applicant.application_form && (
                                 <object
-                                    data={`http://localhost:5000/FileUploads/${applicant.application_form}`}
+                                    data={`${url}/FileUploads/${applicant.application_form}`}
                                     type="application/pdf"
                                     width="100%"
                                     height="600px" >
                                     <p> Your browser does not support embedded PDFs.
-                                        <a href={`http://localhost:5000/FileUploads/${applicant.application_form}`} target="_blank" rel="noopener noreferrer">
+                                        <a href={`${url}/FileUploads/${applicant.application_form}`} target="_blank" rel="noopener noreferrer">
                                             Click here to download the PDF.
                                         </a>
                                     </p>

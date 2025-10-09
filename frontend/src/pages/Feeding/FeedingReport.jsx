@@ -107,19 +107,21 @@ import { useSession } from '../../context/SessionContext'
 import axios from 'axios';
 
 const FeedingReport = () => {
+    const url = `https://whiskerwatch-0j6g.onrender.com`;
+    
     const { user } = useSession();
     const [feedingDate, setFeedingDate] = useState('');
     const [description, setDescription] = useState('');
     const [submitMessage, setSubmitMessage] = useState('');
     const [submitError, setSubmitError] = useState('');
-    const navigate = useNavigate(); // ✅ for redirecting
+    const navigate = useNavigate(); 
 
     useEffect(() => {
         const fetchFeedingDate = async () => {
         if (!user?.user_id) return;
 
         try {
-            const response = await axios.get(`http://localhost:5000/admin/feeders/feeding_date/${user.user_id}`);
+            const response = await axios.get(`${url}/admin/feeders/feeding_date/${user.user_id}`);
             console.log('Feeding date:', response.data);
             setFeedingDate(response.data.feeding_date);
         } catch (err) {
@@ -134,7 +136,7 @@ const FeedingReport = () => {
         e.preventDefault();
 
         try {
-        await axios.post(`http://localhost:5000/user/feeding_report/${user.user_id}`, {
+        await axios.post(`${url}/user/feeding_report/${user.user_id}`, {
             report: description,
         });
 

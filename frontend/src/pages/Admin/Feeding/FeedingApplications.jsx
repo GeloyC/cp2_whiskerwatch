@@ -7,13 +7,15 @@ import axios from 'axios'
 import { useState, useEffect } from 'react'
 
 const FeedingApplications = () => {
+  const url = `https://whiskerwatch-0j6g.onrender.com`;
+    
   const { user, logout, loading: sessionLoading } = useSession();
   const [applicant, setApplicant] = useState([]);
 
   useEffect(() => {
     const fetchApplications = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/admin/feeders/application`);
+        const response = await axios.get(`${url}/admin/feeders/application`);
         console.log(response.data)
         setApplicant(response.data)
       } catch(err) {
