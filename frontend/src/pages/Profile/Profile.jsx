@@ -37,7 +37,10 @@ const Profile = () => {
         const fetchProfile = async () => {
             try {
                 const response = await axios.get(`${url}/user/profile`, {
-                    withCredentials: true
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${Cookies.get("token")}`, // Explicitly send token
+                    },
                 }); 
                 const res = JSON.stringify(response.data)
 
@@ -50,7 +53,7 @@ const Profile = () => {
                 console.error('Error fetching user:', err.response?.data || err.message);
             }
         }
-        fetchProfile()
+        if (user?.user_id) fetchProfile()
     }, [user?.user_id])
 
 

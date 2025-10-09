@@ -609,13 +609,26 @@ UserRoute.post("/adminlogin", async (req, res) => {
 UserRoute.get('/profile', async (req, res) => {
     let db = getDB();
     try {
-        const sessionUser = req.session.user;
+        // const sessionUser = req.session.user;
 
-        if (!sessionUser || !sessionUser.user_id) {
-            return res.status(401).json({ error: 'Please login to submit application.' });
+        const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+        if (!token) {
+          return res.status(401).json({ error: 'Please login to view your profile.' });
         }
 
-        console.log('Authenticated user ID:', sessionUser.user_id);
+        let decoded;
+        try {
+          decoded = jwt.verify(token, JWT_SECRET);
+        } catch (err) {
+          return res.status(401).json({ error: 'Invalid or expired token.' });
+        }
+
+        // if (!sessionUser || !sessionUser.user_id) {
+        //     return res.status(401).json({ error: 'Please login to submit application.' });
+        // }
+
+        const user_id = decoded.user_id;
+        console.log('Authenticated user ID:', user_id);
 
         // Step 3: Query the database
         const [userprofile] = await db.query(
@@ -627,7 +640,7 @@ UserRoute.get('/profile', async (req, res) => {
                 DATE_FORMAT(updated_at, '%Y-%m-%d') AS updated_at 
             FROM users
             WHERE user_id = ?;`,
-            [sessionUser.user_id]
+            [user_id]
         );
 
         // Step 4: Handle if user not found
@@ -643,19 +656,6 @@ UserRoute.get('/profile', async (req, res) => {
         return res.status(500).json({ error: 'Internal server error' });
     }
 });
-
-
-// UserRoute.post("/logout", (req, res) => {
-//   console.log("Logout endpoint hit");
-//   req.session.destroy((err) => {
-//     if (err) {
-//       console.error("Session destroy error:", err);
-//       return res.status(500).json({ message: "Logout failed" });
-//     }
-//     res.clearCookie("connect.sid");
-//     res.json({ message: "Logged out successfully", loggedIn: false });
-//   });
-// });
 
 
 UserRoute.post('/logout', (req, res) => {
