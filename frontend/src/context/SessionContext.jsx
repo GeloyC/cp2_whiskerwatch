@@ -14,7 +14,6 @@ export function useSession() {
 
 export function SessionProvider({ children }) {
     const url = `https://whiskerwatch-0j6g.onrender.com`;
-    const navigate = useNavigate();
 
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, createBrowserRouter, createRoutesFromElements, RouterProvider } from 'react-router-dom';
+import { Routes, BrowserRouter, Route, createBrowserRouter, createRoutesFromElements, RouterProvider } from 'react-router-dom';
 
 import RootLayout from './layout/RootLayout';
 
@@ -134,11 +134,11 @@ const App = () => {
   );
 
   return (
-    <BrowserRouter>
+    
       <SessionProvider>
           <RouterProvider router={router} />
       </SessionProvider>
-    </BrowserRouter>
+    
   );
 };
 
