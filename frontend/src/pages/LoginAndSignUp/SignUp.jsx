@@ -9,7 +9,7 @@ import ReCAPTCHA from 'react-google-recaptcha';
 const SignUp = () => {
     const url = `https://whiskerwatch-0j6g.onrender.com`;
     const [captchaToken, setCaptchaToken] = useState(null);
-    const SITE_KEY = '6LeqdeQrAAAAAK56jWztLw71UodF0-XIKYjBNbqm';
+    const SITE_KEY = '6Lf1hOQrAAAAAGyLTMqscsPcUdIyX6H2wYnsbwQb';
 
     const [firstname, setFirstname] = useState('');
     const [lastname, setLastname] = useState('');
@@ -301,7 +301,7 @@ const SignUp = () => {
                             className={password === confirmPassword ? 'border-b-2 border-b-[#A8784F] p-2 grid-col placeholder-[#A3A3A3] text-[#B5C04A]' : 'border-b-2 border-b-[#A8784F] p-2 grid-col placeholder-[#A3A3A3] text-[#d23f07]'} />
                         
                         <div className='flex flex-col items-center gap-3 col-span-2'>
-                            <ReCAPTCHA sitekey={SITE_KEY} onChange={handleCaptcha} />
+                            <ReCAPTCHA sitekey={'6Lf1hOQrAAAAAGyLTMqscsPcUdIyX6H2wYnsbwQb'} onChange={handleCaptcha} />
                             <div className='flex flex-col'>
                                 <span>By Continuing, you agree to our <Link to='/termscondition' className='text-[#DC8801] underline hover:text-[#B67101] active:text-[#DC8801]'>Terms and Conditions</Link>
                                 </span>
