@@ -134,9 +134,11 @@ const App = () => {
   );
 
   return (
-    <SessionProvider>
-        <RouterProvider router={router} />
-    </SessionProvider>
+    <BrowserRouter>
+      <SessionProvider>
+          <RouterProvider router={router} />
+      </SessionProvider>
+    </BrowserRouter>
   );
 };
 

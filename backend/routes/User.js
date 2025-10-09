@@ -644,7 +644,7 @@ UserRoute.get('/profile', async (req, res) => {
 
 UserRoute.post('/logout', (req, res) => {
   res.clearCookie('token', {
-    httpOnly: true,
+    httpOnly: false,
     secure: process.env.NODE_ENV === 'production',
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     path: '/', // Ensure the cookie is cleared for the root path
