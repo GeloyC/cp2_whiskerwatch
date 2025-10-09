@@ -228,7 +228,7 @@ const AdminSideBar = ({className}) => {
               // loading
                 ? 'Loading...'
                 : user
-                ? `${user.firstname} ${user.lastname}`
+                ? `${user?.firstname} ${user?.lastname}`
                 : 'Guest'}
             </label>
           </div>

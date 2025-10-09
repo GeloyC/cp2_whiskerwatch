@@ -884,14 +884,15 @@ UserRoute.patch('/profile/update', upload.single('profile_image'), async (req, r
     // Remove old image if a new one is uploaded
     if (newImage && old_image && old_image !== newImage) {
       const filePath = path.join(__dirname, 'FileUploads', old_image);
-      try {
-        fs.unlink(filePath);
-        console.log(`Deleted old image: ${old_image}`);
-      } catch (err) {
-        if (err.code !== 'ENOENT') {
-          console.error(`Error deleting file: ${old_image}`, err);
+      fs.unlink(filePath, (err) => {
+        if (err) {
+          if (err.code !== 'ENOENT') { // ENOENT means file not found, which is okay
+            console.error(`Error deleting file: ${old_image}`, err);
+          }
+        } else {
+          console.log(`Deleted old image: ${old_image}`);
         }
-      }
+      });
     }
 
     // Update user info
