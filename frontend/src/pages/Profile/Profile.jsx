@@ -36,19 +36,26 @@ const Profile = () => {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
+                const token = Cookies.get('token');
+                if (!token) throw new Error('No authentication token found');
+
                 const response = await axios.get(`${url}/user/profile`, {
                     withCredentials: true,
                     headers: {
-                        Authorization: `Bearer ${Cookies.get("token")}`, // Explicitly send token
+                        Authorization: `Bearer ${token}`, // Explicitly send token
                     },
                 }); 
                 const res = JSON.stringify(response.data)
 
-                const certificateResponse = await axios.get(`${url}/admin/adopters_certificate/${user?.user_id}`);
-                const certificates = certificateResponse.data;
-                setUserCertificates(certificates);
-
+                const certificateResponse = await axios.get(`${url}/admin/adopters_certificate/${user?.user_id}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                setUserCertificates(certificateResponse.data);
                 setProfile(response.data);
+                setOriginalProfile(response.data);
+
             } catch (err) {
                 console.error('Error fetching user:', err.response?.data || err.message);
             }
@@ -75,11 +82,11 @@ const Profile = () => {
     };
 
     const handleSave = async () => {
-
-
         try {
-            const formData = new FormData();
+            const token = Cookies.get('token');
+            if (!token) throw new Error('No authentication token found');
 
+            const formData = new FormData();
             // Append text fields
             formData.append('firstname', profile.firstname);
             formData.append('lastname', profile.lastname);
@@ -97,7 +104,8 @@ const Profile = () => {
             const response = await axios.patch(`${url}/user/profile/update`, formData, {
                 withCredentials: true,
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${token}`,
                 }
             });
 
@@ -106,11 +114,17 @@ const Profile = () => {
 
 
             // AFTER REPLACING SOME INFOS ON THE UPDATE VIEW, REFETCH THE DATA TO SEE CHANGES ON THE READ VIEW
-            const updated = await axios.get(`${url}/user/profile`, { withCredentials: true });
+            const updated = await axios.get(`${url}/user/profile`, { 
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
 
             setProfile(updated.data);
             setOriginalProfile(updated.data);
             setUpdateProfile(false);
+            setError('');
 
         } catch (err) {
             console.error("Failed to update profile", err);
@@ -140,23 +154,39 @@ const Profile = () => {
         };
     }, [profile.profile_image]);
 
+    // useEffect(() => {
+    //     const fetchWhiskerPoints = async () => {
+    //     if (!user?.user_id) return;
+    //     try {
+    //         const response = await axios.get(`${url}/whisker/whiskermeter/${user.user_id}`);
+    //         setPoints(response.data.points || 0);
+
+            
+    //     } catch (err) {
+    //         console.error('Failed to fetch whisker points:', err);
+    //     }
+    //     };
+
+    //     fetchWhiskerPoints();
+    // }, [user, whiskerUpdateTrigger]);
+
     useEffect(() => {
         const fetchWhiskerPoints = async () => {
         if (!user?.user_id) return;
         try {
-            const response = await axios.get(`${url}/whisker/whiskermeter/${user.user_id}`);
+            const token = Cookies.get('token');
+            const response = await axios.get(`${url}/whisker/whiskermeter/${user.user_id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            });
             setPoints(response.data.points || 0);
-
-            
         } catch (err) {
             console.error('Failed to fetch whisker points:', err);
         }
         };
-
         fetchWhiskerPoints();
     }, [user, whiskerUpdateTrigger]);
-
-
 
     
 
@@ -170,15 +200,6 @@ const Profile = () => {
                 <div className='flex flex-col items-center justify-center w-full'>
                     {/* ALL CONTENTS HERE */}
                     <div className='flex flex-col  rounded-[12px] overflow-hidden w-auto xl:w-[1000px] lg:w-[1000px]'>
-                        {/* <div className='flex flex-col gap-10 pt-10'>
-                            <div className='flex flex-row justify-between items-center p-3 bg-[#FFF] rounded-tr-[20px] rounded-br-[20px]'>
-                                <label className='font-bold text-[#DC8801]'>My Profile</label>
-                                <div className='flex items-center justify-center w-[30px] h-auto'> 
-                                    <img src="/src/assets/icons/account.png" alt="white clipboard" className='w-full h-auto '/>
-                                </div>
-                            </div>
-                        </div> */}
-
                         
 
                         <div className='flex flex-col'>
@@ -189,7 +210,7 @@ const Profile = () => {
                                 </div>
                                 {!updateProfile && (
                                     <>
-                                        {profile && (
+                                        {profile && Object.keys(profile).length > 0 && (
                                             <div className='relative flex flex-col p-[2%] xl:flex-row lg:flex-row gap-5'>
                                                 <div className='flex flex-row xl:flex-col lg:flex-col gap-3 justify-center'>
                                                     <div className='flex w-[250px] h-[250px] bg-[#B5C04A] rounded-sm p-2'>
@@ -273,8 +294,8 @@ const Profile = () => {
 
                                 {updateProfile && (
                                     <>
-                                    {profile && (
-                                        <form onSubmit={handleSave} className='relative flex flex-col items-center xl:items-start lg:items-start xl:flex-row lg:flex-row gap-5'>
+                                    {profile && Object.keys(profile).length > 0 && (
+                                        <form onSubmit={(e) => { e.preventDefault(); handleSave(); }} className='relative flex flex-col items-center xl:items-start lg:items-start xl:flex-row lg:flex-row gap-5'>
                                             <div className='relative flex w-[250px] h-[200px] bg-[#B5C04A] rounded-sm p-2'>
                                                 <label htmlFor="profile_image" className='absolute bottom-3 left-3 bg-[#DC8801] rounded-[15px] cursor-pointer  pl-2 pr-2'>
                                                     <label htmlFor="profile_image" className='cursor-pointer text-[#FFF] text-[12px]'>{!profile.profile_image ? 'Add Photo' : 'Replace'}</label>
