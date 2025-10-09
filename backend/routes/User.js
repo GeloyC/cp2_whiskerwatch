@@ -312,7 +312,6 @@ UserRoute.post("/login", async (req, res) => {
       secure: process.env.NODE_ENV === 'production' ? false : true,
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000, 
-      path: '/'
     });
 
     // Respond with user data
