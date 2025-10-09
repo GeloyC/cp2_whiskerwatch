@@ -199,6 +199,79 @@ UserRoute.post('/check_username', async (req, res) => {
 
 
 
+// UserRoute.post("/login", async (req, res) => {
+//   const db = getDB();
+//   try {
+//     const { email, password } = req.body;
+
+//     if (!email || !password) {
+//       return res.status(400).json({ error: "Email and password are required" });
+//     }
+
+//     const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+//     if (rows.length === 0) {
+//       return res.status(401).json({ error: "Invalid email or password" });
+//     }
+
+//     const user = rows[0];
+
+//     const isMatch = await bcrypt.compare(password, user.password);
+//     if (!isMatch) {
+//       return res.status(401).json({ error: "Invalid email or password" });
+//     }
+
+//     console.log("Login attempt for email:", email);
+
+//     const payload = {
+//       user_id: user.user_id,
+//       role: user.role,
+//       firstname: user.firstname,
+//       lastname: user.lastname,
+//       email: user.email,
+//     };
+
+//     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
+
+//     req.session.user = {
+//       user_id: user.user_id,
+//       role: user.role,
+//       firstname: user.firstname,
+//       lastname: user.lastname,
+//     };
+
+//     req.cookie("token", token, {
+//       httpOnly: true,
+//       secure: process.env.NODE_ENV === "production",
+//       sameSite: "lax",
+//       maxAge: 7 * 24 * 60 * 60 * 1000,
+//     });
+
+
+//     // res.status(200).json({
+//     //   message: "Login successful",
+//     //   user: {
+//     //     user_id: user.user_id,
+//     //     role: user.role,
+//     //     firstname: user.firstname,
+//     //     lastname: user.lastname,
+//     //     email: user.email,
+//     //   },
+//     // });
+
+
+//     res.status(200).json({
+//       message: "Login successful!",
+//       user: payload
+//     });
+
+
+//   } catch (err) {
+//     console.error("Login error:", err);
+//     res.status(500).json({ err: "Internal server error" });
+//   }
+// });
+
+
 UserRoute.post("/login", async (req, res) => {
   const db = getDB();
   try {
@@ -232,38 +305,19 @@ UserRoute.post("/login", async (req, res) => {
 
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
 
-    req.session.user = {
-      user_id: user.user_id,
-      role: user.role,
-      firstname: user.firstname,
-      lastname: user.lastname,
-    };
 
-    req.cookies("token", token, {
+    res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production", 
       sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 7 * 24 * 60 * 60 * 1000, 
     });
 
-
-    // res.status(200).json({
-    //   message: "Login successful",
-    //   user: {
-    //     user_id: user.user_id,
-    //     role: user.role,
-    //     firstname: user.firstname,
-    //     lastname: user.lastname,
-    //     email: user.email,
-    //   },
-    // });
-
-
+    // Respond with user data
     res.status(200).json({
       message: "Login successful!",
-      user: payload
+      user: payload,
     });
-
 
   } catch (err) {
     console.error("Login error:", err);
