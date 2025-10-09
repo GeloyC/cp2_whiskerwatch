@@ -4,6 +4,7 @@ import { Router } from "express";
 import { getDB } from "../database.js"
 import bcrypt from 'bcrypt';
 import jwt from "jsonwebtoken";
+import cookieParser from "cookie-parser";
 
 
 import multer from 'multer';
@@ -19,6 +20,7 @@ import { sendMail } from "./OTP.js";
 
 const UserRoute = Router();
 UserRoute.use(express.json());
+UserRoute.use(cookieParser());
 
 
 

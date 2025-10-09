@@ -6,6 +6,7 @@ import multer from "multer";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import cookieParser from "cookie-parser";
 
 import { connectDB } from "./database.js";
 import CatRoute from "./routes/Cat.js";
@@ -55,6 +56,7 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json({ limit: "10mb" }));
+app.use(cookieParser());
 
 // ---------------- DB CONNECTION ---------------- //
 await connectDB();
