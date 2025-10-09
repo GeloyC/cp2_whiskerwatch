@@ -21,6 +21,65 @@ const AdminLogin = () => {
 
     const { login, refreshSession } = useSession(); 
 
+    // const handleAdminLogin = async (event) => {
+    //     event.preventDefault();
+    //     setError('');
+
+    //     try {
+    //         const response = await axios.post(
+    //             `${url}/user/adminlogin`,
+    //             { username, password },
+    //             { withCredentials: true }
+    //         );
+    //         console.log('Admin login response:', response.data); // Debug response
+    //         console.log('Cookies after login:', document.cookie); // Debug cookies
+
+    //         if (!userData) {
+    //             setError('Invalid Credentials');
+    //             return;
+    //         }
+    //         const token = response.data.token; // Ensure the backend sends the token
+    //         Cookies.set("token", token, {
+    //             expires: 7, // 7 days
+    //             path: "/",
+    //             secure: process.env.NODE_ENV === "production", // Use true for HTTPS
+    //             sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    //         });
+    //         console.log("Token set:", Cookies.get("token"));
+
+    //         const user = response.data.user;
+    //         if (!user) {
+    //         throw new Error('User data not received');
+    //         }
+
+    //         console.log("Login attempt for email:", response.data);
+
+    //         res.status(200).json({
+    //             message: "Admin login successful",
+    //             user: payload,
+    //         });
+
+    //         if (userData.role === 'admin') {
+    //             login(userData); // Set user in session context
+    //             await refreshSession(); // Refresh session to sync with backend
+    //             navigate('/dashboard');
+    //         } else {
+    //             setError('Account invalid! Only admins can access this page.');
+    //         }
+
+
+
+    //     } catch (err) {
+    //         const errorMessage =
+    //             err.response?.data?.error ||
+    //             err.response?.data?.message ||
+    //             'Login Failed: Incorrect Username or Password';
+    //         setError(errorMessage);
+    //         console.error('Login error:', errorMessage);
+    //     }
+    // };
+    
+
     const handleAdminLogin = async (event) => {
         event.preventDefault();
         setError('');
@@ -31,6 +90,9 @@ const AdminLogin = () => {
             { username, password },
             { withCredentials: true }
         );
+        console.log('Admin login response:', response.data); // Debug response
+        console.log('Cookies after login:', document.cookie); // Debug cookies
+
         const userData = response.data.user;
 
         if (!userData) {
@@ -38,13 +100,12 @@ const AdminLogin = () => {
             return;
         }
 
-
-        if (userData.role === 'admin') {
+        if (userData.role === 'admin' || userData.role === 'head_volunteer') {
             login(userData); // Set user in session context
             await refreshSession(); // Refresh session to sync with backend
             navigate('/dashboard');
         } else {
-            setError('Account invalid! Only admins can access this page.');
+            setError('Account invalid! Only admins or head volunteers can access this page.');
         }
         } catch (err) {
         const errorMessage =
@@ -52,10 +113,9 @@ const AdminLogin = () => {
             err.response?.data?.message ||
             'Login Failed: Incorrect Username or Password';
         setError(errorMessage);
-        console.error('Login error:', errorMessage);
+        console.error('Login error:', err.response?.data || err.message);
         }
     };
-    
     
 
     return (
