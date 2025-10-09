@@ -396,19 +396,6 @@ UserRoute.post('/reset_password', async (req, res) => {
       return res.status(404).json({ success: false, message: 'User not found or email mismatch.' });
     }
 
-    // Send confirmation email
-    await sendMail(
-      email,
-      'Password Reset Confirmation',
-      `
-        <h3>Password Reset Successful</h3>
-        <p>Your password has been successfully reset on Whisker Watch.</p>
-        <p>If you did not request this, please contact support immediately.</p>
-        <br>
-        <p>🐾 Stay safe,</p>
-        <p><strong>Whisker Watch Team</strong></p>
-      `
-    );
 
     res.status(200).json({ success: true, message: 'Password reset successfully.' });
   } catch (err) {
@@ -551,84 +538,26 @@ UserRoute.get('/logged', async (req, res) => {
 // });
 
 
-// UserRoute.get('/profile', async (req, res) => {
-//     let db = getDB();
-//     try {
-//         // const sessionUser = req.session.user;
-
-//         const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
-//         if (!token) {
-//           return res.status(401).json({ error: 'Please login to view your profile.' });
-//         }
-
-//         let decoded;
-//         try {
-//           decoded = jwt.verify(token, JWT_SECRET);
-//         } catch (err) {
-//           return res.status(401).json({ error: 'Invalid or expired token.' });
-//         }
-
-//         // if (!sessionUser || !sessionUser.user_id) {
-//         //     return res.status(401).json({ error: 'Please login to submit application.' });
-//         // }
-
-//         const user_id = decoded.user_id;
-//         console.log('Authenticated user ID:', user_id);
-
-//         // Step 3: Query the database
-//         const [userprofile] = await db.query(
-//             `SELECT 
-//                 user_id, firstname, lastname, profile_image, contactnumber,
-//                 DATE_FORMAT(birthday, '%Y-%m-%d') AS birthday,
-//                 email, username, role, badge, address,
-//                 DATE_FORMAT(created_at, '%Y-%m-%d') AS created_at,
-//                 DATE_FORMAT(updated_at, '%Y-%m-%d') AS updated_at 
-//             FROM users
-//             WHERE user_id = ?;`,
-//             [user_id]
-//         );
-
-//         // Step 4: Handle if user not found
-//         if (!userprofile.length) {
-//             return res.status(404).json({ error: 'User not found' });
-//         }
-
-//         // Step 5: Return user profile
-//         return res.json(userprofile[0]);
-
-//     } catch (err) {
-//         console.error('Error fetching user data:', err);
-//         return res.status(500).json({ error: 'Internal server error' });
-//     }
-// });
-
 
 // UserRoute.post('/adminlogin', async (req, res) => {
 //   const db = getDB();
-
 //   try {
 //     const { username, password } = req.body;
-
 //     if (!username || !password) {
 //       return res.status(400).json({ error: 'Username or email and password are required' });
 //     }
-
 //     const [rows] = await db.query(
 //       `SELECT * FROM users WHERE (username = ? OR email = ?) AND role IN ('admin', 'head_volunteer')`,
 //       [username, username]
 //     );
-
 //     if (rows.length === 0) {
 //       return res.status(401).json({ error: 'Invalid credentials or unauthorized role!' });
 //     }
-
 //     const user = rows[0];
-
 //     const isMatch = await bcrypt.compare(password, user.password);
 //     if (!isMatch) {
 //       return res.status(401).json({ error: 'Invalid credentials!' });
 //     }
-
 //     const payload = {
 //       user_id: user.user_id,
 //       role: user.role,
@@ -637,16 +566,13 @@ UserRoute.get('/logged', async (req, res) => {
 //       username: user.username,
 //       profile_image: user.profile_image || null,
 //     };
-
 //     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
-
 //     res.cookie('token', token, {
 //       httpOnly: true,
-//       secure: false, // Test with false
+//       secure: false, // Test with false for non-HTTPS
 //       sameSite: 'lax', // Test with lax
 //       maxAge: 7 * 24 * 60 * 60 * 1000,
 //     });
-
 //     res.status(200).json({
 //       message: 'Admin login successful',
 //       user: payload,
@@ -686,22 +612,16 @@ UserRoute.post('/adminlogin', async (req, res) => {
       profile_image: user.profile_image || null,
     };
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: false, // Test with false for non-HTTPS
-      sameSite: 'lax', // Test with lax
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
     res.status(200).json({
       message: 'Admin login successful',
       user: payload,
+      token: token, // Return token in response body
     });
   } catch (err) {
     console.error('Admin login error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
 
 
 UserRoute.get('/profile', async (req, res) => {
