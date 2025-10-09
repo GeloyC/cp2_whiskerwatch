@@ -50,14 +50,31 @@ const __dirname = path.dirname(__filename);
 
 app.use(
   cors({
-    origin: 'https://cp2-whiskerwatch.vercel.app', 
+    origin: function (origin, callback) {
+      const allowedOrigins = [
+        'https://cp2-whiskerwatch.vercel.app',
+        'https://whiskerwatch-cp2.vercel.app',
+        'http://localhost:5173',
+        /\.vercel\.app$/,
+      ];
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.error('❌ Blocked by CORS:', origin);
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 
+app.options('*', cors());
 
 app.use((req, res, next) => {
-  console.log("Request Origin:", req.headers.origin);
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Origin', req.headers.origin); // Dynamic origin
   next();
 });
 

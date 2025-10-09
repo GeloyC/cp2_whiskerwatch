@@ -11,7 +11,7 @@ const Login = () => {
   const url = `https://whiskerwatch-0j6g.onrender.com`;
 
   const navigate = useNavigate();
-  const { setUser } = useSession();
+  const { setUser, refreshSession } = useSession();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -47,13 +47,14 @@ const Login = () => {
 
       
 
-      user = response.data.user;
+      const user = response.data.user;
+      if (!user) {
+        throw new Error('User data not received');
+      }
 
       console.log("Login attempt for email:", email);
-
       setUser(user); // from context
-    
-
+      refreshSession();
       if (user?.role === "regular" || user?.role === "head_volunteer") {
         navigate("/home");
       } else {
@@ -63,8 +64,8 @@ const Login = () => {
     } catch (err) {
       const errorMessage =
         err.response?.data?.error || "Incorrect Email or Password";
-      setError(errorMessage);
-      console.error("Login error:", errorMessage);
+        setError(errorMessage);
+        console.error("Login error:", errorMessage);
     }
   };
 
@@ -125,7 +126,7 @@ const Login = () => {
     }
 
     try{
-      const res = await axios.post(`${url}/user/reset_password`, { email, password, otp });
+      const res = await axios.post(`${url}/user/reset_password`, { email, password, otp }, {withCredentials:true});
 
       if (res.status === 200) {
         console.log('Password reset successful. Please log in.');

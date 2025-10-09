@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const SessionContext = createContext();
 
@@ -12,6 +14,7 @@ export const SessionProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [notifications, setNotifications] = useState([]);
     const [whiskerUpdateTrigger, setWhiskerUpdateTrigger] = useState(0);
+    const navigate = useNavigate();
     axios.defaults.withCredentials = true;
 
     const triggerWhiskerUpdate = () => setWhiskerUpdateTrigger(Date.now());
@@ -40,6 +43,7 @@ export const SessionProvider = ({ children }) => {
         }
         
         setUser(null);
+        navigate('/login');
     };
 
     const fetchNotifications = async (user_id) => {
