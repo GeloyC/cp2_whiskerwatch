@@ -3,7 +3,7 @@ import cors from "cors";
 import { Router } from "express";
 import { getDB } from "../database.js"
 import bcrypt from 'bcrypt';
-import jwt from "jsonwebtoken";
+import jwt from 'jsonwebtoken';
 import cookieParser from "cookie-parser";
 
 
@@ -399,12 +399,12 @@ UserRoute.post('/reset_password', async (req, res) => {
 
 
 UserRoute.get("/api/session", (req, res) => {
-  try { 
-    const token = req.cookies.token;
-    if (!token) return res.json({ loggedIn: false, user: null });
+  const token = req.cookies.token;
+  if (!token) return res.json({ loggedIn: false, user: null });
 
-    const user = jwt.verify(token, process.env.JWT_SECRET);
-    res.json({ loggedIn: true, user });
+  try { 
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    res.json({ loggedIn: true, user:decoded });
 
   } catch (err) {
     console.error("Session error:", err);
@@ -412,17 +412,21 @@ UserRoute.get("/api/session", (req, res) => {
   }
 });
 
-export const verifyUser = (req, res, next) => {
-  // You should decode the session or JWT
-  // and set the user info in req.user
 
-  const user = req.session.user; // or from token
-  if (!user) {
+export const verifyUser = (req, res, next) => {
+  const token = req.cookies.token; // read JWT cookie
+  if (!token) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  req.user = user;
-  next();
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded; // attach decoded user info to req.user
+    next();
+  } catch (err) {
+    console.error("JWT verification error:", err);
+    return res.status(401).json({ message: "Unauthorized" });
+  }
 };
 
 
