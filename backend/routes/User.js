@@ -525,7 +525,7 @@ UserRoute.post("/adminlogin", async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === 'production' ? false : true,
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
@@ -595,13 +595,14 @@ UserRoute.get('/profile', async (req, res) => {
 
 
 UserRoute.post('/logout', (req, res) => {
-  res.clearCookie("token", {
+  res.clearCookie('token', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    path: '/', // Ensure the cookie is cleared for the root path
   });
 
-  res.json({ message: "Logged out successfully!" });
+  res.json({ message: 'Logged out successfully!' });
 });
 
 
@@ -1018,12 +1019,12 @@ UserRoute.get('/notifications/:user_id', async (req, res) => {
   }
 });
 
-UserRoute.patch('/notifications/mark_read/:id', async (req, res) => {
+UserRoute.patch('/notifications/mark_read/:user_id', async (req, res) => {
   const db = getDB();
-  const { id } = req.params;
+  const { user_id } = req.params;
 
   try {
-    await db.query(`UPDATE notifications SET is_read = 1 WHERE notification_id = ?`, [id]);
+    await db.query(`UPDATE notifications SET is_read = 1 WHERE notification_id = ?`, [user_id]);
     res.json({ message: 'Notification marked as read' });
   } catch (err) {
     console.error('Error marking notification as read:', err); // <-- Add logging
@@ -1033,12 +1034,12 @@ UserRoute.patch('/notifications/mark_read/:id', async (req, res) => {
 
 
 
-UserRoute.delete('/notifications/delete/:id', async (req, res) => {
+UserRoute.delete('/notifications/delete/:user_id', async (req, res) => {
   const db = getDB();
-  const { id } = req.params;
+  const { user_id } = req.params;
 
   try {
-    await db.query(`DELETE FROM notifications WHERE notification_id = ?`, [id]);
+    await db.query(`DELETE FROM notifications WHERE notification_id = ?`, [user_id]);
     res.json({ message: 'Notification deleted' });
   } catch (err) {
     console.error('Error deleting notification:', err); // <-- Add logging

@@ -631,15 +631,16 @@ AdminRoute.patch('/adoption_form/status_update/:application_id', verifyUser, asy
     const { application_id } = req.params;
     const { status } = req.body; 
     let totalPointsEarned = 0;
+
     try {
         // 1. Get application details
         const [apps] = await db.query(
-            `SELECT aa.*, u.firstname, u.lastname, u.contactnumber, c.name AS cat_name
-                FROM adoption_application aa
-                JOIN users u ON aa.user_id = u.user_id
-                JOIN cat c ON aa.cat_id = c.cat_id
-                WHERE aa.application_id = ?`,
-            [application_id]
+        `SELECT aa.*, u.firstname, u.lastname, u.contactnumber, c.name AS cat_name
+            FROM adoption_application aa
+            JOIN users u ON aa.user_id = u.user_id
+            JOIN cat c ON aa.cat_id = c.cat_id
+            WHERE aa.application_id = ?`,
+        [application_id]
         );
 
         if (apps.length === 0) {
@@ -658,29 +659,26 @@ AdminRoute.patch('/adoption_form/status_update/:application_id', verifyUser, asy
             [status, application_id]
         );
 
-        
-
         if (status === 'Accepted') {
             // 3. Insert into adoption table WITHOUT certificate
-            await db.query(
+            const [adoptionResult] = await db.query(
                 `INSERT INTO adoption (
                     adoptedcat_id,
                     adopter_id,
                     cat_name,
                     adopter,
                     contactnumber
-                    ) VALUES (?, ?, ?, ?, ?)`,
+                ) VALUES (?, ?, ?, ?, ?)`,
                 [
                     application.cat_id,
-                    application.user_id,
+                    application.user_id, // adopter_id
                     application.cat_name,
                     `${application.firstname} ${application.lastname}`,
                     application.contactnumber
                 ]
             );
 
-            console.log("Updating cat status for cat_id:", application.cat_id);
-            // Optionally update cat adoption_status here
+            // Update cat status
             await db.query(
                 `UPDATE cat SET adoption_status = 'Adopted' WHERE cat_id = ?`,
                 [application.cat_id]
@@ -688,37 +686,35 @@ AdminRoute.patch('/adoption_form/status_update/:application_id', verifyUser, asy
 
             totalPointsEarned += 10;
 
-            let message = `Your adoption application is now ${status}. Congratulations! Please wait for your adoption certificate which you can view on your Profile page`;
-
+            // Notify user
+            const statusMessage = `Your adoption application is now ${status}. Congratulations! Please wait for your adoption certificate which you can view on your Profile page.`;
             await db.query(
                 `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
-                [application.user_id, message]
+                [application.user_id, statusMessage]
             );
 
+            // Update whiskermeter points
             if (totalPointsEarned > 0) {
-                // Check if user already has a whiskermeter entry
                 const [rows] = await db.query(
                     `SELECT points FROM whiskermeter WHERE user_id = ?`,
-                    [donator_id]
+                    [application.user_id]
                 );
 
                 if (rows.length > 0) {
-                    // Update existing points by adding earned points
                     await db.query(
-                    `UPDATE whiskermeter SET points = points + ?, last_updated = CURRENT_TIMESTAMP WHERE user_id = ?`,
-                    [totalPointsEarned, donator_id]
+                        `UPDATE whiskermeter SET points = points + ?, last_updated = CURRENT_TIMESTAMP WHERE user_id = ?`,
+                        [totalPointsEarned, application.user_id]
                     );
                 } else {
-                    // Insert new whiskermeter row
                     await db.query(
-                    `INSERT INTO whiskermeter (user_id, points) VALUES (?, ?)`,
-                    [donator_id, totalPointsEarned]
+                        `INSERT INTO whiskermeter (user_id, points) VALUES (?, ?)`,
+                        [application.user_id, totalPointsEarned]
                     );
                 }
 
                 const [[{ points }]] = await db.query(
                     `SELECT points FROM whiskermeter WHERE user_id = ?`,
-                    [donator_id]
+                    [application.user_id]
                 );
 
                 let newBadge = 'Toe Bean Trainee';
@@ -732,19 +728,18 @@ AdminRoute.patch('/adoption_form/status_update/:application_id', verifyUser, asy
                     [newBadge, application.user_id]
                 );
 
-                let message = `Congratulations on achieving a badge of ${newBadge}. Keep on going!`;
-
+                const badgeMessage = `Congratulations on achieving a badge of ${newBadge}. Keep on going!`;
                 await db.query(
                     `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
-                    [application.user_id, message]
+                    [application.user_id, badgeMessage]
                 );
             }
-        } else if (status === 'Rejected') {
-            let message = `Your adoption application is now ${status}. You can always apply again!`;
 
+        } else if (status === 'Rejected') {
+            const rejectedMessage = `Your adoption application is now ${status}. You can always apply again!`;
             await db.query(
                 `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
-                [application.user_id, message]
+                [application.user_id, rejectedMessage]
             );
         }
 
@@ -755,6 +750,7 @@ AdminRoute.patch('/adoption_form/status_update/:application_id', verifyUser, asy
         res.status(500).json({ message: "Server error" });
     }
 });
+
 
 AdminRoute.get('/adopters', async (req, res) => {
     const db = getDB();
@@ -828,7 +824,7 @@ AdminRoute.post('/upload_certificate', uploadCertificate.single('certificate'), 
             return res.status(404).json({ error: 'Adoption record not found' });
         }
 
-        const user_id = userResult[0].user_id;
+        const user_id = userResult[0].adopter_id;
 
         const message = 'Your adoption certificate is now available. Visit your profile to view it. Congratulations!';
         await db.query(

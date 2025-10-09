@@ -323,24 +323,24 @@ CatRoute.get("/images", async (req, res) => {
 });
 
 // Fetch cat images by cat_id
-CatRoute.get("/:cat_id/images", async (req, res) => {
-  const db = getDB();
-  const { cat_id } = req.params;
-  try {
-    const [rows] = await db.query(
-      "SELECT image_filename FROM cat_images WHERE cat_id = ?",
-      [cat_id]
-    );
-    const formatted = rows.map((img) => ({
-      filename: img.image_filename,
-      url: `$/uploads/cats/${img.image_filename}`, // ✅ direct URL
-    }));
-    res.json(formatted);
-  } catch (err) {
-    console.error("Error fetching cat images:", err);
-    res.status(500).json({ error: "Failed to fetch images" });
-  }
-});
+// CatRoute.get("/:cat_id/images", async (req, res) => {
+//   const db = getDB();
+//   const { cat_id } = req.params;
+//   try {
+//     const [rows] = await db.query(
+//       "SELECT image_filename FROM cat_images WHERE cat_id = ?",
+//       [cat_id]
+//     );
+//     const formatted = rows.map((img) => ({
+//       filename: img.image_filename,
+//       url: `$/uploads/cats/${img.image_filename}`, // ✅ direct URL
+//     }));
+//     res.json(formatted);
+//   } catch (err) {
+//     console.error("Error fetching cat images:", err);
+//     res.status(500).json({ error: "Failed to fetch images" });
+//   }
+// });
 
 
 CatRoute.post('/uploadcatimages/:cat_id', upload.array('images'), async (req, res) => {

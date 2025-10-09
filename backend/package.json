@@ -9,6 +9,9 @@
     "dev": "nodemon server.js",
     "build": "echo 'No build required' && exit 0"
   },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -17,7 +20,6 @@
     "bcrypt": "^6.0.0",
     "concurrently": "^9.2.1",
     "cookie-parser": "^1.4.7",
-    "cores": "^0.8.5",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
