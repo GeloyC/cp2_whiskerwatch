@@ -6,7 +6,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import cookieParser from "cookie-parser";
 
-
+import axios from 'axios';
 
 import multer from 'multer';
 import fs from 'fs';
@@ -165,9 +165,25 @@ UserRoute.post('/signup', async (req, res) => {
     const { firstname, lastname, contactnumber, birthday, email, username, address, password, otp } = req.body;
 
     // Validate OTP
-    const otpResult = await validateOtp(email, otp);
-    if (!otpResult.success) {
-      return res.status(400).json({ message: otpResult.message || 'OTP validation failed.' });
+    // const otpResult = await validateOtp(email, otp);
+    // if (!otpResult.success) {
+    //   return res.status(400).json({ message: otpResult.message || 'OTP validation failed.' });
+    // }
+
+    const captchaResponse = await axios.post(
+      `https://www.google.com/recaptcha/api/siteverify`,
+      null,
+      {
+        params: {
+          secret: process.env.RECAPTCHA_SECRET_KEY, // Your Secret Key from Google reCAPTCHA
+          response: captchaToken, // Token from frontend
+          remoteip: req.ip, // Optional: Client IP for added security
+        },
+      }
+    );
+
+    if (!captchaResponse.data.success || captchaResponse.data.score < 0.5) {
+      return res.status(400).json({ message: 'CAPTCHA verification failed. Are you a bot?' });
     }
 
     // Check for existing email
@@ -195,7 +211,7 @@ UserRoute.post('/signup', async (req, res) => {
       `
         <h3>Welcome to Whisker Watch!</h3>
         <p>Thank you for joining, ${firstname} ${lastname}! Your account is now active.</p>
-        <p>🐾 Start exploring and supporting our feline friends!</p>
+        <p>Start exploring and supporting our feline friends!</p>
         <p><strong>Whisker Watch Team</strong></p>
       `
     );
