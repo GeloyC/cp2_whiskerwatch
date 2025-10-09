@@ -28,6 +28,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "https://www.whiskerwatch.site",
   "https://whiskerwatch-cp2.vercel.app",
+  'https://cp2-whiskerwatch-git-testfeature-angelo-cabangals-projects.vercel.app',
   /\.vercel\.app$/,
 ];
 
