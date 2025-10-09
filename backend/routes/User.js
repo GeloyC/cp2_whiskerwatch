@@ -361,9 +361,16 @@ UserRoute.post("/login", async (req, res) => {
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
 
     // Ensure cookie settings are correct for all environments
+    // res.cookie("token", token, {
+    //   secure: process.env.NODE_ENV === 'production',
+    //   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    //   maxAge: 7 * 24 * 60 * 60 * 1000,
+    // });
+
     res.cookie("token", token, {
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      httpOnly: false,
+      secure: false, // Temporarily disable for local/Render testing without HTTPS
+      sameSite: 'lax', // Use 'lax' for testing, switch to 'none' with secure: true later
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -571,10 +578,17 @@ UserRoute.post("/adminlogin", async (req, res) => {
 
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
 
+    // res.cookie("token", token, {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === 'production' ? false : true,
+    //   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    //   maxAge: 7 * 24 * 60 * 60 * 1000,
+    // });
+
     res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production' ? false : true,
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      httpOnly: false,
+      secure: false, // Temporarily disable for local/Render testing without HTTPS
+      sameSite: 'lax', // Use 'lax' for testing, switch to 'none' with secure: true later
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
