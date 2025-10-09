@@ -3,14 +3,15 @@ import cors from "cors";
 import { Router } from "express";
 import { getDB } from "../database.js"
 import bcrypt from 'bcrypt';
-import session from "express-session";
+import jwt from "jsonwebtoken";
+
 
 import multer from 'multer';
 import fs from 'fs';
 // import { promises as fs } from 'node:fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { error } from "console";
+import { error, log } from "console";
 
 import nodemailer from 'nodemailer';
 import { validateOtp } from "./OTP.js";
@@ -107,6 +108,10 @@ const uploadAdoptionForm = multer({
 });
 
 
+// to persist user data per refresh
+// add this to render.com env variable later
+const JWT_SECRET = process.env.JWT_SECRET || 'whisker_secret'; 
+
 
 
 UserRoute.post('/signup', async (req, res) => {
@@ -131,6 +136,8 @@ UserRoute.post('/signup', async (req, res) => {
             [firstname, lastname, contactnumber, birthday, email, username, address, hashedPassword]
         );
 
+
+
         res.status(200).json({
         message: 'Account created!',
         newUser: {
@@ -139,6 +146,8 @@ UserRoute.post('/signup', async (req, res) => {
             badge: 'Toe Bean Trainee',
         }
         })
+
+        
 
     } catch(err) {
         console.error('Sign up error:', err);
@@ -188,7 +197,6 @@ UserRoute.post('/check_username', async (req, res) => {
 
 
 
-
 UserRoute.post("/login", async (req, res) => {
   const db = getDB();
   try {
@@ -212,6 +220,16 @@ UserRoute.post("/login", async (req, res) => {
 
     console.log("Login attempt for email:", email);
 
+    const payload = {
+      user_id: user.user_id,
+      role: user.role,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      email: user.email,
+    };
+
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
+
     req.session.user = {
       user_id: user.user_id,
       role: user.role,
@@ -219,17 +237,32 @@ UserRoute.post("/login", async (req, res) => {
       lastname: user.lastname,
     };
 
+    req.cookies("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+
+    // res.status(200).json({
+    //   message: "Login successful",
+    //   user: {
+    //     user_id: user.user_id,
+    //     role: user.role,
+    //     firstname: user.firstname,
+    //     lastname: user.lastname,
+    //     email: user.email,
+    //   },
+    // });
+
 
     res.status(200).json({
-      message: "Login successful",
-      user: {
-        user_id: user.user_id,
-        role: user.role,
-        firstname: user.firstname,
-        lastname: user.lastname,
-        email: user.email,
-      },
+      message: "Login successful!",
+      user: payload
     });
+
+
   } catch (err) {
     console.error("Login error:", err);
     res.status(500).json({ err: "Internal server error" });
@@ -279,43 +312,48 @@ UserRoute.post('/reset_password', async (req, res) => {
 });
 
 
-// UserRoute.get("/api/session", (req, res) => {
-//   if (req.session.user) {
-//     console.log('api/session is currently in progress!');
-//     res.json({ loggedIn: true, user: req.session.user });
-//   } else {
-//     res.json({ loggedIn: false, user: null });
+
+// UserRoute.get('/api/session', async (req, res) => {
+//   if (!req.session.user) {
+//     return res.json({ loggedIn: false, user: null });
+//   }
+
+//   const db = getDB();
+//   const { user_id } = req.session.user;
+
+//   try {
+//     const [rows] = await db.query(`
+//       SELECT user_id, firstname, lastname, role 
+//       FROM users 
+//       WHERE user_id = ?`,
+//       [user_id]
+//     );
+
+//     const user = rows[0];
+
+//     // keep session in sync (optional)
+//     req.session.user = user;
+
+//     res.json({ loggedIn: true, user });
+//   } catch (err) {
+//     console.error('Session fetch error:', err);
+//     res.status(500).json({ error: 'Internal server error' });
 //   }
 // });
 
-UserRoute.get('/api/session', async (req, res) => {
-  if (!req.session.user) {
-    return res.json({ loggedIn: false, user: null });
-  }
 
-  const db = getDB();
-  const { user_id } = req.session.user;
+UserRoute.get("/api/session", (req, res) => {
+  const token = req.cookies.token;
+  if (!token) return res.json({ loggedIn: false, user: null });
 
-  try {
-    const [rows] = await db.query(`
-      SELECT user_id, firstname, lastname, role 
-      FROM users 
-      WHERE user_id = ?`,
-      [user_id]
-    );
-
-    const user = rows[0];
-
-    // keep session in sync (optional)
-    req.session.user = user;
-
+  try { 
+    const user = jwt.verify(token, process.env.JWT_SECRET);
     res.json({ loggedIn: true, user });
+
   } catch (err) {
-    console.error('Session fetch error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    res.json({ loggedIn: false, user: null });
   }
 });
-
 
 export const verifyUser = (req, res, next) => {
   // You should decode the session or JWT
@@ -366,7 +404,6 @@ UserRoute.post("/adminlogin", async (req, res) => {
       return res.status(400).json({ error: "Username and password are required" });
     }
 
-
     const [rows] = await db.query("SELECT * FROM users WHERE username = ?", [username]);
 
     if (rows.length === 0) {
@@ -386,34 +423,56 @@ UserRoute.post("/adminlogin", async (req, res) => {
       return res.status(403).json({ error: "Access denied. Admins only." });
     }
 
+    // req.session.user = {
+    //   user_id: user.user_id,
+    //   role: user.role,
+    //   firstname: user.firstname,
+    //   lastname: user.lastname,
+    //   profile_image: user.profile_image,
+    // };
 
-    req.session.user = {
+    // req.session.save((err) => {
+    //   if (err) {
+    //     console.error("Session save error:", err);
+    //     return res.status(500).json({ error: "Failed to save session" });
+    //   }
+
+
+    //   res.status(200).json({
+    //     message: "Admin login successful",
+    //     user: {
+    //       user_id: user.user_id,
+    //       role: user.role,
+    //       firstname: user.firstname,
+    //       lastname: user.lastname,
+    //       profile_image: user.profile_image,
+    //     },
+    //   });
+    // });
+
+    const payload = {
       user_id: user.user_id,
       role: user.role,
       firstname: user.firstname,
       lastname: user.lastname,
-      profile_image: user.profile_image,
+      username: user.username,
+      profile_image: user.profile_image || null,
     };
 
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
 
-    req.session.save((err) => {
-      if (err) {
-        console.error("Session save error:", err);
-        return res.status(500).json({ error: "Failed to save session" });
-      }
-
-
-      res.status(200).json({
-        message: "Admin login successful",
-        user: {
-          user_id: user.user_id,
-          role: user.role,
-          firstname: user.firstname,
-          lastname: user.lastname,
-          profile_image: user.profile_image,
-        },
-      });
+    req.cookies("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "las",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
+
+    res.status(200).json({
+      message: "Admin login successful",
+      user: payload,
+    });
+
   } catch (err) {
     console.error("Admin login error:", err);
     res.status(500).json({ error: "Internal server error" });
@@ -459,17 +518,31 @@ UserRoute.get('/profile', async (req, res) => {
     }
 });
 
-UserRoute.post("/logout", (req, res) => {
-  console.log("Logout endpoint hit");
-  req.session.destroy((err) => {
-    if (err) {
-      console.error("Session destroy error:", err);
-      return res.status(500).json({ message: "Logout failed" });
-    }
-    res.clearCookie("connect.sid");
-    res.json({ message: "Logged out successfully", loggedIn: false });
+
+// UserRoute.post("/logout", (req, res) => {
+//   console.log("Logout endpoint hit");
+//   req.session.destroy((err) => {
+//     if (err) {
+//       console.error("Session destroy error:", err);
+//       return res.status(500).json({ message: "Logout failed" });
+//     }
+//     res.clearCookie("connect.sid");
+//     res.json({ message: "Logged out successfully", loggedIn: false });
+//   });
+// });
+
+
+UserRoute.post('/logout', (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
   });
+
+  res.json({ message: "Logged out successfully!" });
 });
+
+
 
 UserRoute.patch('/profile/update', upload.single('profile_image'), async (req, res) => {
     const db = getDB();

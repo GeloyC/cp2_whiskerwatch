@@ -17,10 +17,9 @@ export const SessionProvider = ({ children }) => {
 
     const refreshSession = async () => {
         try {
-            const res = await axios.get(`${url}/user/api/session`, {
-                withCredentials: true,
-            });
-            setUser(res.data.user || null);
+            const response = await axios.get(`${url}/user/api/session`, { withCredentials: true, });
+            setUser(response.data.user || null);
+            
         } catch (err) {
             setUser(null);
         } finally {
@@ -33,10 +32,7 @@ export const SessionProvider = ({ children }) => {
     };
 
     const logout = async () => {
-        try { await axios.post( `${url}/user/logout`,
-                {},
-                { withCredentials: true }
-            );
+        try { await axios.post( `${url}/user/logout`, {}, { withCredentials: true });
             console.log("Logged out successfully");
         } catch (err) {
             console.error("Logout failed:", err);
