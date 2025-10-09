@@ -25,29 +25,35 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // ---------------- CORS ---------------- //
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://whiskerwatch.site",
-  "https://cp2-whiskerwatch.vercel.app",
-  "https://whiskerwatch-cp2.vercel.app",
-  /\.vercel\.app$/,
-];
+// const allowedOrigins = [
+//   "http://localhost:5173",
+//   "https://whiskerwatch.site",
+//   "https://cp2-whiskerwatch.vercel.app",
+//   "https://whiskerwatch-cp2.vercel.app",
+//   /\.vercel\.app$/,
+// ];
+
+// app.use(
+//   cors({
+//     origin: function (origin, callback) {
+//       if (!origin) return callback(null, true);
+//       if (allowedOrigins.includes(origin)) {
+//         return callback(null, true);
+//       } else {
+//         console.error("❌ Blocked by CORS:", origin);
+//         return callback(new Error("Not allowed by CORS"));
+//       }
+//     },
+//     credentials: true,
+//   })
+// );
 
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      } else {
-        console.error("❌ Blocked by CORS:", origin);
-        return callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: 'https://cp2-whiskerwatch.vercel.app', // Replace with your Vercel frontend URL
     credentials: true,
   })
 );
-
 
 
 app.use((req, res, next) => {
@@ -55,8 +61,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
+app.use(express.json({ limit: "10mb" }));
 
 // ---------------- DB CONNECTION ---------------- //
 await connectDB();

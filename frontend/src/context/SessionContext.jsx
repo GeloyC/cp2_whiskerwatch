@@ -12,28 +12,16 @@ export const SessionProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [notifications, setNotifications] = useState([]);
     const [whiskerUpdateTrigger, setWhiskerUpdateTrigger] = useState(0);
+    axios.defaults.withCredentials = true;
 
     const triggerWhiskerUpdate = () => setWhiskerUpdateTrigger(Date.now());
 
-    // const refreshSession = async () => {
-    //     try {
-    //         const response = await axios.get(`${url}/user/api/session`, { withCredentials: true, });
-    //         setUser(response.data.user || null);
-
-    //     } catch (err) {
-    //         setUser(null);
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
-
     const refreshSession = async () => {
         try {
-            const response = await axios.get(`${url}/user/api/session`, {
-                withCredentials: true, 
-            });
-            setUser(response.data.user || null); 
+            const response = await axios.get(`${url}/user/api/session`);
+            setUser(response.data.user || null);
         } catch (err) {
+            console.error('Session refresh error:', err);
             setUser(null);
         } finally {
             setLoading(false);

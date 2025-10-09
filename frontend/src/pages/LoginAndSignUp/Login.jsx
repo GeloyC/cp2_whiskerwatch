@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Cookies from 'js-cookie';
 import axios from "axios";
 
 import { useSession } from "../../context/SessionContext";
@@ -58,7 +57,7 @@ const Login = () => {
       if (user?.role === "regular" || user?.role === "head_volunteer") {
         navigate("/home");
       } else {
-        setError("Username & Password Incorrect");
+        setError("Unauthorized role");
       }
 
     } catch (err) {
@@ -73,7 +72,7 @@ const Login = () => {
 
 
   const handleResetPass = async (e) => {
-
+    e.preventDefault();
     setError('');
     setLoading(true);
 
@@ -98,7 +97,7 @@ const Login = () => {
     
 
     try {
-      const res = await axios.post(`${url}/otp/send_otp`, { email });
+      const res = await axios.post(`${url}/otp/send_otp`, { email }, { withCredentials: true });
 
       if (res.status === 200) {
         setStep('verify');
@@ -114,7 +113,8 @@ const Login = () => {
   };
 
 
-  const handleVerifyOTP = async () => {
+  const handleVerifyOTP = async (e) => {
+    e.preventDefault();
     setError('');
     setLoading(true);
 
