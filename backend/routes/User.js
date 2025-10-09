@@ -19,25 +19,6 @@ import { sendMail } from "./OTP.js";
 const UserRoute = Router();
 UserRoute.use(express.json());
 
-const allowedOrigins = [
-  'http://localhost:5173',
-  'https://whiskerwatch.site',
-  'https://whiskerwatch-cp2.vercel.app'
-];
-
-// CORS setup
-UserRoute.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.some(o => 
-        typeof o === "string" ? o === origin : o.test(origin))) {
-      callback(null, true);
-    } else {
-      console.error("❌ Blocked by CORS:", origin);
-      callback(new Error("Not allowed by CORS"));
-    }
-  }
-}));
-
 
 
 const __filename = fileURLToPath(import.meta.url);
