@@ -1,10 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
+import Cookies from 'js-cookie';
 
 const SessionContext = createContext(null);
 
 export function useSession() {
     const context = useContext(SessionContext);
+    
    
     if (!context) {
         throw new Error("useSession must be used within a SessionProvider");
@@ -24,18 +26,14 @@ export function SessionProvider({ children }) {
 
     const triggerWhiskerUpdate = () => setWhiskerUpdateTrigger(Date.now());
 
-    const getCookie = (name) => {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-        return null;
-    };
 
     const refreshSession = async () => {
         // const token = getCookie("token");
         const token = Cookies.get("token");
         if (!token) {
             setUser(null);
+            setLoading(false);
+
             return;
         }
         
@@ -46,22 +44,12 @@ export function SessionProvider({ children }) {
         } catch (err) {
             console.error("Session refresh error:", err);
             setUser(null);
+        } finally {
+            setLoading(false);
         }
     };
 
     const login = (userData) => setUser(userData);
-
-    // const logout = async () => {
-    //     try {
-    //     await axios.post(`${url}/user/logout`, {}, { withCredentials: true });
-    //     console.log("Logged out successfully");
-    //     } catch (err) {
-    //     console.error("Logout failed:", err);
-    //     }
-    //     setUser(null);
-    //     await refreshSession(); // Ensure session state is updated
-    //     navigate("/login");
-    // };
 
     const logout = async () => {
         try {

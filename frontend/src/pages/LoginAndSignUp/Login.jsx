@@ -12,7 +12,7 @@ const Login = () => {
   const url = `https://whiskerwatch-0j6g.onrender.com`;
 
   const navigate = useNavigate();
-  const { setUser, refreshSession, Login } = useSession();
+  const { setUser, refreshSession, login } = useSession();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -64,7 +64,7 @@ const Login = () => {
 
 
       setUser(user); // from context
-      Login(user);
+      login(user);
       await refreshSession();
       if (user?.role === "regular" || user?.role === "head_volunteer") {
         navigate("/home");
