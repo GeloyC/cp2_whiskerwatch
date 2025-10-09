@@ -15,6 +15,8 @@ export async function connectDB() {
       port: 3306,
     });
 
+    console.log("DB object:", db);
+
     console.log('✅ Connected to MySQL database!');
   } catch (err) {
     console.error('❌ Failed to connect to MySQL:', err);

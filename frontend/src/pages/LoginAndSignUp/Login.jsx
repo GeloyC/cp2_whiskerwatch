@@ -50,6 +50,7 @@ const Login = () => {
 
       user = response.data.user;
 
+      console.log("Login attempt for email:", email);
 
       setUser(user); // from context
     
