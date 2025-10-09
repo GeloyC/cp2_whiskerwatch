@@ -27,7 +27,7 @@ const SideNavigation = () => {
       if (!user) return;
 
       try {
-        const res = await axios.get("http://localhost:5000/user/profile", {
+        const res = await axios.get("${url}/user/profile", {
           withCredentials: true,
         });
 
@@ -97,7 +97,7 @@ const SideNavigation = () => {
             <img
               src={
                 profileImage
-                  ? `http://localhost:5000/FileUploads/${profileImage}`
+                  ? `${url}/FileUploads/${profileImage}`
                   : "/src/assets/icons/account.png"
               }
               alt="account"

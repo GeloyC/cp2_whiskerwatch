@@ -35,8 +35,8 @@ const Donation = () => {
 
 
 
-  if (sessionLoading) return <div className="flex items-center justify-center p-10 w-full h-screen">Loading session...</div>;
-  if (!user) return <div className="flex items-center justify-center p-10 w-full h-screen">No active session.</div>;
+  // if (sessionLoading) return <div className="flex items-center justify-center p-10 w-full h-screen">Loading session...</div>;
+  // if (!user) return <div className="flex items-center justify-center p-10 w-full h-screen">No active session.</div>;
 
 
   return (

@@ -41,7 +41,9 @@ const Profile = () => {
                 }); 
                 const res = JSON.stringify(response.data)
 
-                const certificateResponse = await axios.get(`${url}/admin/adopters_certificate/${user?.user_id}`);
+                const certificateResponse = await axios.get(`${url}/admin/adopters_certificate/${user?.user_id}`, {
+                    withCredentials: true
+                });
                 const certificates = certificateResponse.data;
                 setUserCertificates(certificates);
 
@@ -99,16 +101,12 @@ const Profile = () => {
             });
 
 
-            URL.revokeObjectURL(profile.profile_image); 
-
-
             // AFTER REPLACING SOME INFOS ON THE UPDATE VIEW, REFETCH THE DATA TO SEE CHANGES ON THE READ VIEW
             const updated = await axios.get(`${url}/user/profile`, { withCredentials: true });
-
             setProfile(updated.data);
             setOriginalProfile(updated.data);
             setUpdateProfile(false);
-
+            setError('');
         } catch (err) {
             console.error("Failed to update profile", err);
             setError(err.response?.data?.error || 'Failed to update profile');
@@ -128,6 +126,11 @@ const Profile = () => {
         setError(''); // Clear error on cancel or edit
     };
 
+    const getProfileImage = () => {
+        if (profile.profile_image?.startsWith('blob:')) return profile.profile_image;
+        if (profile.profile_image) return `${url}/FileUploads/${profile.profile_image}`;
+        return '/assets/UserProfile/default_profile_image.jpg';
+    };
 
     useEffect(() => {
         return () => {
@@ -184,88 +187,84 @@ const Profile = () => {
                                 <div className='w-full text-center font-bold text-3xl text-[#889132]'>
                                     <span>MY PROFILE</span>
                                 </div>
-                                {!updateProfile && (
-                                    <>
-                                        {profile && (
-                                            <div className='relative flex flex-col p-[2%] xl:flex-row lg:flex-row gap-5'>
-                                                <div className='flex flex-row xl:flex-col lg:flex-col gap-3 justify-center'>
-                                                    <div className='flex w-[250px] h-[250px] bg-[#B5C04A] rounded-sm p-2'>
-                                                        <img src={`${`${url}/FileUploads/${profile.profile_image}` || '/assets/UserProfile/default_profile_image.jpg'}`} alt="" className='w-full h-full object-cover'/>
-                                                    </div>
+                                {!updateProfile && profile && (
+                                    <div className='relative flex flex-col p-[2%] xl:flex-row lg:flex-row gap-5'>
+                                        <div className='flex flex-row xl:flex-col lg:flex-col gap-3 justify-center'>
+                                            <div className='flex w-[250px] h-[250px] bg-[#B5C04A] rounded-sm p-2'>
+                                                <img src={`${`${url}/FileUploads/${profile.profile_image}` || '/assets/UserProfile/default_profile_image.jpg'}`} alt="" className='w-full h-full object-cover'/>
+                                            </div>
 
-                                                    <div className='flex flex-row gap-2'>
-                                                        <button onClick={profileUpdateWindow} className='bg-[#B5C04A] min-w-[90px] h-fit p-2 rounded-[10px] text-[#000] hover:bg-[#CFDA34] active:bg-[#B5C04A]'>Edit Profile</button>
-                                                    </div>  
-                                                </div>
-                                                <div className='flex flex-col'>
-                                                    <div className='flex flex-row gap-3 border-b-2 border-dashed border-[#bbc3c1] pt-2 pb-2'>
-                                                        <label className='font-bold'>Name:</label>
-                                                        <label>{`${profile.firstname} ${profile.lastname}`}</label>
-                                                    </div>
-                                                    <div className='flex flex-row items-center gap-3 border-b-2 border-dashed border-[#bbc3c1] pt-2 pb-2'>
-                                                        
-                                                        <label className='flex flex-row items-center font-bold gap-[5px]'>
-                                                            <div className='w-[30px] h-auto'>
-                                                                <img src="/assets/icons/location-orange.png" alt="" />
-                                                            </div> 
-                                                            Address: 
-                                                        </label>
-                                                        <label> {profile.address} </label>
-                                                    </div>
-                                                    <div className='flex flex-row items-center gap-3 border-b-2 border-dashed border-[#bbc3c1] pt-2 pb-2'>
-                                                        <label className='flex flex-row items-center font-bold gap-[5px]'>
-                                                            <div className='w-[30px] h-auto'>
-                                                                <img src="/assets/icons/email-orange.png" alt="" />
-                                                            </div> 
-                                                            Email: 
-                                                        </label>
-                                                        <label>{profile.email}</label>
-                                                    </div>
-                                                    <div className='flex flex-row items-center gap-3 border-b-2 border-dashed border-[#bbc3c1] pt-2 pb-2'>
-                                                        <label className='flex flex-row items-center font-bold gap-[5px]'>
-                                                            <div className='w-[30px] h-auto'>
-                                                                <img src="/assets/icons/birthday-cake.png" alt="" />
-                                                            </div> 
-                                                            Birthday: 
-                                                        </label>
-                                                        <label>{profile.birthday}</label>
-                                                    </div>
-                                                    <div className='flex flex-row items-center gap-3 border-b-2 border-dashed border-[#bbc3c1] pt-2 pb-2'>
-                                                        <label className='flex flex-row items-center font-bold gap-[5px]'>
-                                                            <div className='w-[30px] h-auto'>
-                                                                <img src="/assets/icons/badge-orange.png" alt="" />
-                                                            </div> 
-                                                            Badge: 
-                                                        </label>
-                                                        <label>{profile.badge}</label>
-                                                    </div>
-                                                    <label className='leading-tight text-[14px] pt-4 pb-2 text-[#645e5f]'>
-                                                        You've received the <strong>{profile.badge}</strong> badge! You're cuddly corners and warming hearts along the way. <br/>
-                                                        Thanks for your growing support! Your cozy contributions don't go unnoticed!
-                                                    </label>
+                                            <div className='flex flex-row gap-2'>
+                                                <button onClick={profileUpdateWindow} className='bg-[#B5C04A] min-w-[90px] h-fit p-2 rounded-[10px] text-[#000] hover:bg-[#CFDA34] active:bg-[#B5C04A]'>Edit Profile</button>
+                                            </div>  
+                                        </div>
+                                        <div className='flex flex-col'>
+                                            <div className='flex flex-row gap-3 border-b-2 border-dashed border-[#bbc3c1] pt-2 pb-2'>
+                                                <label className='font-bold'>Name:</label>
+                                                <label>{`${profile.firstname} ${profile.lastname}`}</label>
+                                            </div>
+                                            <div className='flex flex-row items-center gap-3 border-b-2 border-dashed border-[#bbc3c1] pt-2 pb-2'>
+                                                
+                                                <label className='flex flex-row items-center font-bold gap-[5px]'>
+                                                    <div className='w-[30px] h-auto'>
+                                                        <img src="/assets/icons/location-orange.png" alt="" />
+                                                    </div> 
+                                                    Address: 
+                                                </label>
+                                                <label> {profile.address} </label>
+                                            </div>
+                                            <div className='flex flex-row items-center gap-3 border-b-2 border-dashed border-[#bbc3c1] pt-2 pb-2'>
+                                                <label className='flex flex-row items-center font-bold gap-[5px]'>
+                                                    <div className='w-[30px] h-auto'>
+                                                        <img src="/assets/icons/email-orange.png" alt="" />
+                                                    </div> 
+                                                    Email: 
+                                                </label>
+                                                <label>{profile.email}</label>
+                                            </div>
+                                            <div className='flex flex-row items-center gap-3 border-b-2 border-dashed border-[#bbc3c1] pt-2 pb-2'>
+                                                <label className='flex flex-row items-center font-bold gap-[5px]'>
+                                                    <div className='w-[30px] h-auto'>
+                                                        <img src="/assets/icons/birthday-cake.png" alt="" />
+                                                    </div> 
+                                                    Birthday: 
+                                                </label>
+                                                <label>{profile.birthday}</label>
+                                            </div>
+                                            <div className='flex flex-row items-center gap-3 border-b-2 border-dashed border-[#bbc3c1] pt-2 pb-2'>
+                                                <label className='flex flex-row items-center font-bold gap-[5px]'>
+                                                    <div className='w-[30px] h-auto'>
+                                                        <img src="/assets/icons/badge-orange.png" alt="" />
+                                                    </div> 
+                                                    Badge: 
+                                                </label>
+                                                <label>{profile.badge}</label>
+                                            </div>
+                                            <label className='leading-tight text-[14px] pt-4 pb-2 text-[#645e5f]'>
+                                                You've received the <strong>{profile.badge}</strong> badge! You're cuddly corners and warming hearts along the way. <br/>
+                                                Thanks for your growing support! Your cozy contributions don't go unnoticed!
+                                            </label>
 
-                                                    <div className='flex flex-row items-center gap-3 pt-2 pb-2'>
-                                                        {userCertificates.length > 0 && (
-                                                            userCertificates.map((cert, index) => (
-                                                                <a
-                                                                    key={index}
-                                                                    href={`${url}/FileUploads/certificate/${cert.certificate}`}
-                                                                    target='_blank'
-                                                                    rel='noopener noreferrer'
-                                                                    className='flex items-center justify-between self-start min-w-[300px] gap-3 p-2 pl-4 pr-4 bg-[#E3E697] text-[#2F2F2F] rounded-[10px] hover:underline border-dashed border-2 border-[#99A339]'
-                                                                >
-                                                                    View Certificate #{index + 1}
-                                                                    <div className='w-[25px] h-auto'>
-                                                                        <img src="/assets/icons/document-black.png" alt="" />
-                                                                    </div>
-                                                                </a>
-                                                            ))
-                                                        )}
-                                                    </div>
-                                                </div>            
-                                            </div>     
-                                        )}
-                                    </>
+                                            <div className='flex flex-row items-center gap-3 pt-2 pb-2'>
+                                                {userCertificates.length > 0 && (
+                                                    userCertificates.map((cert, index) => (
+                                                        <a
+                                                            key={index}
+                                                            href={`${url}/FileUploads/certificate/${cert.certificate}`}
+                                                            target='_blank'
+                                                            rel='noopener noreferrer'
+                                                            className='flex items-center justify-between self-start min-w-[300px] gap-3 p-2 pl-4 pr-4 bg-[#E3E697] text-[#2F2F2F] rounded-[10px] hover:underline border-dashed border-2 border-[#99A339]'
+                                                        >
+                                                            View Certificate #{index + 1}
+                                                            <div className='w-[25px] h-auto'>
+                                                                <img src="/assets/icons/document-black.png" alt="" />
+                                                            </div>
+                                                        </a>
+                                                    ))
+                                                )}
+                                            </div>
+                                        </div>            
+                                    </div>     
                                 )}
 
                                 {updateProfile && (
