@@ -362,8 +362,7 @@ UserRoute.post("/login", async (req, res) => {
 
     // Ensure cookie settings are correct for all environments
     res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // Use true only in production with HTTPS
+      secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
