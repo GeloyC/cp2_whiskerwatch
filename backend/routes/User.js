@@ -7,6 +7,7 @@ import jwt from 'jsonwebtoken';
 import cookieParser from "cookie-parser";
 
 
+
 import multer from 'multer';
 import fs from 'fs';
 // import { promises as fs } from 'node:fs';
@@ -377,6 +378,7 @@ UserRoute.post("/login", async (req, res) => {
     res.status(200).json({
       message: "Login successful!",
       user: payload,
+      token: token
     });
   } catch (err) {
     console.error("Login error:", err);

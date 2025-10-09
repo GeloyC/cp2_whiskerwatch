@@ -32,7 +32,8 @@ export function SessionProvider({ children }) {
     };
 
     const refreshSession = async () => {
-        const token = getCookie("token");
+        // const token = getCookie("token");
+        const token = Cookies.get("token");
         if (!token) {
             setUser(null);
             return;
@@ -66,9 +67,9 @@ export function SessionProvider({ children }) {
         try {
             const response = await axios.post(`${url}/user/logout`, {}, { withCredentials: true });
             console.log("Logout response:", response.data);
-            document.cookie = "token=; Max-Age=0; path=/"; // Clear cookie manually
+            Cookies.remove("token", { path: "/" });
         } catch (err) {
-         console.error("Logout failed:", err);
+            console.error("Logout failed:", err);
         }
         
         setUser(null);

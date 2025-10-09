@@ -3,6 +3,7 @@ import logo from '/assets/whiskerwatchlogo-no textmarks.png'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import NotificationBell from './NotificationBell';
 import PopLogout from "../modal/PopLogout.jsx";
+import Cookies from 'js-cookie';
 
 import { useSession } from '../context/SessionContext';
 import axios from 'axios';
@@ -70,8 +71,9 @@ const NavigationBar = () => {
     setMenuVisible((prev) => !prev);
   }
 
-  const handleLogout = () => {
-    logout(); 
+  const handleLogout = async () => {
+    await logout(); 
+    setShowLogoutModal(false);
     window.location.href = "/home"; 
   };
 

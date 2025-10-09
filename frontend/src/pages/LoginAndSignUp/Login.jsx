@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 import { useSession } from "../../context/SessionContext";
 
@@ -11,7 +12,7 @@ const Login = () => {
   const url = `https://whiskerwatch-0j6g.onrender.com`;
 
   const navigate = useNavigate();
-  const { setUser, refreshSession } = useSession();
+  const { setUser, refreshSession, Login } = useSession();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -45,6 +46,13 @@ const Login = () => {
         { withCredentials: true }
       );
 
+      const token = response.data.token; // Ensure the backend sends the token
+      Cookies.set("token", token, {
+        expires: 7, // 7 days
+        path: "/",
+        secure: process.env.NODE_ENV === "production", // Use true for HTTPS
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      });
       
 
       const user = response.data.user;
@@ -52,9 +60,12 @@ const Login = () => {
         throw new Error('User data not received');
       }
 
-      console.log("Login attempt for email:", email);
+      console.log("Login attempt for email:", response.data);
+
+
       setUser(user); // from context
-      refreshSession();
+      Login(user);
+      await refreshSession();
       if (user?.role === "regular" || user?.role === "head_volunteer") {
         navigate("/home");
       } else {
@@ -66,6 +77,8 @@ const Login = () => {
         err.response?.data?.error || "Incorrect Email or Password";
         setError(errorMessage);
         console.error("Login error:", errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
