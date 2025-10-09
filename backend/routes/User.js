@@ -353,123 +353,6 @@ UserRoute.post("/login", async (req, res) => {
   }
 });
 
-// UserRoute.post('/reset_password', async (req, res) => {
-//   const db = getDB();
-//   const { password, email, otp } = req.body;
-
-//   if (!email || !password || !otp) {
-//     return res.status(400).json({ success: false, message: 'Email, password and OTP are required.' });
-//   }
-
-//   try {
-//     const otp_result = await validateOtp(email, otp);
-
-//     if (!otp_result.success) {
-//       return res.status(400).json({ success: false, message: otp_result.message || 'OTP validation failed.' });
-//     }
-
-//     const [result] = await db.query(`
-//       UPDATE users SET password = ?
-//       WHERE email = ?
-//     `, [password, email]);
-
-//     await sendMail(
-//       email, 
-//       'Password reset confirmation', 
-//       `
-//         <h3>Password Reset Successful</h3>
-//         <p>Your password has been successfully reset on Whisker Watch.</p>
-//         <p>If you did not request this, please contact support immediately.</p>
-//         <br>
-//         <p>🐾 Stay safe,</p>
-//         <p><strong>Whisker Watch Team</strong></p>
-//       `
-//     );
-
-//     res.status(200).json({ success: true, message: 'Password reset successfully.' });
-//   } catch (err) {
-//     console.error(err);
-//   }
-// });
-
-
-
-// UserRoute.get('/api/session', async (req, res) => {
-//   if (!req.session.user) {
-//     return res.json({ loggedIn: false, user: null });
-//   }
-
-//   const db = getDB();
-//   const { user_id } = req.session.user;
-
-//   try {
-//     const [rows] = await db.query(`
-//       SELECT user_id, firstname, lastname, role 
-//       FROM users 
-//       WHERE user_id = ?`,
-//       [user_id]
-//     );
-
-//     const user = rows[0];
-
-//     // keep session in sync (optional)
-//     req.session.user = user;
-
-//     res.json({ loggedIn: true, user });
-//   } catch (err) {
-//     console.error('Session fetch error:', err);
-//     res.status(500).json({ error: 'Internal server error' });
-//   }
-// });
-
-// UserRoute.post('/reset_password', async (req, res) => {
-//   const db = getDB();
-//   const { password, email, otp } = req.body;
-
-//   if (!email || !password || !otp) {
-//     return res.status(400).json({ success: false, message: 'Email, password, and OTP are required.' });
-//   }
-
-//   try {
-//     const otpResult = await validateOtp(email, otp);
-//     if (!otpResult.success) {
-//       return res.status(400).json({ success: false, message: otpResult.message || 'OTP validation failed.' });
-//     }
-
-//     // Hash the new password
-//     const saltRounds = 10;
-//     const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-//     // Update password
-//     const [result] = await db.query(
-//       `UPDATE users SET password = ? WHERE email = ?`,
-//       [hashedPassword, email]
-//     );
-
-//     if (result.affectedRows === 0) {
-//       return res.status(404).json({ success: false, message: 'User not found or email mismatch.' });
-//     }
-
-//     // Send confirmation email
-//     await sendMail(
-//       email,
-//       'Password Reset Confirmation',
-//       `
-//         <h3>Password Reset Successful</h3>
-//         <p>Your password has been successfully reset on Whisker Watch.</p>
-//         <p>If you did not request this, please contact support immediately.</p>
-//         <br>
-//         <p>🐾 Stay safe,</p>
-//         <p><strong>Whisker Watch Team</strong></p>
-//       `
-//     );
-
-//     res.status(200).json({ success: true, message: 'Password reset successfully.' });
-//   } catch (err) {
-//     console.error('Reset password error:', err);
-//     res.status(500).json({ success: false, message: 'Internal server error' });
-//   }
-// });
 
 UserRoute.post('/reset_password', async (req, res) => {
   const db = getDB();
@@ -535,16 +418,29 @@ UserRoute.post('/reset_password', async (req, res) => {
 });
 
 
-UserRoute.get("/api/session", (req, res) => {
-  const token = req.cookies.token  || req.headers.authorization?.split(" ")[1];;
+// UserRoute.get("/api/session", (req, res) => {
+//   const token = req.cookies.token  || req.headers.authorization?.split(" ")[1];;
+//   if (!token) return res.json({ loggedIn: false, user: null });
+
+//   try { 
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//     res.json({ loggedIn: true, user:decoded });
+
+//   } catch (err) {
+//     console.error("Session error:", err);
+//     res.status(401).json({ loggedIn: false, user: null });
+//   }
+// });
+
+UserRoute.get('/api/session', (req, res) => {
+  const token = req.cookies.token || (req.headers.authorization?.split(' ')[1] || '');
   if (!token) return res.json({ loggedIn: false, user: null });
 
-  try { 
+  try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    res.json({ loggedIn: true, user:decoded });
-
+    res.json({ loggedIn: true, user: decoded });
   } catch (err) {
-    console.error("Session error:", err);
+    console.error('Session error:', err);
     res.status(401).json({ loggedIn: false, user: null });
   }
 });

@@ -152,9 +152,8 @@
 
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState } from 'react'; // Removed useEffect as it's not used
 import axios from 'axios';
-import Cookies from 'js-cookie';
 import { useSession } from '../../context/SessionContext';
 
 const AdminLogin = () => {
@@ -179,7 +178,7 @@ const AdminLogin = () => {
             { withCredentials: true }
         );
         console.log('Admin login response:', response.data); // Debug response
-        console.log('Cookies after login:', document.cookie); // Debug cookies (httpOnly won’t show)
+        console.log('Cookies after login:', document.cookie); // Debug (httpOnly won’t show)
 
         const userData = response.data.user;
 
