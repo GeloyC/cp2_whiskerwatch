@@ -69,11 +69,11 @@ const Login = () => {
         setError("Unauthorized role");
       }
     } catch (err) {
-      const errorMessage = err.response?.data?.error || "Incorrect Email or Password";
-      setError(errorMessage);
-      console.error("Login error:", errorMessage);
+        const errorMessage = err.response?.data?.error || "Incorrect Email or Password";
+        setError(errorMessage);
+        console.error("Login error:", errorMessage);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
   };
 

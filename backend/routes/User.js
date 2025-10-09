@@ -592,63 +592,63 @@ UserRoute.get('/logged', async (req, res) => {
 });
 
 
-UserRoute.post("/adminlogin", async (req, res) => {
-  const db = getDB();
+// UserRoute.post("/adminlogin", async (req, res) => {
+//   const db = getDB();
 
-  try {
-    const { username, password } = req.body;
+//   try {
+//     const { username, password } = req.body;
 
-    if (!username || !password) {
-      return res.status(400).json({ error: 'Username and password are required' });
-    }
+//     if (!username || !password) {
+//       return res.status(400).json({ error: 'Username and password are required' });
+//     }
 
-    const [rows] = await db.query("SELECT * FROM users WHERE username = ?", [username]);
+//     const [rows] = await db.query("SELECT * FROM users WHERE username = ?", [username]);
 
-    if (rows.length === 0) {
-      return res.status(401).json({ error: "Invalid credentials!" });
-    }
+//     if (rows.length === 0) {
+//       return res.status(401).json({ error: "Invalid credentials!" });
+//     }
 
-    const user = rows[0];
-
-
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(401).json({ error: "Invalid credentials!" });
-    }
+//     const user = rows[0];
 
 
-    if (user.role !== "admin") {
-      return res.status(403).json({ error: "Access denied. Admins only." });
-    }
+//     const isMatch = await bcrypt.compare(password, user.password);
+//     if (!isMatch) {
+//       return res.status(401).json({ error: "Invalid credentials!" });
+//     }
 
-    const payload = {
-      user_id: user.user_id,
-      role: user.role,
-      firstname: user.firstname,
-      lastname: user.lastname,
-      username: user.username,
-      profile_image: user.profile_image || null,
-    };
 
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
+//     if (user.role !== "admin") {
+//       return res.status(403).json({ error: "Access denied. Admins only." });
+//     }
 
-    res.cookie('token', token, {
-      httpOnly: true, // Enable httpOnly for security
-      secure: process.env.NODE_ENV === 'production', // Set to true in production with HTTPS
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Adjust based on environment
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    });
+//     const payload = {
+//       user_id: user.user_id,
+//       role: user.role,
+//       firstname: user.firstname,
+//       lastname: user.lastname,
+//       username: user.username,
+//       profile_image: user.profile_image || null,
+//     };
 
-    res.status(200).json({
-      message: "Admin login successful",
-      user: payload,
-    });
+//     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
 
-  } catch (err) {
-    console.error("Admin login error:", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+//     res.cookie('token', token, {
+//       httpOnly: true, // Enable httpOnly for security
+//       secure: process.env.NODE_ENV === 'production', // Set to true in production with HTTPS
+//       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Adjust based on environment
+//       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+//     });
+
+//     res.status(200).json({
+//       message: "Admin login successful",
+//       user: payload,
+//     });
+
+//   } catch (err) {
+//     console.error("Admin login error:", err);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
 
 
 // UserRoute.get('/profile', async (req, res) => {
@@ -702,6 +702,60 @@ UserRoute.post("/adminlogin", async (req, res) => {
 //     }
 // });
 
+
+UserRoute.post('/adminlogin', async (req, res) => {
+  const db = getDB();
+
+  try {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ error: 'Username or email and password are required' });
+    }
+
+    const [rows] = await db.query(
+      `SELECT * FROM users WHERE (username = ? OR email = ?) AND role IN ('admin', 'head_volunteer')`,
+      [username, username]
+    );
+
+    if (rows.length === 0) {
+      return res.status(401).json({ error: 'Invalid credentials or unauthorized role!' });
+    }
+
+    const user = rows[0];
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Invalid credentials!' });
+    }
+
+    const payload = {
+      user_id: user.user_id,
+      role: user.role,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      username: user.username,
+      profile_image: user.profile_image || null,
+    };
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: false, // Test with false
+      sameSite: 'lax', // Test with lax
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.status(200).json({
+      message: 'Admin login successful',
+      user: payload,
+    });
+  } catch (err) {
+    console.error('Admin login error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 UserRoute.get('/profile', async (req, res) => {
   let db = getDB();
