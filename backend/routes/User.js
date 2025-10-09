@@ -434,13 +434,17 @@ UserRoute.post('/reset_password', async (req, res) => {
 
 UserRoute.get('/api/session', (req, res) => {
   const token = req.cookies.token || (req.headers.authorization?.split(' ')[1] || '');
-  if (!token) return res.json({ loggedIn: false, user: null });
+  console.log('Received token:', token); // Debug token
+  if (!token) {
+    console.log('No token found in request');
+    return res.json({ loggedIn: false, user: null });
+  }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     res.json({ loggedIn: true, user: decoded });
   } catch (err) {
-    console.error('Session error:', err);
+    console.error('Session error:', err.message);
     res.status(401).json({ loggedIn: false, user: null });
   }
 });
@@ -599,32 +603,80 @@ UserRoute.get('/logged', async (req, res) => {
 // });
 
 
+// UserRoute.post('/adminlogin', async (req, res) => {
+//   const db = getDB();
+
+//   try {
+//     const { username, password } = req.body;
+
+//     if (!username || !password) {
+//       return res.status(400).json({ error: 'Username or email and password are required' });
+//     }
+
+//     const [rows] = await db.query(
+//       `SELECT * FROM users WHERE (username = ? OR email = ?) AND role IN ('admin', 'head_volunteer')`,
+//       [username, username]
+//     );
+
+//     if (rows.length === 0) {
+//       return res.status(401).json({ error: 'Invalid credentials or unauthorized role!' });
+//     }
+
+//     const user = rows[0];
+
+//     const isMatch = await bcrypt.compare(password, user.password);
+//     if (!isMatch) {
+//       return res.status(401).json({ error: 'Invalid credentials!' });
+//     }
+
+//     const payload = {
+//       user_id: user.user_id,
+//       role: user.role,
+//       firstname: user.firstname,
+//       lastname: user.lastname,
+//       username: user.username,
+//       profile_image: user.profile_image || null,
+//     };
+
+//     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
+
+//     res.cookie('token', token, {
+//       httpOnly: true,
+//       secure: false, // Test with false
+//       sameSite: 'lax', // Test with lax
+//       maxAge: 7 * 24 * 60 * 60 * 1000,
+//     });
+
+//     res.status(200).json({
+//       message: 'Admin login successful',
+//       user: payload,
+//     });
+//   } catch (err) {
+//     console.error('Admin login error:', err);
+//     res.status(500).json({ error: 'Internal server error' });
+//   }
+// });
+
+
 UserRoute.post('/adminlogin', async (req, res) => {
   const db = getDB();
-
   try {
     const { username, password } = req.body;
-
     if (!username || !password) {
       return res.status(400).json({ error: 'Username or email and password are required' });
     }
-
     const [rows] = await db.query(
       `SELECT * FROM users WHERE (username = ? OR email = ?) AND role IN ('admin', 'head_volunteer')`,
       [username, username]
     );
-
     if (rows.length === 0) {
       return res.status(401).json({ error: 'Invalid credentials or unauthorized role!' });
     }
-
     const user = rows[0];
-
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ error: 'Invalid credentials!' });
     }
-
     const payload = {
       user_id: user.user_id,
       role: user.role,
@@ -633,16 +685,13 @@ UserRoute.post('/adminlogin', async (req, res) => {
       username: user.username,
       profile_image: user.profile_image || null,
     };
-
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
-
     res.cookie('token', token, {
       httpOnly: true,
-      secure: false, // Test with false
+      secure: false, // Test with false for non-HTTPS
       sameSite: 'lax', // Test with lax
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-
     res.status(200).json({
       message: 'Admin login successful',
       user: payload,
@@ -652,6 +701,8 @@ UserRoute.post('/adminlogin', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+
 
 UserRoute.get('/profile', async (req, res) => {
   let db = getDB();
