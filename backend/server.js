@@ -24,34 +24,24 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // ---------------- CORS ---------------- //
-// const allowedOrigins = [
-//   'http://localhost:5173',
-//   'https://whiskerwatch.site',
-// ];
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://whiskerwatch.site',
+  'https://whiskerwatch-cp2.vercel.app'
+];
 
 // CORS setup
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (mobile apps, curl, etc.)
-      if (!origin) return callback(null, true);
-
-      // Explicitly allow localhost and your custom domain
-      if (
-        origin === "http://localhost:5173" ||
-        origin === "https://whiskerwatch.site" ||
-        /^https:\/\/[\w-]+\.whisker-watch\.vercel\.app$/.test(origin)
-      ) {
-        return callback(null, true);
-      }
-
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.some(o => 
+        typeof o === "string" ? o === origin : o.test(origin))) {
+      callback(null, true);
+    } else {
       console.error("❌ Blocked by CORS:", origin);
-      // Return headers even on failure
-      return callback(new Error("CORS policy violation"), false);
-    },
-    credentials: true,
-  })
-);
+      callback(new Error("Not allowed by CORS"));
+    }
+  }
+}));
 
 
 
