@@ -9,7 +9,7 @@ import ReCAPTCHA from 'react-google-recaptcha';
 const SignUp = () => {
     const url = `https://whiskerwatch-0j6g.onrender.com`;
     const [captchaToken, setCaptchaToken] = useState(null);
-    const SITE_KEY = '6LdVeeQrAAAAAAvuwHXHEpX8NwKXLJLHWtbR80ed';
+    const SITE_KEY = '6LeqdeQrAAAAAK56jWztLw71UodF0-XIKYjBNbqm';
 
     const [firstname, setFirstname] = useState('');
     const [lastname, setLastname] = useState('');
