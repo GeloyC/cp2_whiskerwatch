@@ -118,58 +118,82 @@ const JWT_SECRET = process.env.JWT_SECRET || 'whisker_secret';
 
 
 // UserRoute.post('/signup', async (req, res) => {
-//     let db = getDB();
-//     try {
-//         const { firstname, lastname, contactnumber, birthday, email, username, address, password, otp } = req.body;
+//   let db = getDB();
+//   try {
+//     const { firstname, lastname, contactnumber, birthday, email, username, address, password, otp } = req.body;
 
-//         const otp_result = await validateOtp(email, otp);
-//         if (!otp_result.success) {
-//           return res.status(400).json({
-//             message: otp_result.message
-//           });
-//         }
+//     // Validate OTP
+//     // const otpResult = await validateOtp(email, otp);
+//     // if (!otpResult.success) {
+//     //   return res.status(400).json({ message: otpResult.message || 'OTP validation failed.' });
+//     // }
 
-//         const saltRounds = 10;
-//         const hashedPassword = await bcrypt.hash(password, saltRounds);
+//     const captchaResponse = await axios.post(
+//       `https://www.google.com/recaptcha/api/siteverify`,
+//       null,
+//       {
+//         params: {
+//           secret: process.env.RECAPTCHA_SECRET_KEY, // Your Secret Key from Google reCAPTCHA
+//           response: captchaToken, // Token from frontend
+//           remoteip: req.ip, // Optional: Client IP for added security
+//         },
+//       }
+//     );
 
-//         const [result] = await db.query(
-//         `INSERT INTO users 
-//             (firstname, lastname, contactnumber, birthday, email, username, address, password) 
-//             VALUES (?, ?, ?, ?, ?, ?, ?, ? )`,
-//             [firstname, lastname, contactnumber, birthday, email, username, address, hashedPassword]
-//         );
-
-
-
-//         res.status(200).json({
-//         message: 'Account created!',
-//         newUser: {
-//             user_id: result.insertId,
-//             role: 'regular',
-//             badge: 'Toe Bean Trainee',
-//         }
-//         })
-
-        
-
-//     } catch(err) {
-//         console.error('Sign up error:', err);
-//         res.status(500).json({ err: 'Internal server error' });
+//     if (!captchaResponse.data.success || captchaResponse.data.score < 0.5) {
+//       return res.status(400).json({ message: 'CAPTCHA verification failed. Are you a bot?' });
 //     }
-// })
 
+//     // Check for existing email
+//     const [existingUsers] = await db.query('SELECT email FROM users WHERE email = ?', [email]);
+//     if (existingUsers.length > 0) {
+//       return res.status(400).json({ message: 'Email already registered.' });
+//     }
+
+//     // Hash password
+//     const saltRounds = 10;
+//     const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+//     // Insert user
+//     const [result] = await db.query(
+//       `INSERT INTO users 
+//       (firstname, lastname, contactnumber, birthday, email, username, address, password, role, badge) 
+//       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'regular', 'Toe Bean Trainee')`,
+//       [firstname, lastname, contactnumber, birthday, email, username, address, hashedPassword]
+//     );
+
+//     // Send welcome email (optional)
+//     await sendMail(
+//       email,
+//       'Welcome to Whisker Watch',
+//       `
+//         <h3>Welcome to Whisker Watch!</h3>
+//         <p>Thank you for joining, ${firstname} ${lastname}! Your account is now active.</p>
+//         <p>Start exploring and supporting our feline friends!</p>
+//         <p><strong>Whisker Watch Team</strong></p>
+//       `
+//     );
+
+//     res.status(200).json({
+//       message: 'Account created!',
+//       newUser: {
+//         user_id: result.insertId,
+//         role: 'regular',
+//         badge: 'Toe Bean Trainee',
+//       },
+//     });
+//   } catch (err) {
+//     console.error('Sign up error:', err);
+//     res.status(500).json({ error: 'Internal server error' });
+//   }
+// });
 
 UserRoute.post('/signup', async (req, res) => {
   let db = getDB();
   try {
-    const { firstname, lastname, contactnumber, birthday, email, username, address, password, otp } = req.body;
+    const { firstname, lastname, contactnumber, birthday, email, username, address, password, 'g-recaptcha-response': captchaToken } = req.body;
 
-    // Validate OTP
-    // const otpResult = await validateOtp(email, otp);
-    // if (!otpResult.success) {
-    //   return res.status(400).json({ message: otpResult.message || 'OTP validation failed.' });
-    // }
-
+    // Verify reCAPTCHA
     const captchaResponse = await axios.post(
       `https://www.google.com/recaptcha/api/siteverify`,
       null,
@@ -229,6 +253,7 @@ UserRoute.post('/signup', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 UserRoute.post('/check_email', async (req, res) => {
   const db = getDB();
