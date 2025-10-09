@@ -197,7 +197,7 @@ CatRoute.get('/catlist/limit', async (req, res) => {
           c.description, 
           c.adoption_status,
           ci.image_filename AS thumbnail
-        FROM Cat c
+        FROM cat c
         LEFT JOIN cat_images ci ON c.cat_id = ci.cat_id 
         AND ci.image_id = (
           SELECT image_id 
