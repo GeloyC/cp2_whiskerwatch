@@ -1,65 +1,141 @@
+// import React, { createContext, useContext, useState, useEffect } from "react";
+// import axios from "axios";
+// import { useNavigate } from "react-router-dom"; 
+
+
+// const SessionContext = createContext();
+
+// export const useSession = () => useContext(SessionContext);
+
+// export const SessionProvider = ({ children }) => {
+//     const url = `https://whiskerwatch-0j6g.onrender.com`;
+
+//     const [user, setUser] = useState(null);
+//     const [loading, setLoading] = useState(true);
+//     const [notifications, setNotifications] = useState([]);
+//     const [whiskerUpdateTrigger, setWhiskerUpdateTrigger] = useState(0);
+
+//     axios.defaults.withCredentials = true;
+
+//     const triggerWhiskerUpdate = () => setWhiskerUpdateTrigger(Date.now());
+
+//     const refreshSession = async () => {
+//         try {
+//             const response = await axios.get(`${url}/user/api/session`);
+//             setUser(response.data.user || null);
+//         } catch (err) {
+//             console.error('Session refresh error:', err);
+//             setUser(null);
+//         } finally {
+//             setLoading(false);
+//         }
+//     };
+
+//     const login = (userData) => {
+//         setUser(userData);
+//     };
+
+//     const logout = async () => {
+//         try { await axios.post( `${url}/user/logout`, {}, { withCredentials: true });
+//             console.log("Logged out successfully");
+//         } catch (err) {
+//             console.error("Logout failed:", err);
+//         }
+        
+//         setUser(null);
+//     };
+
+//     const fetchNotifications = async (user_id) => {
+//         if (!user_id) return;
+//         try {
+//             const response = await axios.get(`${url}/user/notifications/${user_id}`);
+//             setNotifications(response.data);
+//         } catch (err) {
+//             console.error('Failed to fetch notifications:', err);
+//         }
+//     };
+
+//     useEffect(() => {
+//         if (user?.user_id) {
+//         fetchNotifications(user.user_id);
+//         }
+//     }, [user]);
+
+//     useEffect(() => {
+//         refreshSession();
+//     }, []);
+
+//     return (
+//         <SessionContext.Provider
+//         value={{ user, setUser, login, loading, refreshSession, logout , notifications, fetchNotifications, whiskerUpdateTrigger, triggerWhiskerUpdate}}
+//         >
+//         {children}
+//         </SessionContext.Provider>
+//     );
+// };
+
+
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom"; 
 
+const SessionContext = createContext(null);
 
-const SessionContext = createContext();
+export function useSession() {
+    const context = useContext(SessionContext);
+    if (!context) {
+        throw new Error("useSession must be used within a SessionProvider");
+    }
+    return context;
+    }
 
-export const useSession = () => useContext(SessionContext);
-
-export const SessionProvider = ({ children }) => {
+    export function SessionProvider({ children }) {
     const url = `https://whiskerwatch-0j6g.onrender.com`;
 
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [notifications, setNotifications] = useState([]);
     const [whiskerUpdateTrigger, setWhiskerUpdateTrigger] = useState(0);
-    const navigate = useNavigate();
+
     axios.defaults.withCredentials = true;
 
     const triggerWhiskerUpdate = () => setWhiskerUpdateTrigger(Date.now());
 
     const refreshSession = async () => {
         try {
-            const response = await axios.get(`${url}/user/api/session`);
-            setUser(response.data.user || null);
+        const response = await axios.get(`${url}/user/api/session`);
+        setUser(response.data.user || null);
         } catch (err) {
-            console.error('Session refresh error:', err);
-            setUser(null);
+        console.error("Session refresh error:", err);
+        setUser(null);
         } finally {
-            setLoading(false);
+        setLoading(false);
         }
     };
 
-    const login = (userData) => {
-        setUser(userData);
-    };
+    const login = (userData) => setUser(userData);
 
     const logout = async () => {
-        try { await axios.post( `${url}/user/logout`, {}, { withCredentials: true });
-            console.log("Logged out successfully");
+        try {
+        await axios.post(`${url}/user/logout`, {}, { withCredentials: true });
+        console.log("Logged out successfully");
         } catch (err) {
-            console.error("Logout failed:", err);
+        console.error("Logout failed:", err);
         }
-        
         setUser(null);
-        navigate('/login');
     };
 
     const fetchNotifications = async (user_id) => {
         if (!user_id) return;
         try {
-            const response = await axios.get(`${url}/user/notifications/${user_id}`);
-            setNotifications(response.data);
+        const response = await axios.get(`${url}/user/notifications/${user_id}`);
+        setNotifications(response.data);
         } catch (err) {
-            console.error('Failed to fetch notifications:', err);
+        console.error("Failed to fetch notifications:", err);
         }
     };
 
     useEffect(() => {
-        if (user?.user_id) {
-        fetchNotifications(user.user_id);
-        }
+        if (user?.user_id) fetchNotifications(user.user_id);
     }, [user]);
 
     useEffect(() => {
@@ -68,9 +144,20 @@ export const SessionProvider = ({ children }) => {
 
     return (
         <SessionContext.Provider
-        value={{ user, setUser, login, loading, refreshSession, logout , notifications, fetchNotifications, whiskerUpdateTrigger, triggerWhiskerUpdate}}
+        value={{
+            user,
+            setUser,
+            login,
+            loading,
+            refreshSession,
+            logout,
+            notifications,
+            fetchNotifications,
+            whiskerUpdateTrigger,
+            triggerWhiskerUpdate,
+        }}
         >
         {children}
         </SessionContext.Provider>
     );
-};
+}
