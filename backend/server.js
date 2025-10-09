@@ -50,7 +50,7 @@ const __dirname = path.dirname(__filename);
 
 app.use(
   cors({
-    origin: 'https://cp2-whiskerwatch.vercel.app', // Replace with your Vercel frontend URL
+    origin: 'https://cp2-whiskerwatch.vercel.app', 
     credentials: true,
   })
 );
