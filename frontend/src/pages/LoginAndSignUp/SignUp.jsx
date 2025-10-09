@@ -66,7 +66,7 @@ const SignUp = () => {
 
             try {
                 // Check username availability
-                await axios.post(`${url}user/check_username`, { username });
+                await axios.post(`${url}/user/check_username`, { username });
                 setUsernameError('');
             } catch (err) {
                 if (err.response?.status === 409) {
