@@ -1,36 +1,43 @@
-import mysql from 'mysql2/promise';
-import fs from 'fs';
-import dotenv from 'dotenv';
-import path from 'path';
+import mysql from "mysql2/promise";
+import fs from "fs";
+import path from "path";
+import dotenv from "dotenv";
 
 dotenv.config();
 
-let db;
-export async function connectDB() {
+let pool;
+
+export const connectDB = async () => {
+  if (pool) return pool;
+
   try {
-    db = mysql.createPool({
+    pool = mysql.createPool({
       host: process.env.DB_HOST,
       user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
+      password: process.env.DB_PASSWORD, // make sure you have this in your .env
       database: process.env.DB_NAME,
-      port: 3306,
+      port: process.env.DB_PORT,
+      waitForConnections: true,
+      connectionLimit: 10,
+      queueLimit: 0,
       ssl: {
-        ca: fs.readFileSync(path.resolve('./config/server-ca.pem'))
+        ca: fs.readFileSync(path.join(process.cwd(), "backend/config/server-ca.pem")),
+        key: fs.readFileSync(path.join(process.cwd(), "backend/config/client-key.pem")),
+        cert: fs.readFileSync(path.join(process.cwd(), "backend/config/client-cert.pem")),
       },
     });
 
-    console.log("DB object:", db);
-
-    console.log('✅ Connected to MySQL database!');
+    console.log("Database connected successfully!");
+    return pool;
   } catch (err) {
-    console.error('❌ Failed to connect to MySQL:', err);
-    process.exit(1);
+    console.error("Database connection error:", err);
+    throw err;
   }
-}
+};
 
-export function getDB() {
-  if (!db) {
-    throw new Error('Database not connected. Call connectDB() first.');
+export const getDB = () => {
+  if (!pool) {
+    throw new Error("Database not connected. Call connectDB() first.");
   }
-  return db;
-}
+  return pool;
+};
