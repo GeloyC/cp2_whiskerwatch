@@ -97,7 +97,7 @@ const Login = () => {
     
 
     try {
-      const res = await axios.post(`otp/send_otp`, { email });
+      const res = await axios.post(`${url}/otp/send_otp`, { email });
 
       if (res.status === 200) {
         setStep('verify');
