@@ -13,7 +13,7 @@ const AdminSideBar = ({className}) => {
 
   // const [user, setUser] = useState({ firstname: '', lastname: '', role: '' });
   const { user, logout, loading: sessionLoading } = useSession();
-  const [profileImage, setProfileImage] = useState({ profile_image: '' });
+  const [profileImage, setProfileImage] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const menuRef = useRef(null);
@@ -25,17 +25,25 @@ const AdminSideBar = ({className}) => {
 
   useEffect(() => {
       const fetchProfileImage = async () => {
-        if (!user) return;
+        if (!user) {
+          setProfileImage(null);
+          return;
+        }
 
         try {
           const res = await axios.get(`${url}/user/profile`, {
             withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${Cookies.get('token')}`, // Explicitly send token
+            },
           });
           setProfileImage(res.data.profile_image || null); // Set filename or null
           setError('');
         } catch (err) {
           console.error('Failed to fetch profile image:', err);
           setError(err.response?.data?.error || 'Failed to fetch profile image');
+        } finally {
+          setLoading(false);
         }
       };
 

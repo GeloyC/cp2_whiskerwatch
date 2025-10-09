@@ -23,6 +23,8 @@ const AdminLogin = () => {
 
     const handleAdminLogin = async (event) => {
         event.preventDefault();
+        setError('');
+
         try {
         const response = await axios.post(
             `${url}/user/adminlogin`,

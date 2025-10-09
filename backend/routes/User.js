@@ -599,7 +599,7 @@ UserRoute.post("/adminlogin", async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
-      return res.status(400).json({ error: "Username and password are required" });
+      return res.status(400).json({ error: 'Username and password are required' });
     }
 
     const [rows] = await db.query("SELECT * FROM users WHERE username = ?", [username]);
@@ -621,33 +621,6 @@ UserRoute.post("/adminlogin", async (req, res) => {
       return res.status(403).json({ error: "Access denied. Admins only." });
     }
 
-    // req.session.user = {
-    //   user_id: user.user_id,
-    //   role: user.role,
-    //   firstname: user.firstname,
-    //   lastname: user.lastname,
-    //   profile_image: user.profile_image,
-    // };
-
-    // req.session.save((err) => {
-    //   if (err) {
-    //     console.error("Session save error:", err);
-    //     return res.status(500).json({ error: "Failed to save session" });
-    //   }
-
-
-    //   res.status(200).json({
-    //     message: "Admin login successful",
-    //     user: {
-    //       user_id: user.user_id,
-    //       role: user.role,
-    //       firstname: user.firstname,
-    //       lastname: user.lastname,
-    //       profile_image: user.profile_image,
-    //     },
-    //   });
-    // });
-
     const payload = {
       user_id: user.user_id,
       role: user.role,
@@ -659,18 +632,11 @@ UserRoute.post("/adminlogin", async (req, res) => {
 
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
 
-    // res.cookie("token", token, {
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === 'production' ? false : true,
-    //   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-    //   maxAge: 7 * 24 * 60 * 60 * 1000,
-    // });
-
-    res.cookie("token", token, {
-      httpOnly: false,
-      secure: false, // Temporarily disable for local/Render testing without HTTPS
-      sameSite: 'lax', // Use 'lax' for testing, switch to 'none' with secure: true later
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+    res.cookie('token', token, {
+      httpOnly: true, // Enable httpOnly for security
+      secure: process.env.NODE_ENV === 'production', // Set to true in production with HTTPS
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Adjust based on environment
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     res.status(200).json({

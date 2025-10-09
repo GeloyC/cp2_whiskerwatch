@@ -36,7 +36,10 @@ const NavigationBar = () => {
   // fetch profile image
   useEffect(() => { 
     const fetchProfileImage = async () => {
-      if (!user) return;
+      if (!user) {
+        setProfileImage(null);
+        return;
+      }
 
       try {
         const response = await axios.get(`${url}/user/profile`, { 
@@ -49,6 +52,7 @@ const NavigationBar = () => {
         setProfileImage(response.data.profile_image);
       } catch (err) {
         console.error("Failed to fetch profile image:", err);
+        setProfileImage(null);
       }
     }
 
