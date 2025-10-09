@@ -40,6 +40,9 @@ const NavigationBar = () => {
       try {
         const response = await axios.get(`${url}/user/profile`, { 
           withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${Cookies.get("token")}`, // Explicitly send token
+          },
         });
 
         setProfileImage(response.data.profile_image);

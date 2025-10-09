@@ -49,20 +49,16 @@ otpRoute.post('/send_otp', async (req, res) => {
         VALUES (?, ?, ?)
         `, [email, otp, expiration]);
 
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS,
-            }
-        });
-
-        await transporter.sendMail({
-        from: process.env.EMAIL_USER,
-        to: email,
-        subject: 'WhiskerWatch generated OTP',
-        text: `Thank you for signing up to WhiskerWatch, please use this OTP ${otp} to verify your email. Thank you!`
-        });
+        await sendMail(
+            email,
+            'WhiskerWatch Generated OTP',
+            `
+                <h3>Verify Your Email</h3>
+                <p>Thank you for signing up to WhiskerWatch, please use this OTP <strong>${otp}</strong> to verify your email.</p>
+                <p>This OTP expires in 5 minutes.</p>
+                <p><strong>WhiskerWatch Team</strong></p>
+            `
+        );
 
 
         res.json({message: 'Succesfully sent OTP.'});
@@ -89,20 +85,14 @@ export async function validateOtp(email, otp)  {
         [email, otp]);
 
         if (rows.length === 0) {
-            return res.status(400).json({
-                success: false,
-                message: 'The OTP you entered is invalid!'
-            });
+            return { success: false, message: 'The OTP you entered is invalid!' };
         }
 
         const record = rows[0];
         const time_now = new Date();
 
-        if (time_now > record.expiration) {
-            return res.status(400).json({
-                success: false,
-                message: 'The OTP you entered is already expired.'
-            });
+        if (time_now > record.expires_at) {
+            return { success: false, message: 'The OTP you entered has expired.' };
         }
 
         await db.query(`

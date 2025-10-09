@@ -117,46 +117,102 @@ const JWT_SECRET = process.env.JWT_SECRET || 'whisker_secret';
 
 
 
-UserRoute.post('/signup', async (req, res) => {
-    let db = getDB();
-    try {
-        const { firstname, lastname, contactnumber, birthday, email, username, address, password, otp } = req.body;
+// UserRoute.post('/signup', async (req, res) => {
+//     let db = getDB();
+//     try {
+//         const { firstname, lastname, contactnumber, birthday, email, username, address, password, otp } = req.body;
 
-        const otp_result = await validateOtp(email, otp);
-        if (!otp_result.success) {
-          return res.status(400).json({
-            message: otp_result.message
-          });
-        }
+//         const otp_result = await validateOtp(email, otp);
+//         if (!otp_result.success) {
+//           return res.status(400).json({
+//             message: otp_result.message
+//           });
+//         }
 
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
+//         const saltRounds = 10;
+//         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-        const [result] = await db.query(
-        `INSERT INTO users 
-            (firstname, lastname, contactnumber, birthday, email, username, address, password) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ? )`,
-            [firstname, lastname, contactnumber, birthday, email, username, address, hashedPassword]
-        );
+//         const [result] = await db.query(
+//         `INSERT INTO users 
+//             (firstname, lastname, contactnumber, birthday, email, username, address, password) 
+//             VALUES (?, ?, ?, ?, ?, ?, ?, ? )`,
+//             [firstname, lastname, contactnumber, birthday, email, username, address, hashedPassword]
+//         );
 
 
 
-        res.status(200).json({
-        message: 'Account created!',
-        newUser: {
-            user_id: result.insertId,
-            role: 'regular',
-            badge: 'Toe Bean Trainee',
-        }
-        })
+//         res.status(200).json({
+//         message: 'Account created!',
+//         newUser: {
+//             user_id: result.insertId,
+//             role: 'regular',
+//             badge: 'Toe Bean Trainee',
+//         }
+//         })
 
         
 
-    } catch(err) {
-        console.error('Sign up error:', err);
-        res.status(500).json({ err: 'Internal server error' });
+//     } catch(err) {
+//         console.error('Sign up error:', err);
+//         res.status(500).json({ err: 'Internal server error' });
+//     }
+// })
+
+
+UserRoute.post('/signup', async (req, res) => {
+  let db = getDB();
+  try {
+    const { firstname, lastname, contactnumber, birthday, email, username, address, password, otp } = req.body;
+
+    // Validate OTP
+    const otpResult = await validateOtp(email, otp);
+    if (!otpResult.success) {
+      return res.status(400).json({ message: otpResult.message || 'OTP validation failed.' });
     }
-})
+
+    // Check for existing email
+    const [existingUsers] = await db.query('SELECT email FROM users WHERE email = ?', [email]);
+    if (existingUsers.length > 0) {
+      return res.status(400).json({ message: 'Email already registered.' });
+    }
+
+    // Hash password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Insert user
+    const [result] = await db.query(
+      `INSERT INTO users 
+      (firstname, lastname, contactnumber, birthday, email, username, address, password, role, badge) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'regular', 'Toe Bean Trainee')`,
+      [firstname, lastname, contactnumber, birthday, email, username, address, hashedPassword]
+    );
+
+    // Send welcome email (optional)
+    await sendMail(
+      email,
+      'Welcome to Whisker Watch',
+      `
+        <h3>Welcome to Whisker Watch!</h3>
+        <p>Thank you for joining, ${firstname} ${lastname}! Your account is now active.</p>
+        <p>🐾 Start exploring and supporting our feline friends!</p>
+        <p><strong>Whisker Watch Team</strong></p>
+      `
+    );
+
+    res.status(200).json({
+      message: 'Account created!',
+      newUser: {
+        user_id: result.insertId,
+        role: 'regular',
+        badge: 'Toe Bean Trainee',
+      },
+    });
+  } catch (err) {
+    console.error('Sign up error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 UserRoute.post('/check_email', async (req, res) => {
   const db = getDB();
@@ -200,134 +256,6 @@ UserRoute.post('/check_username', async (req, res) => {
 
 
 
-// UserRoute.post("/login", async (req, res) => {
-//   const db = getDB();
-//   try {
-//     const { email, password } = req.body;
-
-//     if (!email || !password) {
-//       return res.status(400).json({ error: "Email and password are required" });
-//     }
-
-//     const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
-//     if (rows.length === 0) {
-//       return res.status(401).json({ error: "Invalid email or password" });
-//     }
-
-//     const user = rows[0];
-
-//     const isMatch = await bcrypt.compare(password, user.password);
-//     if (!isMatch) {
-//       return res.status(401).json({ error: "Invalid email or password" });
-//     }
-
-//     console.log("Login attempt for email:", email);
-
-//     const payload = {
-//       user_id: user.user_id,
-//       role: user.role,
-//       firstname: user.firstname,
-//       lastname: user.lastname,
-//       email: user.email,
-//     };
-
-//     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
-
-//     req.session.user = {
-//       user_id: user.user_id,
-//       role: user.role,
-//       firstname: user.firstname,
-//       lastname: user.lastname,
-//     };
-
-//     req.cookie("token", token, {
-//       httpOnly: true,
-//       secure: process.env.NODE_ENV === "production",
-//       sameSite: "lax",
-//       maxAge: 7 * 24 * 60 * 60 * 1000,
-//     });
-
-
-//     // res.status(200).json({
-//     //   message: "Login successful",
-//     //   user: {
-//     //     user_id: user.user_id,
-//     //     role: user.role,
-//     //     firstname: user.firstname,
-//     //     lastname: user.lastname,
-//     //     email: user.email,
-//     //   },
-//     // });
-
-
-//     res.status(200).json({
-//       message: "Login successful!",
-//       user: payload
-//     });
-
-
-//   } catch (err) {
-//     console.error("Login error:", err);
-//     res.status(500).json({ err: "Internal server error" });
-//   }
-// });
-
-
-// UserRoute.post("/login", async (req, res) => {
-//   const db = getDB();
-//   try {
-//     const { email, password } = req.body;
-
-//     if (!email || !password) {
-//       return res.status(400).json({ error: "Email and password are required" });
-//     }
-
-//     const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
-//     if (rows.length === 0) {
-//       return res.status(401).json({ error: "Invalid email or password" });
-//     }
-
-//     const user = rows[0];
-
-//     const isMatch = await bcrypt.compare(password, user.password);
-//     if (!isMatch) {
-//       return res.status(401).json({ error: "Invalid email or password" });
-//     }
-
-//     console.log("Login attempt for email:", email);
-
-//     const payload = {
-//       user_id: user.user_id,
-//       role: user.role,
-//       firstname: user.firstname,
-//       lastname: user.lastname,
-//       email: user.email,
-//     };
-
-//     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
-
-
-//     res.cookie("token", token, {
-//       httpOnly: true,
-//       // secure: process.env.NODE_ENV === "production", 
-//       secure: process.env.NODE_ENV === 'production' ? false : true,
-//       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-//       maxAge: 7 * 24 * 60 * 60 * 1000, 
-//     });
-
-//     // Respond with user data
-//     res.status(200).json({
-//       message: "Login successful!",
-//       user: payload,
-//     });
-
-//   } catch (err) {
-//     console.error("Login error:", err);
-//     res.status(500).json({ err: "Internal server error" });
-//   }
-// });
-
-
 UserRoute.post("/login", async (req, res) => {
   const db = getDB();
   try {
@@ -361,12 +289,6 @@ UserRoute.post("/login", async (req, res) => {
 
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
 
-    // Ensure cookie settings are correct for all environments
-    // res.cookie("token", token, {
-    //   secure: process.env.NODE_ENV === 'production',
-    //   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-    //   maxAge: 7 * 24 * 60 * 60 * 1000,
-    // });
 
     res.cookie("token", token, {
       httpOnly: false,
@@ -386,44 +308,44 @@ UserRoute.post("/login", async (req, res) => {
   }
 });
 
-UserRoute.post('/reset_password', async (req, res) => {
-  const db = getDB();
-  const { password, email, otp } = req.body;
+// UserRoute.post('/reset_password', async (req, res) => {
+//   const db = getDB();
+//   const { password, email, otp } = req.body;
 
-  if (!email || !password || !otp) {
-    return res.status(400).json({ success: false, message: 'Email, password and OTP are required.' });
-  }
+//   if (!email || !password || !otp) {
+//     return res.status(400).json({ success: false, message: 'Email, password and OTP are required.' });
+//   }
 
-  try {
-    const otp_result = await validateOtp(email, otp);
+//   try {
+//     const otp_result = await validateOtp(email, otp);
 
-    if (!otp_result.success) {
-      return res.status(400).json({ success: false, message: otp_result.message || 'OTP validation failed.' });
-    }
+//     if (!otp_result.success) {
+//       return res.status(400).json({ success: false, message: otp_result.message || 'OTP validation failed.' });
+//     }
 
-    const [result] = await db.query(`
-      UPDATE users SET password = ?
-      WHERE email = ?
-    `, [password, email]);
+//     const [result] = await db.query(`
+//       UPDATE users SET password = ?
+//       WHERE email = ?
+//     `, [password, email]);
 
-    await sendMail(
-      email, 
-      'Password reset confirmation', 
-      `
-        <h3>Password Reset Successful</h3>
-        <p>Your password has been successfully reset on Whisker Watch.</p>
-        <p>If you did not request this, please contact support immediately.</p>
-        <br>
-        <p>🐾 Stay safe,</p>
-        <p><strong>Whisker Watch Team</strong></p>
-      `
-    );
+//     await sendMail(
+//       email, 
+//       'Password reset confirmation', 
+//       `
+//         <h3>Password Reset Successful</h3>
+//         <p>Your password has been successfully reset on Whisker Watch.</p>
+//         <p>If you did not request this, please contact support immediately.</p>
+//         <br>
+//         <p>🐾 Stay safe,</p>
+//         <p><strong>Whisker Watch Team</strong></p>
+//       `
+//     );
 
-    res.status(200).json({ success: true, message: 'Password reset successfully.' });
-  } catch (err) {
-    console.error(err);
-  }
-});
+//     res.status(200).json({ success: true, message: 'Password reset successfully.' });
+//   } catch (err) {
+//     console.error(err);
+//   }
+// });
 
 
 
@@ -454,6 +376,55 @@ UserRoute.post('/reset_password', async (req, res) => {
 //     res.status(500).json({ error: 'Internal server error' });
 //   }
 // });
+
+UserRoute.post('/reset_password', async (req, res) => {
+  const db = getDB();
+  const { password, email, otp } = req.body;
+
+  if (!email || !password || !otp) {
+    return res.status(400).json({ success: false, message: 'Email, password, and OTP are required.' });
+  }
+
+  try {
+    const otpResult = await validateOtp(email, otp);
+    if (!otpResult.success) {
+      return res.status(400).json({ success: false, message: otpResult.message || 'OTP validation failed.' });
+    }
+
+    // Hash the new password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Update password
+    const [result] = await db.query(
+      `UPDATE users SET password = ? WHERE email = ?`,
+      [hashedPassword, email]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ success: false, message: 'User not found or email mismatch.' });
+    }
+
+    // Send confirmation email
+    await sendMail(
+      email,
+      'Password Reset Confirmation',
+      `
+        <h3>Password Reset Successful</h3>
+        <p>Your password has been successfully reset on Whisker Watch.</p>
+        <p>If you did not request this, please contact support immediately.</p>
+        <br>
+        <p>🐾 Stay safe,</p>
+        <p><strong>Whisker Watch Team</strong></p>
+      `
+    );
+
+    res.status(200).json({ success: true, message: 'Password reset successfully.' });
+  } catch (err) {
+    console.error('Reset password error:', err);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
 
 
 UserRoute.get("/api/session", (req, res) => {
