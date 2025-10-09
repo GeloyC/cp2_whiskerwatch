@@ -302,7 +302,7 @@ CatRoute.get("/images", async (req, res) => {
       `
         SELECT
           ci.image_id, ci.cat_id, ci.image_filename, ci.is_primary,
-          CONCAT('http://localhost:5000/uploads/cats/', ci.image_filename) AS url
+          CONCAT('https://whiskerwatch-0j6g.onrender.com/uploads/cats/', ci.image_filename) AS url
         FROM
           cat_images ci
         JOIN
@@ -333,7 +333,7 @@ CatRoute.get("/:cat_id/images", async (req, res) => {
     );
     const formatted = rows.map((img) => ({
       filename: img.image_filename,
-      url: `http://localhost:5000/uploads/cats/${img.image_filename}`, // ✅ direct URL
+      url: `$/uploads/cats/${img.image_filename}`, // ✅ direct URL
     }));
     res.json(formatted);
   } catch (err) {
