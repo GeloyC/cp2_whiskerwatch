@@ -28,11 +28,9 @@ const AdminSideBar = ({className}) => {
         if (!user) return;
 
         try {
-          const res = await axios.get(`${url}/user/profile`, {
-            withCredentials: true,
-          });
-          setProfileImage(res.data.profile_image || null); // Set filename or null
-          setError('');
+          const res = await axios.get(`${url}/user/profile`, { withCredentials: true, });
+            setProfileImage(res.data.profile_image || null); // Set filename or null
+            setError('');
         } catch (err) {
           console.error('Failed to fetch profile image:', err);
           setError(err.response?.data?.error || 'Failed to fetch profile image');

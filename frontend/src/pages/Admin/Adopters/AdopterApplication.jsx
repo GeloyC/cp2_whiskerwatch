@@ -25,13 +25,13 @@ const AdopterApplication = () => {
     fetchApplications()
   }, []);
 
-  if (sessionLoading) {
-    return <div className="p-10">Loading session...</div>;
-  }
+  // if (sessionLoading) {
+  //   return <div className="p-10">Loading session...</div>;
+  // }
 
-  if (!user) {
-    return <div className="p-10">No active session.</div>;
-  }
+  // if (!user) {
+  //   return <div className="p-10">No active session.</div>;
+  // }
 
   return (
     <div className='relative flex flex-col h-screen w-auto overflow-x-hidden'>

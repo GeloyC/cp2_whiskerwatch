@@ -67,8 +67,8 @@ const FeedingVolunteers = () => {
     }
   };
 
-  if (sessionLoading) return <div className="p-10">Loading session...</div>;
-  if (!user) return <div className="p-10">No active session.</div>;
+  // if (sessionLoading) return <div className="p-10">Loading session...</div>;
+  // if (!user) return <div className="p-10">No active session.</div>;
 
 
 

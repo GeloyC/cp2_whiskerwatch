@@ -10,7 +10,7 @@ const AdminCatProfile = () => {
   const [cats, setCats] = useState([]);
   const [searchInput, setSearchInput] = useState('');
 
- 
+
   const fetchCat = async () => {
     try {
       const response = await axios.get(`${url}/cat/list`);
