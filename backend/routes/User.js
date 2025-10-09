@@ -193,8 +193,12 @@ UserRoute.post('/signup', async (req, res) => {
   try {
     const { firstname, lastname, contactnumber, birthday, email, username, address, password, 'g-recaptcha-response': captchaToken } = req.body;
 
+    console.log('Received Request Body:', req.body);
+    console.log('RECAPTCHA_SECRET_KEY:', process.env.RECAPTCHA_SECRET_KEY);
+    console.log('Received captchaToken:', captchaToken);
+
     // Verify reCAPTCHA
-    const captchaResponse = await axios.post(
+    let captchaResponse = await axios.post(
       `https://www.google.com/recaptcha/api/siteverify`,
       null,
       {

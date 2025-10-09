@@ -550,7 +550,7 @@ const SignUp = () => {
             />
 
             <div className="flex flex-col items-center gap-3 col-span-2">
-                <ReCAPTCHA sitekey={SITE_KEY} onChange={handleCaptcha} />
+                <ReCAPTCHA sitekey={'6Lf1hOQrAAAAAGyLTMqscsPcUdIyX6H2wYnsbwQb'} onChange={handleCaptcha} />
                 <div className="flex flex-col">
                 <span>
                     By Continuing, you agree to our{' '}
