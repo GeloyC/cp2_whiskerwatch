@@ -16,7 +16,6 @@ import { fileURLToPath } from 'url';
 import { error, log } from "console";
 
 import nodemailer from 'nodemailer';
-import { validateOtp } from "./OTP.js";
 import { sendMail } from "./OTP.js";
 
 const UserRoute = Router();
@@ -423,18 +422,81 @@ UserRoute.post("/login", async (req, res) => {
 //   }
 // });
 
+// UserRoute.post('/reset_password', async (req, res) => {
+//   const db = getDB();
+//   const { password, email, otp } = req.body;
+
+//   if (!email || !password || !otp) {
+//     return res.status(400).json({ success: false, message: 'Email, password, and OTP are required.' });
+//   }
+
+//   try {
+//     const otpResult = await validateOtp(email, otp);
+//     if (!otpResult.success) {
+//       return res.status(400).json({ success: false, message: otpResult.message || 'OTP validation failed.' });
+//     }
+
+//     // Hash the new password
+//     const saltRounds = 10;
+//     const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+//     // Update password
+//     const [result] = await db.query(
+//       `UPDATE users SET password = ? WHERE email = ?`,
+//       [hashedPassword, email]
+//     );
+
+//     if (result.affectedRows === 0) {
+//       return res.status(404).json({ success: false, message: 'User not found or email mismatch.' });
+//     }
+
+//     // Send confirmation email
+//     await sendMail(
+//       email,
+//       'Password Reset Confirmation',
+//       `
+//         <h3>Password Reset Successful</h3>
+//         <p>Your password has been successfully reset on Whisker Watch.</p>
+//         <p>If you did not request this, please contact support immediately.</p>
+//         <br>
+//         <p>🐾 Stay safe,</p>
+//         <p><strong>Whisker Watch Team</strong></p>
+//       `
+//     );
+
+//     res.status(200).json({ success: true, message: 'Password reset successfully.' });
+//   } catch (err) {
+//     console.error('Reset password error:', err);
+//     res.status(500).json({ success: false, message: 'Internal server error' });
+//   }
+// });
+
 UserRoute.post('/reset_password', async (req, res) => {
   const db = getDB();
-  const { password, email, otp } = req.body;
+  const { password, email, 'g-recaptcha-response': captchaToken } = req.body;
 
-  if (!email || !password || !otp) {
-    return res.status(400).json({ success: false, message: 'Email, password, and OTP are required.' });
+  // Validate required fields
+  if (!email || !password || !captchaToken) {
+    return res.status(400).json({ success: false, message: 'Email, password, and CAPTCHA are required.' });
   }
 
   try {
-    const otpResult = await validateOtp(email, otp);
-    if (!otpResult.success) {
-      return res.status(400).json({ success: false, message: otpResult.message || 'OTP validation failed.' });
+    // Verify reCAPTCHA
+    const captchaResponse = await axios.post(
+      `https://www.google.com/recaptcha/api/siteverify`,
+      null,
+      {
+        params: {
+          secret: process.env.RECAPTCHA_SECRET_KEY, // Your Secret Key from Google reCAPTCHA
+          response: captchaToken,
+          remoteip: req.ip,
+        },
+      }
+    );
+    console.log('Google reCAPTCHA Response:', captchaResponse.data);
+
+    if (!captchaResponse.data.success || captchaResponse.data.score < 0.5) {
+      return res.status(400).json({ success: false, message: 'CAPTCHA verification failed. Are you a bot?' });
     }
 
     // Hash the new password
@@ -623,55 +685,100 @@ UserRoute.post("/adminlogin", async (req, res) => {
 });
 
 
+// UserRoute.get('/profile', async (req, res) => {
+//     let db = getDB();
+//     try {
+//         // const sessionUser = req.session.user;
+
+//         const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+//         if (!token) {
+//           return res.status(401).json({ error: 'Please login to view your profile.' });
+//         }
+
+//         let decoded;
+//         try {
+//           decoded = jwt.verify(token, JWT_SECRET);
+//         } catch (err) {
+//           return res.status(401).json({ error: 'Invalid or expired token.' });
+//         }
+
+//         // if (!sessionUser || !sessionUser.user_id) {
+//         //     return res.status(401).json({ error: 'Please login to submit application.' });
+//         // }
+
+//         const user_id = decoded.user_id;
+//         console.log('Authenticated user ID:', user_id);
+
+//         // Step 3: Query the database
+//         const [userprofile] = await db.query(
+//             `SELECT 
+//                 user_id, firstname, lastname, profile_image, contactnumber,
+//                 DATE_FORMAT(birthday, '%Y-%m-%d') AS birthday,
+//                 email, username, role, badge, address,
+//                 DATE_FORMAT(created_at, '%Y-%m-%d') AS created_at,
+//                 DATE_FORMAT(updated_at, '%Y-%m-%d') AS updated_at 
+//             FROM users
+//             WHERE user_id = ?;`,
+//             [user_id]
+//         );
+
+//         // Step 4: Handle if user not found
+//         if (!userprofile.length) {
+//             return res.status(404).json({ error: 'User not found' });
+//         }
+
+//         // Step 5: Return user profile
+//         return res.json(userprofile[0]);
+
+//     } catch (err) {
+//         console.error('Error fetching user data:', err);
+//         return res.status(500).json({ error: 'Internal server error' });
+//     }
+// });
+
+
 UserRoute.get('/profile', async (req, res) => {
-    let db = getDB();
-    try {
-        // const sessionUser = req.session.user;
-
-        const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
-        if (!token) {
-          return res.status(401).json({ error: 'Please login to view your profile.' });
-        }
-
-        let decoded;
-        try {
-          decoded = jwt.verify(token, JWT_SECRET);
-        } catch (err) {
-          return res.status(401).json({ error: 'Invalid or expired token.' });
-        }
-
-        // if (!sessionUser || !sessionUser.user_id) {
-        //     return res.status(401).json({ error: 'Please login to submit application.' });
-        // }
-
-        const user_id = decoded.user_id;
-        console.log('Authenticated user ID:', user_id);
-
-        // Step 3: Query the database
-        const [userprofile] = await db.query(
-            `SELECT 
-                user_id, firstname, lastname, profile_image, contactnumber,
-                DATE_FORMAT(birthday, '%Y-%m-%d') AS birthday,
-                email, username, role, badge, address,
-                DATE_FORMAT(created_at, '%Y-%m-%d') AS created_at,
-                DATE_FORMAT(updated_at, '%Y-%m-%d') AS updated_at 
-            FROM users
-            WHERE user_id = ?;`,
-            [user_id]
-        );
-
-        // Step 4: Handle if user not found
-        if (!userprofile.length) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        // Step 5: Return user profile
-        return res.json(userprofile[0]);
-
-    } catch (err) {
-        console.error('Error fetching user data:', err);
-        return res.status(500).json({ error: 'Internal server error' });
+  let db = getDB();
+  try {
+    const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ error: 'Please login to view your profile.' });
     }
+
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET); // Use env variable
+    } catch (err) {
+      return res.status(401).json({ error: 'Invalid or expired token.' });
+    }
+
+    const user_id = decoded.user_id;
+    console.log('Authenticated user ID:', user_id);
+
+    // Query the database
+    const [userprofile] = await db.query(
+      `SELECT 
+        user_id, firstname, lastname, profile_image, contactnumber,
+        DATE_FORMAT(birthday, '%Y-%m-%d') AS birthday,
+        email, username, role, badge, address,
+        DATE_FORMAT(created_at, '%Y-%m-%d') AS created_at,
+        DATE_FORMAT(updated_at, '%Y-%m-%d') AS updated_at 
+      FROM users
+      WHERE user_id = ?`,
+      [user_id]
+    );
+
+    // Handle if user not found
+    if (!userprofile.length) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Return user profile
+    return res.json(userprofile[0]);
+  } catch (err) {
+    console.error('Error fetching user data:', err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 
@@ -688,95 +795,191 @@ UserRoute.post('/logout', (req, res) => {
 
 
 
+// UserRoute.patch('/profile/update', upload.single('profile_image'), async (req, res) => {
+//     const db = getDB();
+//     const {
+//         firstname = '',
+//         lastname = '',
+//         address = '',
+//         email = '',
+//         birthday = '',
+//         profile_image = '',  // assume this is the new filename
+//         old_image = ''       // send this from frontend when uploading new image
+//     } = req.body;
+
+//     const newImage = req.file ? req.file.filename : null;
+//     try {
+//         const sessionUser = req.session.user;
+
+//         if (!sessionUser || !sessionUser.user_id) {
+//             console.log('No session user found');
+//             return res.status(401).json({ error: 'User not authenticated (no session)' });
+//         }
+
+//         console.log('Updating profile for user ID:', sessionUser.user_id);
+
+//         // 1. Remove old image if a new one is uploaded
+//         if (newImage && old_image && old_image !== newImage) {
+//             const filePath = path.join(__dirname, 'FileUploads', old_image);
+//             try {
+//                 fs.unlink(filePath);
+//                 console.log(`Deleted old image: ${old_image}`);
+//             } catch (err) {
+//                 if (err.code !== 'ENOENT') {
+//                 console.error(`Error deleting file: ${old_image}`, err);
+//                 }
+//             }
+//         }
+
+//         // 2. Update user info
+//         const [update] = await db.query(`
+//             UPDATE users SET
+//                 firstname = ?,
+//                 lastname = ?,
+//                 address = ?,
+//                 email = ?,
+//                 birthday = ?,
+//                 profile_image = ?,
+//                 updated_at = CURRENT_TIMESTAMP
+//                 WHERE user_id = ?`,
+//             [
+//                 firstname, 
+//                 lastname, 
+//                 address, 
+//                 email, 
+//                 birthday, 
+//                 newImage || old_image, 
+//                 sessionUser.user_id
+//             ]
+//         );
+
+//         if (update.affectedRows === 0) {
+//             return res.status(404).json({ message: 'User not found' });
+//         }
+
+//         const [updatedProfile] = await db.query(
+//             `
+//             SELECT 
+//                 user_id, firstname, lastname, profile_image, contactnumber,
+//                 DATE_FORMAT(birthday, '%Y-%m-%d') AS birthday,
+//                 email, username, role, badge, address,
+//                 DATE_FORMAT(created_at, '%Y-%m-%d') AS created_at,
+//                 DATE_FORMAT(updated_at, '%Y-%m-%d') AS updated_at 
+//             FROM users
+//             WHERE user_id = ?`,
+//             [sessionUser.user_id]
+//         );
+
+//         if (!updatedProfile.length) {
+//         return res.status(404).json({ error: 'User not found after update' });
+//         }
+
+//         return res.status(200).json({
+//             message: 'User profile updated successfully!',
+//             profile_image: newImage || old_image  // return updated image filename
+//         });
+
+//     } catch (err) {
+//         console.error('Error updating user profile: ', err);
+//         return res.status(500).json({ error: 'Failed to update profile.' });
+//     }
+// });
+
 UserRoute.patch('/profile/update', upload.single('profile_image'), async (req, res) => {
-    const db = getDB();
-    const {
-        firstname = '',
-        lastname = '',
-        address = '',
-        email = '',
-        birthday = '',
-        profile_image = '',  // assume this is the new filename
-        old_image = ''       // send this from frontend when uploading new image
-    } = req.body;
+  const db = getDB();
+  const {
+    firstname = '',
+    lastname = '',
+    address = '',
+    email = '',
+    birthday = '',
+    profile_image = '', // New filename from frontend
+    old_image = '',    // Existing image filename from frontend
+  } = req.body;
 
-    const newImage = req.file ? req.file.filename : null;
-    try {
-        const sessionUser = req.session.user;
+  const newImage = req.file ? req.file.filename : null;
 
-        if (!sessionUser || !sessionUser.user_id) {
-            console.log('No session user found');
-            return res.status(401).json({ error: 'User not authenticated (no session)' });
-        }
-
-        console.log('Updating profile for user ID:', sessionUser.user_id);
-
-        // 1. Remove old image if a new one is uploaded
-        if (newImage && old_image && old_image !== newImage) {
-            const filePath = path.join(__dirname, 'FileUploads', old_image);
-            try {
-                fs.unlink(filePath);
-                console.log(`Deleted old image: ${old_image}`);
-            } catch (err) {
-                if (err.code !== 'ENOENT') {
-                console.error(`Error deleting file: ${old_image}`, err);
-                }
-            }
-        }
-
-        // 2. Update user info
-        const [update] = await db.query(`
-            UPDATE users SET
-                firstname = ?,
-                lastname = ?,
-                address = ?,
-                email = ?,
-                birthday = ?,
-                profile_image = ?,
-                updated_at = CURRENT_TIMESTAMP
-                WHERE user_id = ?`,
-            [
-                firstname, 
-                lastname, 
-                address, 
-                email, 
-                birthday, 
-                newImage || old_image, 
-                sessionUser.user_id
-            ]
-        );
-
-        if (update.affectedRows === 0) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        const [updatedProfile] = await db.query(
-            `
-            SELECT 
-                user_id, firstname, lastname, profile_image, contactnumber,
-                DATE_FORMAT(birthday, '%Y-%m-%d') AS birthday,
-                email, username, role, badge, address,
-                DATE_FORMAT(created_at, '%Y-%m-%d') AS created_at,
-                DATE_FORMAT(updated_at, '%Y-%m-%d') AS updated_at 
-            FROM users
-            WHERE user_id = ?`,
-            [sessionUser.user_id]
-        );
-
-        if (!updatedProfile.length) {
-        return res.status(404).json({ error: 'User not found after update' });
-        }
-
-        return res.status(200).json({
-            message: 'User profile updated successfully!',
-            profile_image: newImage || old_image  // return updated image filename
-        });
-
-    } catch (err) {
-        console.error('Error updating user profile: ', err);
-        return res.status(500).json({ error: 'Failed to update profile.' });
+  try {
+    const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ error: 'User not authenticated (no token)' });
     }
+
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET); // Use env variable
+    } catch (err) {
+      return res.status(401).json({ error: 'Invalid or expired token.' });
+    }
+
+    const user_id = decoded.user_id;
+    console.log('Updating profile for user ID:', user_id);
+
+    // Remove old image if a new one is uploaded
+    if (newImage && old_image && old_image !== newImage) {
+      const filePath = path.join(__dirname, 'FileUploads', old_image);
+      try {
+        fs.unlink(filePath);
+        console.log(`Deleted old image: ${old_image}`);
+      } catch (err) {
+        if (err.code !== 'ENOENT') {
+          console.error(`Error deleting file: ${old_image}`, err);
+        }
+      }
+    }
+
+    // Update user info
+    const [update] = await db.query(
+      `UPDATE users SET
+        firstname = ?,
+        lastname = ?,
+        address = ?,
+        email = ?,
+        birthday = ?,
+        profile_image = ?,
+        updated_at = CURRENT_TIMESTAMP
+      WHERE user_id = ?`,
+      [
+        firstname,
+        lastname,
+        address,
+        email,
+        birthday,
+        newImage || old_image,
+        user_id,
+      ]
+    );
+
+    if (update.affectedRows === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const [updatedProfile] = await db.query(
+      `SELECT 
+        user_id, firstname, lastname, profile_image, contactnumber,
+        DATE_FORMAT(birthday, '%Y-%m-%d') AS birthday,
+        email, username, role, badge, address,
+        DATE_FORMAT(created_at, '%Y-%m-%d') AS created_at,
+        DATE_FORMAT(updated_at, '%Y-%m-%d') AS updated_at 
+      FROM users
+      WHERE user_id = ?`,
+      [user_id]
+    );
+
+    if (!updatedProfile.length) {
+      return res.status(404).json({ error: 'User not found after update' });
+    }
+
+    return res.status(200).json({
+      message: 'User profile updated successfully!',
+      profile_image: newImage || old_image, // Return updated image filename
+    });
+  } catch (err) {
+    console.error('Error updating user profile:', err);
+    return res.status(500).json({ error: 'Failed to update profile.' });
+  }
 });
+
 
 UserRoute.get(`/all_users`, async (req, res) => {
   const db = getDB();
