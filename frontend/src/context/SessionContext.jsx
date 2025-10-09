@@ -15,11 +15,24 @@ export const SessionProvider = ({ children }) => {
 
     const triggerWhiskerUpdate = () => setWhiskerUpdateTrigger(Date.now());
 
+    // const refreshSession = async () => {
+    //     try {
+    //         const response = await axios.get(`${url}/user/api/session`, { withCredentials: true, });
+    //         setUser(response.data.user || null);
+
+    //     } catch (err) {
+    //         setUser(null);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
+
     const refreshSession = async () => {
         try {
-            const response = await axios.get(`${url}/user/api/session`, { withCredentials: true, });
-            setUser(response.data.user || null);
-            
+            const response = await axios.get(`${url}/user/api/session`, {
+                withCredentials: true, 
+            });
+            setUser(response.data.user || null); 
         } catch (err) {
             setUser(null);
         } finally {

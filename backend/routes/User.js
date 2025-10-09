@@ -399,15 +399,16 @@ UserRoute.post('/reset_password', async (req, res) => {
 
 
 UserRoute.get("/api/session", (req, res) => {
-  const token = req.cookies.token;
-  if (!token) return res.json({ loggedIn: false, user: null });
-
   try { 
+    const token = req.cookies.token;
+    if (!token) return res.json({ loggedIn: false, user: null });
+
     const user = jwt.verify(token, process.env.JWT_SECRET);
     res.json({ loggedIn: true, user });
 
   } catch (err) {
-    res.json({ loggedIn: false, user: null });
+    console.error("Session error:", err);
+    res.status(401).json({ loggedIn: false, user: null });
   }
 });
 
