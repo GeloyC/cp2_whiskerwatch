@@ -1,6 +1,7 @@
 import mysql from 'mysql2/promise';
 import fs from 'fs';
 import dotenv from 'dotenv';
+import path from 'path';
 
 dotenv.config();
 
@@ -13,6 +14,9 @@ export async function connectDB() {
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       port: 3306,
+      ssl: {
+        ca: fs.readFileSync(path.resolve('./config/server-ca.pem'))
+      },
     });
 
     console.log("DB object:", db);
