@@ -54,7 +54,7 @@ const SignUp = () => {
         try {
             try {
                 // Check email availability
-                await axios.post(`user/check_email`, { email });
+                await axios.post(`${url}/user/check_email`, { email });
                 setEmailError('');
             } catch (err) {
                 if (err.response?.status === 409) {
