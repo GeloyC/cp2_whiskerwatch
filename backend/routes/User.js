@@ -457,7 +457,7 @@ UserRoute.post('/reset_password', async (req, res) => {
 
 
 UserRoute.get("/api/session", (req, res) => {
-  const token = req.cookies.token;
+  const token = req.cookies.token  || req.headers.authorization?.split(" ")[1];;
   if (!token) return res.json({ loggedIn: false, user: null });
 
   try { 

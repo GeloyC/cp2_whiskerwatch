@@ -54,6 +54,7 @@ app.use(
       const allowedOrigins = [
         'https://cp2-whiskerwatch.vercel.app',
         'https://whiskerwatch-cp2.vercel.app',
+        'https://whiskerwatch-0j6g.onrender.com',
         'http://localhost:5173',
         /\.vercel\.app$/,
       ];
@@ -74,7 +75,8 @@ app.use(
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Origin', req.headers.origin); // Dynamic origin
+  res.header('Access-Control-Allow-Origin', req.headers.origin);
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // Allow headers
   next();
 });
 

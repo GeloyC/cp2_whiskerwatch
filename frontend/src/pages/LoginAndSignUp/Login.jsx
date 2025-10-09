@@ -53,6 +53,7 @@ const Login = () => {
         secure: process.env.NODE_ENV === "production", // Use true for HTTPS
         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       });
+      console.log("Token set:", Cookies.get("token"));
       
 
       const user = response.data.user;

@@ -38,7 +38,12 @@ export function SessionProvider({ children }) {
         }
         
         try {
-            const response = await axios.get(`${url}/user/api/session`, { withCredentials: true });
+            const response = await axios.get(`${url}/user/api/session`, { 
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${token}`, // Send token in header
+                },
+            });
             setUser(response.data.loggedIn ? response.data.user : null);
             console.log("Session refreshed:", response.data);
         } catch (err) {
