@@ -234,16 +234,16 @@ UserRoute.post('/signup', async (req, res) => {
     );
 
     // Send welcome email (optional)
-    await sendMail(
-      email,
-      'Welcome to Whisker Watch',
-      `
-        <h3>Welcome to Whisker Watch!</h3>
-        <p>Thank you for joining, ${firstname} ${lastname}! Your account is now active.</p>
-        <p>Start exploring and supporting our feline friends!</p>
-        <p><strong>Whisker Watch Team</strong></p>
-      `
-    );
+    // await sendMail(
+    //   email,
+    //   'Welcome to Whisker Watch',
+    //   `
+    //     <h3>Welcome to Whisker Watch!</h3>
+    //     <p>Thank you for joining, ${firstname} ${lastname}! Your account is now active.</p>
+    //     <p>Start exploring and supporting our feline friends!</p>
+    //     <p><strong>Whisker Watch Team</strong></p>
+    //   `
+    // );
 
     res.status(200).json({
       message: 'Account created!',
