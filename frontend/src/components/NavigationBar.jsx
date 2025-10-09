@@ -3,6 +3,7 @@ import logo from '/assets/whiskerwatchlogo-no textmarks.png'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import NotificationBell from './NotificationBell';
 import PopLogout from "../modal/PopLogout.jsx";
+import Cookies from 'js-cookie';
 
 
 import { useSession } from '../context/SessionContext';

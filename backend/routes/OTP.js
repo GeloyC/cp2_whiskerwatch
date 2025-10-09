@@ -17,20 +17,17 @@ function generateOTP() {
 }
 
 export async function sendMail(to, subject, html) {
-    const transporter = nodemailer.createTransport({
-        service: 'gmail', // or your provider like 'SendGrid', 'Mailgun', etc.
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS,
-        },
-    });
+    const sgMail = require('@sendgrid/mail');
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-    return transporter.sendMail({
-        from: `"Whisker Watch " <${process.env.EMAIL_USER}>`,
+    const msg = {
         to,
+        from: process.env.EMAIL_USER, // Verified sender
         subject,
-        html
-    });
+        html,
+    };
+
+    return sgMail.send(msg);
 }
 
 // Route for OTP 
