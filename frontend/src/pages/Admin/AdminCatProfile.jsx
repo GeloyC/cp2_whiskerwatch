@@ -25,15 +25,32 @@ const AdminCatProfile = () => {
     return cat.name.toLowerCase().includes(searchInput.toLowerCase())
   });
 
-  const handleDeleteCatProfile = async (cat_id) => {
-    try {
-      await axios.delete(`${url}/cat/delete_cat/${cat_id}`);
+  // const handleDeleteCatProfile = async (cat_id) => {
+  //   try {
+  //     await axios.delete(`${url}/cat/delete_cat/${cat_id}`);
 
+  //     fetchCat();
+  //   } catch (err) {
+  //     console.error('Failed to delete cat profile: ', err);
+  //   }
+  // };
+
+  const handleDeleteCatProfile = async (cat) => {
+    if (cat.adoption_status !== "Available") {
+      alert(`Cannot delete ${cat.name}. Status: ${cat.adoption_status}`);
+      return;
+    }
+
+    if (!window.confirm(`Are you sure you want to delete ${cat.name}?`)) return;
+
+    try {
+      await axios.delete(`${url}/cat/delete_cat/${cat.cat_id}`);
       fetchCat();
     } catch (err) {
-      console.error('Failed to delete cat profile: ', err);
+      console.error('Failed to delete cat profile:', err);
     }
   };
+
 
 
   useEffect(() => {
@@ -98,7 +115,7 @@ const AdminCatProfile = () => {
                     <div className='flex items-center gap-2'>
 
                       <Link to={`/catprofileproperty/${cat.cat_id}`} className='p-2 pl-6 pr-6 w-auto h-auto bg-[#2F2F2F] text-[#FFF] rounded-[15px] cursor-pointer active:bg-[#595959]'>View</Link>
-                      <button onClick={() => handleDeleteCatProfile(cat.cat_id)} className='w-[35px] h-[35px] p-2 border-2 border-[#DC8801] rounded-[25px] cursor-pointer active:bg-[#DC8801] hover:bg-[#FDF5D8]'>
+                      <button onClick={() => handleDeleteCatProfile(cat)} className='w-[35px] h-[35px] p-2 border-2 border-[#DC8801] rounded-[25px] cursor-pointer active:bg-[#DC8801] hover:bg-[#FDF5D8]'>
                         <img src="/assets/icons/delete_orange.png" alt="" className='w-full h-full object-cover'/>
                       </button>
                     </div>
