@@ -79,7 +79,7 @@ const NotificationBell = () => {
 
       {/* Dropdown */}
       {isOpen && (
-        <div  className={"absolute top-8 right-5 bg-white border-2 border-[#DC8801] rounded-[10px] rounded-tr-[0px] z-50 w-[300px] h-[400px] scrollbar-thin overflow-y-scroll"}>
+        <div  className={"absolute top-8 right-0 bg-white border-2 border-[#DC8801] rounded-[10px] rounded-tr-[0px] z-50 w-[300px] h-[400px] scrollbar-thin overflow-y-scroll"}>
           {!Array.isArray(notifications) || notifications.length === 0 ? (
             <p className="p-3 text-[#2F2F2F] text-sm">No notifications</p>
           ) : (

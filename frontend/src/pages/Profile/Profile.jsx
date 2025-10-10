@@ -436,7 +436,7 @@ const Profile = () => {
                                     
                                 </div>
 
-                                <div className='grid grid-cols-5 place-items-center'>
+                                <div className='grid grid-cols-5 place-items-center min-height-[150px]'>
                                     <div className='flex flex-col items-center text-[14px]'>
                                         <div className="w-[15px] h-[15px] object-contain">
                                             <img src="/assets/icons/whisker_arrow.png" alt="Arrow icon" className="w-full h-full object-cover -rotate-90" />
