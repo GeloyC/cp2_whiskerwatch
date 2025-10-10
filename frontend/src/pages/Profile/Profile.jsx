@@ -112,9 +112,6 @@ const Profile = () => {
 
     const handleSave = async () => {
         try {
-            const token = Cookies.get('token');
-            if (!token) throw new Error('No authentication token found');
-
             const formData = new FormData();
             // Append text fields
             formData.append('firstname', profile.firstname);
