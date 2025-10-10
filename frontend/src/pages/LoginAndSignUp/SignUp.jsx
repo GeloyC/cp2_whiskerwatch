@@ -7,7 +7,7 @@ import TermsCondition from '../../layout/TermsCondition';
 const SignUp = () => {
     const url = `https://whiskerwatch-0j6g.onrender.com`;
     const [captchaToken, setCaptchaToken] = useState(null);
-    const SITE_KEY = '6Lf1hOQrAAAAAGyLTMqscsPcUdIyX6H2wYnsbwQb';
+    const SITE_KEY = '6Ldl6eQrAAAAAG1Gm36nP4GrDBFiOX6654susxa0';
 
     const [firstname, setFirstname] = useState('');
     const [lastname, setLastname] = useState('');
@@ -323,7 +323,7 @@ const SignUp = () => {
                 />
 
                 <div className="flex flex-col items-center gap-3 col-span-2">
-                    <ReCAPTCHA sitekey={'6Lf1hOQrAAAAAGyLTMqscsPcUdIyX6H2wYnsbwQb'} onChange={handleCaptcha} />
+                    <ReCAPTCHA sitekey={'6Ldl6eQrAAAAAG1Gm36nP4GrDBFiOX6654susxa0'} onChange={handleCaptcha} />
                     <div className="flex flex-col">
                         <span>
                             By Continuing, you agree to our{' '}
