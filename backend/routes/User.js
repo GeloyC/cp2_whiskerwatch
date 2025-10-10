@@ -419,24 +419,19 @@ UserRoute.post('/reset_password', async (req, res) => {
 //   }
 // });
 
-UserRoute.get('/api/session', (req, res) => {
-  console.log('All cookies:', req.cookies); // Log all cookies
-  const token = req.cookies.token || (req.headers.authorization?.split(' ')[1] || '');
-  console.log('Received token:', token);
-  console.log('Request headers:', req.headers);
-  if (!token) {
-    console.log('No token found in request');
-    return res.json({ loggedIn: false, user: null });
-  }
+UserRoute.get("/api/session", (req, res) => {
+  const token = req.cookies.token;
+  if (!token) return res.json({ loggedIn: false, user: null });
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     res.json({ loggedIn: true, user: decoded });
   } catch (err) {
-    console.error('Session error:', err.message);
-    res.status(401).json({ loggedIn: false, user: null });
+    console.error("Session error:", err);
+    res.json({ loggedIn: false, user: null });
   }
 });
+
 
 
 export const verifyUser = (req, res, next) => {
@@ -613,12 +608,27 @@ UserRoute.post('/adminlogin', async (req, res) => {
       username: user.username,
       profile_image: user.profile_image || null,
     };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
-    res.status(200).json({
-      message: 'Admin login successful',
-      user: payload,
-      token: token, // Return token in response body
+    
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: "7d",
     });
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true, // required for sameSite:'none'
+      sameSite: "none",
+      path: "/",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Admin login successful",
+      user: payload,
+    });
+
+
+
   } catch (err) {
     console.error('Admin login error:', err);
     res.status(500).json({ error: 'Internal server error' });
@@ -671,17 +681,15 @@ UserRoute.get('/profile', async (req, res) => {
 });
 
 
-UserRoute.post('/logout', (req, res) => {
-  res.clearCookie('token', {
-    httpOnly: false,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-    path: '/', // Ensure the cookie is cleared for the root path
+UserRoute.post("/logout", (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    path: "/",
   });
-
-  res.json({ message: 'Logged out successfully!' });
+  res.json({ success: true, message: "Logged out successfully" });
 });
-
 
 
 // UserRoute.patch('/profile/update', upload.single('profile_image'), async (req, res) => {
