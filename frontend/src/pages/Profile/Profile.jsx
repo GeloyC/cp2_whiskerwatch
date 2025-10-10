@@ -112,6 +112,8 @@ const Profile = () => {
 
     const handleSave = async () => {
         try {
+            const token = Cookies.get('token');
+
             const formData = new FormData();
             // Append text fields
             formData.append('firstname', profile.firstname);
