@@ -34,40 +34,65 @@ const Profile = () => {
     const MAX_POINTS = 500;
     const progressHeightPercent = Math.min((points / MAX_POINTS) * 100, 100);
 
+    // useEffect(() => {
+    //     const fetchProfile = async () => {
+    //         try {
+    //             const token = Cookies.get('token');
+    //             console.log("Token from cookie:", token);
+                
+
+    //             if (!token) throw new Error('No authentication token found');
+
+    //             const response = await axios.get(`${url}/user/profile`, {
+    //                 withCredentials: true,
+    //                 headers: {
+    //                     Authorization: `Bearer ${token}`, // Explicitly send token
+    //                 },
+    //             }); 
+    //             const res = JSON.stringify(response.data)
+
+    //             const certificateResponse = await axios.get(`${url}/admin/adopters_certificate/${user?.user_id}`, {
+    //                 headers: {
+    //                     Authorization: `Bearer ${token}`,
+    //                 },
+    //             });
+    //             setUserCertificates(certificateResponse.data);
+    //             setProfile(response.data);
+    //             setOriginalProfile(response.data);
+
+    //         } catch (err) {
+    //             console.error('Error fetching user:', err.response?.data || err.message);
+    //         }
+    //     }
+    //     if (user?.user_id) fetchProfile()
+    // }, [user?.user_id])
+
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const token = Cookies.get('token');
-                console.log("Token from cookie:", token);
-                
+            const response = await axios.get(`${url}/user/profile`, {
+                withCredentials: true, // This automatically sends your cookie
+            });
 
-                if (!token) throw new Error('No authentication token found');
+            setProfile(response.data);
+            setOriginalProfile(response.data);
 
-                const response = await axios.get(`${url}/user/profile`, {
-                    withCredentials: true,
-                    headers: {
-                        Authorization: `Bearer ${token}`, // Explicitly send token
-                    },
-                }); 
-                const res = JSON.stringify(response.data)
-
-                const certificateResponse = await axios.get(`${url}/admin/adopters_certificate/${user?.user_id}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+            // Fetch certificates using user_id from the response
+            if (response.data.user_id) {
+                const certificateResponse = await axios.get(
+                `${url}/admin/adopters_certificate/${response.data.user_id}`,
+                { withCredentials: true }
+                );
                 setUserCertificates(certificateResponse.data);
-                setProfile(response.data);
-                setOriginalProfile(response.data);
+            }
 
             } catch (err) {
-                console.error('Error fetching user:', err.response?.data || err.message);
+            console.error("Error fetching user:", err.response?.data || err.message);
             }
-        }
-        if (user?.user_id) fetchProfile()
-    }, [user?.user_id])
+        };
 
-
+        fetchProfile();
+    }, []);
 
 
     const handleImageChange = async (e) => {
