@@ -987,7 +987,7 @@ UserRoute.post('/feeding/form', upload.single('file'), async (req, res) => {
 
         return res.json({ message: 'File uploaded and DB updated successfully.' });
     } catch (err) {
-        console.error('Login error:', err);
+        console.error('Feeding form error:', err);
         res.status(500).json({ err: 'Internal server error' });
     } 
 })

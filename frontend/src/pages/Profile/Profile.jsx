@@ -28,6 +28,7 @@ const Profile = () => {
 
     const { user, whiskerUpdateTrigger } = useSession();
     const [points, setPoints] = useState(0);
+    axios.defaults.withCredentials = true;
 
     // whiskermeter
     const MAX_POINTS = 500;
@@ -36,7 +37,7 @@ const Profile = () => {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const token = Cookies.get('token') || localStorage.getItem('token');
+                const token = Cookies.get('token');
                 console.log("Token from cookie:", token);
                 
 
