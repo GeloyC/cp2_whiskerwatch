@@ -406,7 +406,7 @@ const Profile = () => {
                             <div className='flex flex-col gap-4 bg-[#ffdfab] bg-[url(/src/assets/background-paws.png)] w-full bg-cover bg-fit bg-repeat p-10 rounded-b-[10px]'>
                                 {/* WHISKER METER */}
                                 <label className='font-bold text-[#2F2F2F] text-2xl text-center'>WHISKERMETER TRACKER</label>
-                                <span className='w-full self-center text-[#B67101] bg-[#FFF] rounded-[10px] '>{`You have ${points} points.`}</span>
+                                <span className='w-fit self-center text-[#B67101] bg-[#FFF] p-1 rounded-[5px] '>{`You have ${points} points.`}</span>
                                 <div className='relative flex w-full'>
                                     <div className='absolute flex justify-evenly w-full'>
                                         <div className='w-[15px] object-fit rotate-90'>
