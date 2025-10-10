@@ -422,14 +422,17 @@ const Profile = () => {
                                         </div>
                                     </div>
 
-                                    <progress className='w-full 
-                                        [&::-webkit-progress-bar]:rounded-lg 
-                                        [&::-webkit-progress-value]:rounded-lg 
-                                        [&::-webkit-progress-bar]:bg-[#FFF] 
-                                        [&::-webkit-progress-value]:bg-[#B5C04A]
-                                        [&::-moz-progress-bar]:bg-green-400' value={progressHeightPercent} max="100">
-                                        100%
-                                    </progress>
+                                    <div className='flex flex-col w-fit items-start justify-start gap-2'>
+                                        <span>{`You have ${points} points.`}</span>
+                                        <progress className='w-full 
+                                            [&::-webkit-progress-bar]:rounded-lg 
+                                            [&::-webkit-progress-value]:rounded-lg 
+                                            [&::-webkit-progress-bar]:bg-[#FFF] 
+                                            [&::-webkit-progress-value]:bg-[#B5C04A]
+                                            [&::-moz-progress-bar]:bg-green-400' value={progressHeightPercent} max="100">
+                                            100%
+                                        </progress>
+                                    </div>
                                 </div>
 
                                 <div className='grid grid-cols-5 place-items-center'>
