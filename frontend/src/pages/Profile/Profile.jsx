@@ -436,7 +436,7 @@ const Profile = () => {
                                     
                                 </div>
 
-                                <div className='grid grid-cols-5 place-items-center min-height-[150px]'>
+                                <div className='grid grid-cols-5 place-items-center justify-items-between min-height-[150px] max-h-[200px]'>
                                     <div className='flex flex-col items-center text-[14px]'>
                                         <div className="w-[15px] h-[15px] object-contain">
                                             <img src="/assets/icons/whisker_arrow.png" alt="Arrow icon" className="w-full h-full object-cover -rotate-90" />
@@ -454,7 +454,7 @@ const Profile = () => {
                                         Snuggle Scout
 
                                         <div className='size-12 object-cover'>
-                                            <img src="/assets/badge/trainee-badge-icon.png" alt="" className='w-full h-full object-cover'/>
+                                            <img src="/assets/badge/scout-badge-icon.png" alt="" className='w-full h-full object-cover'/>
                                         </div>
                                     </div>
                                     <div className='flex flex-col items-center text-[14px]'>
@@ -464,7 +464,7 @@ const Profile = () => {
                                         Furmidable Friend
 
                                         <div className='size-12 object-cover'>
-                                            <img src="/assets/badge/trainee-badge-icon.png" alt="" className='w-full h-full object-cover'/>
+                                            <img src="/assets/badge/friend-badge-icon.png" alt="" className='w-full h-full object-cover'/>
                                         </div>
                                     </div>
                                     <div className='flex flex-col items-center text-[14px]'>
@@ -474,7 +474,7 @@ const Profile = () => {
                                         Meowtain Mover
 
                                         <div className='size-12 object-cover'>
-                                            <img src="/assets/badge/trainee-badge-icon.png" alt="" className='w-full h-full object-cover'/>
+                                            <img src="/assets/badge/mover-badge-icon.png" alt="" className='w-full h-full object-cover'/>
                                         </div>
                                     </div>
                                     <div className='flex flex-col items-center text-[14px]'>
@@ -484,7 +484,7 @@ const Profile = () => {
                                         The Catnip Captain
 
                                         <div className='size-12 object-cover'>
-                                            <img src="/assets/badge/trainee-badge-icon.png" alt="" className='w-full h-full object-cover'/>
+                                            <img src="/assets/badge/captain-badge-icon.png" alt="" className='w-full h-full object-cover'/>
                                         </div>
                                     </div>
                                 </div>
