@@ -46,7 +46,7 @@ export const AdminList = () => {
 
               <table className='hidden xl:flex lg:flex flex-col w-full gap-2'>
                 <thead className='flex w-full'>
-                  <tr className='grid grid-cols-5 justify-items-start place-items-start w-full bg-[#DC8801] p-3 rounded-[15px] text-[#FFF]'>
+                  <tr className='grid grid-cols-[auto_auto_auto_auto_auto] justify-items-start place-items-start w-full bg-[#DC8801] p-3 rounded-[15px] text-[#FFF]'>
                     <th>User ID</th>
                     <th>Name</th>
                     <th>Email</th>
@@ -56,7 +56,7 @@ export const AdminList = () => {
                 </thead>
                 <tbody className='hidden xl:flex lg:flex flex-col w-full'>
                   {adminlist.map((admin) => (
-                    <tr key={admin.user_id} className='grid grid-cols-5 justify-items-start place-items-center w-full bg-[#FFF] p-3 rounded-[15px] text-[#2F2F2F] border-b-1 border-b-[#595959]'>
+                    <tr key={admin.user_id} className='grid grid-cols-[auto_auto_auto_auto_auto] justify-items-start place-items-center w-full bg-[#FFF] p-3 rounded-[15px] text-[#2F2F2F] border-b-1 border-b-[#595959]'>
                       <td>{admin.user_id}</td>
                       <td>{`${admin.firstname} ${admin.lastname}`}</td>
                       <td>{admin.email}</td>

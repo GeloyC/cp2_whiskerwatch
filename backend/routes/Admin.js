@@ -453,7 +453,7 @@ AdminRoute.get('/feeders', async (req, res) => {
     try {
         const [volunteers] = await db.query(`
             SELECT v.feeder_id, u.firstname, u.lastname, u.contactnumber, 
-                DATE_FORMAT(v.feeding_date, '%Y-%m-%d %H:%i:%s') AS feeding_date, 
+                DATE_FORMAT(v.feeding_date, '%Y-%m-%d') AS feeding_date, 
                 v.status
             FROM volunteer v
             JOIN users u ON v.feeder_id = u.user_id

@@ -132,7 +132,7 @@ const AdoptersList = () => {
                         <label htmlFor={`adoption_certificate_${adoptee.adoption_id}`} className='w-[25px] h-[25px] object-fit p-2 bg-[#2F2F2F] rounded-[15px] cursor-pointer hover:bg-[#595959] active:bg-[#2F2F2F]'>
                           <input type="file" accept='image/jpeg, image/png' 
                           id={`adoption_certificate_${adoptee.adoption_id}`} hidden onChange={(e) => handleUploadCertificate(e, adoptee)}/>
-                          <img src="/src/assets/icons/add-white.png" alt="" className='w-full h-full object-cover'/>
+                          <img src="/assets/icons/add-white.png" alt="" className='w-full h-full object-cover'/>
                         </label>
                       ) : ('')}
                       
