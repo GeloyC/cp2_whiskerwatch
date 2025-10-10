@@ -49,7 +49,7 @@ const NavigationBar = () => {
           },
         });
 
-        setProfileImage(response.data.profile_image);
+        setProfileImage(response.data.profile_image || '/assets/icons/account.png');
       } catch (err) {
         console.error("Failed to fetch profile image:", err);
         setProfileImage(null);

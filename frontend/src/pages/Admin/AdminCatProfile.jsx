@@ -85,10 +85,7 @@ const AdminCatProfile = () => {
                 <th>Adoption Status</th>
               </tr>
             </thead>
-
-            
-
-            <tbody className='hidden xl:flex lg:flex flex-col w-full overflow-y-scroll max-h-[550px] gap-1'>
+            <tbody className='hidden xl:flex lg:flex flex-col w-full overflow-y-scroll scrollbar-thin max-h-[550px] gap-1'>
               {filteredItems.map((cat) => (
                 <tr key={cat.cat_id} className='grid grid-cols-[10%_15%_15%_25%_35%] place-items-center justify-items-start w-full p-3 bg-[#FFF] rounded-[15px] border-b-1 border-b-[#2F2F2F]'>
                   <td>{cat.cat_id}</td>
