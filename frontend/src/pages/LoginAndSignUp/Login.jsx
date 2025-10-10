@@ -455,17 +455,17 @@ const Login = () => {
               required
             />
 
-            <div className="flex flex-col items-center gap-2">
+            <div className="flex flex-col items-center gap-2 w-full">
               <button
                 type="submit"
-                className="bg-[#B5C04A] text-white p-2 w-[120px] rounded-[25px] cursor-pointer hover:bg-[#889132]"
+                className="bg-[#B5C04A] text-white p-2 w-[120px] rounded-[25px] cursor-pointer hover:bg-[#889132] w-full"
                 disabled={loading}
               >
                 {loading ? "Logging in..." : "Log In"}
               </button>
               <Link
                 to="/signup"
-                className="border-2 border-[#B5C04A] text-[#B5C04A] p-2 w-[120px] text-center rounded-[25px] hover:bg-[#B5C04A] hover:text-white"
+                className="border-2 border-[#B5C04A] text-[#889132] p-2 w-[120px] text-center rounded-[25px] hover:bg-[#B5C04A] hover:text-white w-full"
               >
                 Sign Up
               </Link>
