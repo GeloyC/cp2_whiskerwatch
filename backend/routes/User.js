@@ -444,25 +444,24 @@ UserRoute.post("/login", async (req, res) => {
 
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
 
-    // ✅ Secure cookie
+    // ✅ Secure Cookie Settings
     res.cookie("token", token, {
-      httpOnly: true,         // client-side JS can't modify it
-      secure: true,           // must be true in HTTPS (Vercel)
-      sameSite: "None",       // required when frontend/backend on different origins
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // true on Render/Vercel
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    localStorage.setItem('token', response.data.token);
 
     res.status(200).json({
       message: "Login successful!",
       user: payload,
-      token,
     });
   } catch (err) {
     console.error("Login error:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 
 

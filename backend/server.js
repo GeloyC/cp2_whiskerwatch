@@ -27,33 +27,23 @@ const __dirname = path.dirname(__filename);
 // ---------------- CORS ---------------- //
 app.use(
   cors({
-    origin: function (origin, callback) {
-      const allowedOrigins = [
-        'https://cp2-whiskerwatch.vercel.app',
-        'https://whiskerwatch-cp2.vercel.app',
-        'https://whiskerwatch-0j6g.onrender.com',
-        'http://localhost:5173',
-        /\.vercel\.app$/,
-      ];
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        console.error('Blocked by CORS:', origin);
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
+    origin: [
+      "https://cp2-whiskerwatch.vercel.app",
+      "https://whiskerwatch-cp2.vercel.app",
+      "http://localhost:5173",
+      /\.vercel\.app$/,
+    ],
     credentials: true,
-    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
 
-
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Origin', req.headers.origin);
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // Allow headers
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Origin", req.headers.origin);
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
 });
 
@@ -62,21 +52,6 @@ app.use(express.json({ limit: "10mb" }));
 
 // ---------------- DB CONNECTION ---------------- //
 await connectDB();
-
-// ---------------- SESSION ---------------- //
-// app.use(
-//   session({
-//     secret: process.env.SESSION_SECRET || "your_secret_key",
-//     resave: false,
-//     saveUninitialized: false,
-//     cookie: {
-//       httpOnly: true,
-//       secure: process.env.NODE_ENV === "production",
-//       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-//       maxAge: 1000 * 60 * 60 * 24,
-//     },
-//   })
-// );
 
 // ---------------- ROUTES ---------------- //
 app.use("/cat", CatRoute);
