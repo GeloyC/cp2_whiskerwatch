@@ -160,9 +160,11 @@ const NavigationBar = () => {
                         profileImage
                           ? profileImage.startsWith("http")
                             ? profileImage
+                            : profileImage.includes("FileUploads/")
+                            ? `${url}/${profileImage}`
                             : `${url}/FileUploads/${profileImage}`
                           : "/assets/icons/account.png"
-                          }
+                      }
                     alt="profile" />
                   </div>
 

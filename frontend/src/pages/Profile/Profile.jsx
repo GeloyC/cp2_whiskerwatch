@@ -214,7 +214,13 @@ const Profile = () => {
                                             <div className='relative flex flex-col p-[2%] xl:flex-row lg:flex-row gap-5'>
                                                 <div className='flex flex-row xl:flex-col lg:flex-col gap-3 justify-center'>
                                                     <div className='flex w-[250px] h-[250px] bg-[#B5C04A] rounded-sm p-2'>
-                                                        <img src={`${`${url}/FileUploads/${profile.profile_image}` || '/assets/UserProfile/default_profile_image.jpg'}`} alt="" className='w-full h-full object-cover'/>
+                                                        <img
+                                                            src={
+                                                                profile.profile_image
+                                                                ? `${url}/FileUploads/${profile.profile_image}`
+                                                                : "/assets/UserProfile/default_profile_image.jpg"
+                                                            }
+                                                        alt="" className='w-full h-full object-cover'/>
                                                     </div>
 
                                                     <div className='flex flex-row gap-2'>
