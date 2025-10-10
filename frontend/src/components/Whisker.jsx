@@ -204,7 +204,7 @@ const Whisker = () => {
           <label  className={`font-bold text-[14px] text-[#FFF] overflow-hidden whitespace-nowrap ${whiskerVisible ? 'opacity-0 hidden' : 'opacity-100'}`}>
             The WhiskerMeter
           </label>
-          <span className={whiskerVisible ? 'text-[#FFF] text-[13px]' : 'hidden'}>
+          <span className={!whiskerVisible ? 'text-[#FFF] text-[13px] leading-tight' : 'hidden'}>
             You have {points} points. 
           </span>
         </div>
