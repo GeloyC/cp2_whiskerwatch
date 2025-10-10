@@ -301,8 +301,62 @@ UserRoute.post('/check_username', async (req, res) => {
 
 
 
+// UserRoute.post("/login", async (req, res) => {
+//   const db = getDB();
+//   try {
+//     const { email, password } = req.body;
+
+//     if (!email || !password) {
+//       return res.status(400).json({ error: "Email and password are required" });
+//     }
+
+//     const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+//     if (rows.length === 0) {
+//       return res.status(401).json({ error: "Invalid email or password" });
+//     }
+
+//     const user = rows[0];
+
+//     const isMatch = await bcrypt.compare(password, user.password);
+//     if (!isMatch) {
+//       return res.status(401).json({ error: "Invalid email or password" });
+//     }
+
+//     console.log("Login attempt for email:", email);
+
+//     const payload = {
+//       user_id: user.user_id,
+//       role: user.role,
+//       firstname: user.firstname,
+//       lastname: user.lastname,
+//       email: user.email,
+//     };
+
+//     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
+
+
+//     res.cookie("token", token, {
+//       httpOnly: false,
+//       secure: false, // Temporarily disable for local/Render testing without HTTPS
+//       sameSite: 'lax', // Use 'lax' for testing, switch to 'none' with secure: true later
+//       maxAge: 7 * 24 * 60 * 60 * 1000,
+//     });
+
+//     res.status(200).json({
+//       message: "Login successful!",
+//       user: payload,
+//       token: token
+//     });
+//   } catch (err) {
+//     console.error("Login error:", err);
+//     res.status(500).json({ err: "Internal server error" });
+//   }
+// });
+
+
 UserRoute.post("/login", async (req, res) => {
   const db = getDB();
+
   try {
     const { email, password } = req.body;
 
@@ -316,13 +370,12 @@ UserRoute.post("/login", async (req, res) => {
     }
 
     const user = rows[0];
-
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
-    console.log("Login attempt for email:", email);
+    console.log("✅ Login attempt for email:", email);
 
     const payload = {
       user_id: user.user_id,
@@ -330,26 +383,32 @@ UserRoute.post("/login", async (req, res) => {
       firstname: user.firstname,
       lastname: user.lastname,
       email: user.email,
+      username: user.username,
+      profile_image: user.profile_image || null,
     };
 
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
 
 
     res.cookie("token", token, {
-      httpOnly: false,
-      secure: false, // Temporarily disable for local/Render testing without HTTPS
-      sameSite: 'lax', // Use 'lax' for testing, switch to 'none' with secure: true later
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      httpOnly: true, // prevent client-side JS from reading token
+      secure: true, // must be true for 'sameSite: none'
+      sameSite: "none",
+      path: "/",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    res.status(200).json({
+
+    return res.status(200).json({
+      success: true,
       message: "Login successful!",
       user: payload,
-      token: token
     });
+
   } catch (err) {
-    console.error("Login error:", err);
-    res.status(500).json({ err: "Internal server error" });
+    console.error("❌ Login error:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -405,19 +464,7 @@ UserRoute.post('/reset_password', async (req, res) => {
 });
 
 
-// UserRoute.get("/api/session", (req, res) => {
-//   const token = req.cookies.token  || req.headers.authorization?.split(" ")[1];;
-//   if (!token) return res.json({ loggedIn: false, user: null });
 
-//   try { 
-//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-//     res.json({ loggedIn: true, user:decoded });
-
-//   } catch (err) {
-//     console.error("Session error:", err);
-//     res.status(401).json({ loggedIn: false, user: null });
-//   }
-// });
 
 UserRoute.get("/api/session", (req, res) => {
   const token = req.cookies.token;
@@ -475,110 +522,6 @@ UserRoute.get('/logged', async (req, res) => {
     }
 });
 
-
-// UserRoute.post("/adminlogin", async (req, res) => {
-//   const db = getDB();
-
-//   try {
-//     const { username, password } = req.body;
-
-//     if (!username || !password) {
-//       return res.status(400).json({ error: 'Username and password are required' });
-//     }
-
-//     const [rows] = await db.query("SELECT * FROM users WHERE username = ?", [username]);
-
-//     if (rows.length === 0) {
-//       return res.status(401).json({ error: "Invalid credentials!" });
-//     }
-
-//     const user = rows[0];
-
-
-//     const isMatch = await bcrypt.compare(password, user.password);
-//     if (!isMatch) {
-//       return res.status(401).json({ error: "Invalid credentials!" });
-//     }
-
-
-//     if (user.role !== "admin") {
-//       return res.status(403).json({ error: "Access denied. Admins only." });
-//     }
-
-//     const payload = {
-//       user_id: user.user_id,
-//       role: user.role,
-//       firstname: user.firstname,
-//       lastname: user.lastname,
-//       username: user.username,
-//       profile_image: user.profile_image || null,
-//     };
-
-//     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
-
-//     res.cookie('token', token, {
-//       httpOnly: true, // Enable httpOnly for security
-//       secure: process.env.NODE_ENV === 'production', // Set to true in production with HTTPS
-//       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Adjust based on environment
-//       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-//     });
-
-//     res.status(200).json({
-//       message: "Admin login successful",
-//       user: payload,
-//     });
-
-//   } catch (err) {
-//     console.error("Admin login error:", err);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// });
-
-
-
-// UserRoute.post('/adminlogin', async (req, res) => {
-//   const db = getDB();
-//   try {
-//     const { username, password } = req.body;
-//     if (!username || !password) {
-//       return res.status(400).json({ error: 'Username or email and password are required' });
-//     }
-//     const [rows] = await db.query(
-//       `SELECT * FROM users WHERE (username = ? OR email = ?) AND role IN ('admin', 'head_volunteer')`,
-//       [username, username]
-//     );
-//     if (rows.length === 0) {
-//       return res.status(401).json({ error: 'Invalid credentials or unauthorized role!' });
-//     }
-//     const user = rows[0];
-//     const isMatch = await bcrypt.compare(password, user.password);
-//     if (!isMatch) {
-//       return res.status(401).json({ error: 'Invalid credentials!' });
-//     }
-//     const payload = {
-//       user_id: user.user_id,
-//       role: user.role,
-//       firstname: user.firstname,
-//       lastname: user.lastname,
-//       username: user.username,
-//       profile_image: user.profile_image || null,
-//     };
-//     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
-//     res.cookie('token', token, {
-//       httpOnly: true,
-//       secure: false, // Test with false for non-HTTPS
-//       sameSite: 'lax', // Test with lax
-//       maxAge: 7 * 24 * 60 * 60 * 1000,
-//     });
-//     res.status(200).json({
-//       message: 'Admin login successful',
-//       user: payload,
-//     });
-//   } catch (err) {
-//     console.error('Admin login error:', err);
-//     res.status(500).json({ error: 'Internal server error' });
-//   }
-// });
 
 
 UserRoute.post('/adminlogin', async (req, res) => {
