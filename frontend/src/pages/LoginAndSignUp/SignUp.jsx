@@ -30,7 +30,6 @@ const SignUp = () => {
 
     const handleChange = (setter) => (e) => setter(e.target.value);
     const handleCaptcha = (token) => {
-        console.log('CAPTCHA Token:', token);
         setCaptchaToken(token);
     };
 
