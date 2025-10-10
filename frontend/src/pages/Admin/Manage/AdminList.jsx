@@ -19,7 +19,6 @@ export const AdminList = () => {
         const response = await axios.get(`${url}/admin/manage/adminlist`);
         setAdminlist(response.data);
 
-        console.log(response.data)
       } catch(err) {
           console.error('Error fetching users:', err);
       }

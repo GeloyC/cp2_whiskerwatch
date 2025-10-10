@@ -19,7 +19,6 @@ const FeedingVolunteers = () => {
       try {
         const response = await axios.get(`${url}/admin/feeders`);
         setFeeders(response.data);
-        console.log(response.data)
         
 
         const initialDates = {};
@@ -56,7 +55,7 @@ const FeedingVolunteers = () => {
       });
 
       alert('Feeding date updated successfully!');
-      console.log(feeding_date)
+
       // Refetch data or update UI as needed
       const response = await axios.get(`${url}/admin/feeders`);
       setFeeders(response.data);

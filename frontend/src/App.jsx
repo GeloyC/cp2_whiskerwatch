@@ -88,8 +88,10 @@ const App = () => {
         {/* Auth */}
         <Route path="login" element={<Login />} />
         <Route path="adminlogin" element={<AdminLogin />} />
-        <Route path="signup" element={<SignUp />} />
-        <Route path="termscondition" element={<TermsCondition/>} />
+        <Route path="signup" element={<SignUp />} >
+          <Route path="termscondition" element={<TermsCondition/>} />
+        </Route>
+       
 
 
         {/* Admin Routes */}

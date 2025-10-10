@@ -17,7 +17,6 @@ const Donation = () => {
     const fetchDonation = async () => {
       try {
         const response = await axios.get(`${url}/donate/donation_list`);
-        console.log('Donation date: ', response.data)
         setDonate(response.data)
       } catch (err) {
         console.error('Error fetching donation data:', err);

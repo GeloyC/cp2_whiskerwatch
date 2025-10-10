@@ -30,7 +30,6 @@ const AssignNewAdmin = () => {
             const response = await axios.patch(`${url}/admin/manage/update_admin`, {
                 user_id,  // <-- send in body here
             });
-            console.log('Update success:', response.data);
 
             setUsers((prev) => prev.filter((user) => user.user_id !== user_id));
             window.location.reload();

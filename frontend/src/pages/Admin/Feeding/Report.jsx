@@ -17,7 +17,7 @@ const Report = () => {
         const fetchReport = async () => {
             try {
                 const response = await axios.get(`${url}/user/feeding_reports`);
-                console.log(response.data)
+
                 setReports(response.data)
             } catch (err) {
 

@@ -15,7 +15,7 @@ const AllUsers = () => {
       try {
         const response = await axios.get(`${url}/admin/manage/users`)
         setUsers(response.data);
-        console.log(response.data)
+
 
       } catch(err) {
           console.error('Error fetching users:', err);

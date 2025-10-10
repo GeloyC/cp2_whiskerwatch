@@ -175,7 +175,7 @@ const NavigationBar = () => {
                     </div>
 
                     {/* Display if user role is head_volunteers */}
-                    <Link to='/dashboard' className={user?.role === 'head_volunteer' ? 'w-full font-bold hover:bg-[#F9F7DC] p-2 px-4' : 'hidden'}>Dashboard</Link>
+                    <Link to='/dashboard' className={user?.role === 'head_volunteer' || user?.role === 'admin' ? 'w-full font-bold hover:bg-[#F9F7DC] p-2 px-4' : 'hidden'}>Dashboard</Link>
 
                     <button onClick={() => { setShowLogoutModal(true); setIsVisible(false); }}
                     className='w-full font-bold text-left p-2 px-4 hover:bg-[#F9F7DC]'>Log out</button>

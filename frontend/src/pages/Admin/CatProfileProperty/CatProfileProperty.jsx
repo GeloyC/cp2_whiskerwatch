@@ -37,7 +37,6 @@ const CatProfileProperty = () => {
         const fetchProfile = async () => {
             try {
                 const response = await axios.get(`${url}/cat/catprofile/${cat_id}`);
-                console.log(response.data.date_created)
                 setCatprofile(response.data)
                 setOriginalCatprofile(response.data)
 
@@ -56,7 +55,6 @@ const CatProfileProperty = () => {
         const fetchAdoptionHistory = async () => {
             try {
                 const response = await axios.get(`${url}/cat/adoption_history/${cat_id}`);
-                console.log(response.data)
                 setAdoptionHistory(response.data);
             } catch(err) {
                 console.error('Error fetching adoption history:', err);
@@ -86,16 +84,6 @@ const CatProfileProperty = () => {
                 description: catprofile.description
             });
 
-            console.log('Update success:', response.data);
-
-            console.log('Sending:', {
-                name: catprofile.name,
-                gender: catprofile.gender,
-                age: catprofile.age,
-                adoption_status: catprofile.adoption_status,
-                sterilization_status: catprofile.sterilization_status,
-                description: catprofile.description
-            });
 
             window.location.reload();
         } catch(err) {
@@ -146,7 +134,6 @@ const CatProfileProperty = () => {
             );
 
             if (response.status === 200) {
-                console.log('Image uploaded successfully!')
                 setCatImagePreview([])
                 setUploaderVisible(false);  
                 await fetchCatImage();
@@ -175,7 +162,6 @@ const CatProfileProperty = () => {
     const handleDeleteImage = async (filename) => {
     try {
         await axios.delete(`${url}/cat/image/${filename}`);
-            console.log(`Deleted image: ${filename}`);
             fetchCatImage(); // Refresh the image list
 
         } catch (err) {

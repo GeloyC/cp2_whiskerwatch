@@ -37,7 +37,6 @@ const AdoptersList = () => {
       console.warn('No file selected or invalid file object.');
       return;
     }
-    console.log(file)
 
     // Safely extract file extension
     const extension = file.name.includes('.') ? file.name.slice(file.name.lastIndexOf('.')) : '';
@@ -53,7 +52,6 @@ const AdoptersList = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      console.log('Upload success:', response.data);
 
       // Optional: refetch or update adopter state to reflect new certificate
     } catch (error) {

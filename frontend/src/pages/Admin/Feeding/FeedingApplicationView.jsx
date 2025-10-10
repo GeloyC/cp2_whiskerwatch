@@ -22,7 +22,7 @@ const FeedingApplicationView = () => {
                 const response = await axios.get(`${url}/admin/form/${application_id}`, {
                     withCredentials: true
                 });
-                console.log(response.data)
+
                 setApplicant(response.data);
             } catch(err) {
                 console.error('Error fetching user:', err.response?.data || err.message);
@@ -42,7 +42,6 @@ const FeedingApplicationView = () => {
             );
 
             setApplicant(prev => ({ ...prev, status }));   
-            console.log('Update successfull, status is now ', status);
 
             if (status === 'Accepted') {
                 setStatusMessage(`${applicant.firstname} ${applicant.lastname}'s application is accepted. Update successfull!`);
@@ -57,7 +56,6 @@ const FeedingApplicationView = () => {
     }
 
 
-    console.log('Application form: ', applicant.application_form)
     return (
         <div className='relative flex flex-col h-screen overflow-x-hidden '>
             <div className='flex flex-row w-full overflow-x-hidden'> 

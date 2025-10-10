@@ -134,25 +134,17 @@ export function SessionProvider({ children }) {
     const triggerWhiskerUpdate = () => setWhiskerUpdateTrigger(Date.now());
 
     const refreshSession = async () => {
-        // const token = Cookies.get("token");
-        // console.log('Refresh token from cookie:', token);
-        // if (!token) {
-        //     setUser(null);
-        //     setLoading(false);
-        //     return;
-        // }
-
         try {
         const response = await axios.get(`${url}/user/api/session`, {
             withCredentials: true,
         });
         setUser(response.data.loggedIn ? response.data.user : null);
-        console.log("Session refreshed:", response.data);
+
         } catch (err) {
-        console.error("Session refresh error:", err);
-        setUser(null);
+            console.error("Session refresh error:", err);
+            setUser(null);
         } finally {
-        setLoading(false);
+            setLoading(false);
         }
     };
 
@@ -160,9 +152,8 @@ export function SessionProvider({ children }) {
 
     const logout = async () => {
         try {
-        const response = await axios.post(`${url}/user/logout`, {}, { withCredentials: true });
-        console.log("Logout response:", response.data);
-        Cookies.remove("token", { path: "/" });
+            await axios.post(`${url}/user/logout`, {}, { withCredentials: true });
+            Cookies.remove("token", { path: "/" });
         } catch (err) {
         console.error("Logout failed:", err);
         }
@@ -173,9 +164,10 @@ export function SessionProvider({ children }) {
 
     const fetchNotifications = async (user_id) => {
         if (!user_id) return;
+        
         try {
-        const response = await axios.get(`${url}/user/notifications/${user_id}`);
-        setNotifications(response.data);
+            const response = await axios.get(`${url}/user/notifications/${user_id}`);
+            setNotifications(response.data);
         } catch (err) {
         console.error("Failed to fetch notifications:", err);
         }

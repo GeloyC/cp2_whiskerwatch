@@ -286,9 +286,9 @@ const AdminLogin = () => {
         setLoading(true);
 
         if (!username.trim() || !password.trim()) {
-        setError('Please enter both username and password');
-        setLoading(false);
-        return;
+            setError('Please enter both username and password');
+            setLoading(false);
+            return;
         }
 
         try {
@@ -298,9 +298,8 @@ const AdminLogin = () => {
             { withCredentials: true }
         );
 
-        console.log('Admin login response:', response.data);
+
         const token = response.data.token;
-        console.log('Token to set:', token);
         Cookies.set('token', token, {
             expires: 7,
             path: '/',
@@ -308,14 +307,14 @@ const AdminLogin = () => {
             sameSite: 'lax', // Test with lax
             domain: '.whiskerwatch-0j6g.onrender.com', // Ensure domain matches
         });
-        console.log('Cookies after set:', Cookies.get('token'));
+        
 
         const user = response.data.user;
         if (!user) {
             throw new Error('User data not received');
         }
 
-        console.log('Login attempt for admin:', response.data);
+        
 
         setUser(user);
         login(user);

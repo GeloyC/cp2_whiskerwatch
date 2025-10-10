@@ -26,12 +26,10 @@ const CatProfileCreate = () => {
             const response = await axios.post(`${url}/cat/create`, {
                 name, age, gender, sterilization_status, description
             });
-            console.log('Signup response:', response.data);
+
 
             if (response.status === 201 || response.status === 200) {
                 const cat_id = response.data.cat_id;
-                console.log('Cat profile created: ', response.data);
-                console.log(cat_id)
 
                 await handleUploadImages(cat_id);
                 navigate(`/catprofileproperty/${response.data.cat_id}`);
@@ -81,7 +79,6 @@ const CatProfileCreate = () => {
             );
 
             if (response.status === 200) {
-                console.log('Image uploaded successfully!')
                 setCatImagePreview([])
                 
             } 

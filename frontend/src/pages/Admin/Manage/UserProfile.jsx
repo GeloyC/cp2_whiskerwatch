@@ -70,7 +70,6 @@ const UserProfile = () => {
             });
 
 
-            console.log('User Update success: ', response.data);
             window.location.reload();
 
         } catch (err) {

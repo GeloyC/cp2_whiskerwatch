@@ -47,7 +47,6 @@ const UpdateRole = () => {
                 role: role
             });
 
-            console.log('Update success:', response);
 
             setUser(prev => ({ ...prev, role }));
             setRoleOriginal(role);

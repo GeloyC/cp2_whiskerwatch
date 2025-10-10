@@ -19,7 +19,6 @@ const Whisker = () => {
         const response = await axios.get(`${url}/whisker/whiskermeter/${user.user_id}`);
         setPoints(response.data.points);
         
-        console.log(points)
       } catch (err) {
         console.error('Failed to fetch whisker points:', err);
       }

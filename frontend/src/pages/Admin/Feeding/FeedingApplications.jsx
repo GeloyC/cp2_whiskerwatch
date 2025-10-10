@@ -16,7 +16,6 @@ const FeedingApplications = () => {
     const fetchApplications = async () => {
       try {
         const response = await axios.get(`${url}/admin/feeders/application`);
-        console.log(response.data)
         setApplicant(response.data)
       } catch(err) {
           console.error('Error retrieving application data: ', err)

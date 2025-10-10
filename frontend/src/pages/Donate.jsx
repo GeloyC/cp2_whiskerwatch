@@ -171,7 +171,6 @@ const Donate = () => {
       items: donationItems,
     };
 
-    console.log("Final donation payload:", donationPayLoad);
 
     try {
       const formData = new FormData();

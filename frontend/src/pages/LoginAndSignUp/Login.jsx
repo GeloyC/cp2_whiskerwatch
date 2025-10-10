@@ -321,7 +321,7 @@ const Login = () => {
         { withCredentials: true }
       );
 
-      console.log("Login response:", response.data);
+      
       const token = response.data.token;
 
       if (token) {
@@ -342,7 +342,7 @@ const Login = () => {
       login(user);
       await refreshSession();
 
-      if (user.role === "regular" || user.role === "head_volunteer") {
+      if (user.role === "regular" || user.role === "head_volunteer" || user.role === "admin") {
         navigate("/home");
       } else {
         setError("Unauthorized role");
@@ -482,12 +482,12 @@ const Login = () => {
               >
                 Forgot Password?
               </button>
-              <Link
+              {/* <Link
                 to="/adminlogin"
                 className="pt-4 text-[14px] hover:underline hover:text-[#977655]"
               >
                 Log in as Admin
-              </Link>
+              </Link> */}
             </div>
 
             {error && (
