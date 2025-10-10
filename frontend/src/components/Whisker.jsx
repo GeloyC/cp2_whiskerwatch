@@ -201,10 +201,10 @@ const Whisker = () => {
       <div className={`flex items-center justify-between bg-[#DC8801] p-2 h-auto rounded-[50px] transition-all duration-200 overflow-hidden
         ${whiskerVisible ? 'w-fit h-auto rounded-[50px]' : 'w-full rounded-[50px]'}`}>
         <div className='flex flex-col'>
-          <label  className={`font-bold text-[14px] text-[#FFF] overflow-hidden whitespace-nowrap ${whiskerVisible ? 'opacity-0 hidden' : 'opacity-100'}`}>
+          <label  className={`font-bold text-[14px] pl-2 text-[#FFF] overflow-hidden whitespace-nowrap ${whiskerVisible ? 'opacity-0 hidden' : 'opacity-100'}`}>
             The WhiskerMeter
           </label>
-          <span className={!whiskerVisible ? 'text-[#FFF] text-[13px] leading-tight' : 'hidden'}>
+          <span className={!whiskerVisible ? 'text-[#FFF] text-[13px] leading-tight pl-2' : 'hidden'}>
             You have {points} points. 
           </span>
         </div>
