@@ -433,27 +433,6 @@ const Profile = () => {
                                         [&::-moz-progress-bar]:bg-green-400' value={progressHeightPercent} max="100">
                                         100%
                                     </progress>
-                                    <div className='flex items-center justify-between'>
-                                        <div className='size-12 object-cover'>
-                                            <img src="/assets/badge/trainee-badge-icon.png" alt="" className='w-full h-full object-cover'/>
-                                        </div>
-
-                                        <div className='size-12 object-cover'>
-                                            <img src="/assets/badge/trainee-badge-icon.png" alt="" className='w-full h-full object-cover'/>
-                                        </div>
-
-                                        <div className='size-12 object-cover'>
-                                            <img src="/assets/badge/trainee-badge-icon.png" alt="" className='w-full h-full object-cover'/>
-                                        </div>
-
-                                        <div className='size-12 object-cover'>
-                                            <img src="/assets/badge/trainee-badge-icon.png" alt="" className='w-full h-full object-cover'/>
-                                        </div>
-
-                                        <div className='size-12 object-cover'>
-                                            <img src="/assets/badge/trainee-badge-icon.png" alt="" className='w-full h-full object-cover'/>
-                                        </div>
-                                    </div>
                                     
                                 </div>
 
@@ -463,30 +442,50 @@ const Profile = () => {
                                             <img src="/assets/icons/whisker_arrow.png" alt="Arrow icon" className="w-full h-full object-cover -rotate-90" />
                                         </div>
                                         Toe Bean Trainee
+
+                                        <div className='size-12 object-cover'>
+                                            <img src="/assets/badge/trainee-badge-icon.png" alt="" className='w-full h-full object-cover'/>
+                                        </div>
                                     </div>
                                     <div className='flex flex-col items-center text-[14px]'>
                                         <div className="w-[15px] h-[15px] object-contain">
                                             <img src="/assets/icons/whisker_arrow.png" alt="Arrow icon" className="w-full h-full object-cover -rotate-90" />
                                         </div>
                                         Snuggle Scout
+
+                                        <div className='size-12 object-cover'>
+                                            <img src="/assets/badge/trainee-badge-icon.png" alt="" className='w-full h-full object-cover'/>
+                                        </div>
                                     </div>
                                     <div className='flex flex-col items-center text-[14px]'>
                                         <div className="w-[15px] h-[15px] object-contain">
                                             <img src="/assets/icons/whisker_arrow.png" alt="Arrow icon" className="w-full h-full object-cover -rotate-90" />
                                         </div>
                                         Furmidable Friend
+
+                                        <div className='size-12 object-cover'>
+                                            <img src="/assets/badge/trainee-badge-icon.png" alt="" className='w-full h-full object-cover'/>
+                                        </div>
                                     </div>
                                     <div className='flex flex-col items-center text-[14px]'>
                                         <div className="w-[15px] h-[15px] object-contain">
                                             <img src="/assets/icons/whisker_arrow.png" alt="Arrow icon" className="w-full h-full object-cover -rotate-90" />
                                         </div>
                                         Meowtain Mover
+
+                                        <div className='size-12 object-cover'>
+                                            <img src="/assets/badge/trainee-badge-icon.png" alt="" className='w-full h-full object-cover'/>
+                                        </div>
                                     </div>
                                     <div className='flex flex-col items-center text-[14px]'>
                                         <div className="w-[15px] h-[15px] object-contain">
                                             <img src="/assets/icons/whisker_arrow.png" alt="Arrow icon" className="w-full h-full object-cover -rotate-90" />
                                         </div>
                                         The Catnip Captain
+
+                                        <div className='size-12 object-cover'>
+                                            <img src="/assets/badge/trainee-badge-icon.png" alt="" className='w-full h-full object-cover'/>
+                                        </div>
                                     </div>
                                 </div>
 
