@@ -403,9 +403,10 @@ const Profile = () => {
                                 
                             </div>
 
-                            <div className='flex flex-col gap-4 bg-[#ffdfab] bg-[url(/src/assets/background-paws.png)] bg-cover bg-fit bg-repeat p-10 rounded-b-[10px]'>
+                            <div className='flex flex-col gap-4 bg-[#ffdfab] bg-[url(/src/assets/background-paws.png)] w-full bg-cover bg-fit bg-repeat p-10 rounded-b-[10px]'>
                                 {/* WHISKER METER */}
                                 <label className='font-bold text-[#2F2F2F] text-2xl text-center'>WHISKERMETER TRACKER</label>
+                                <span className='w-full self-start'>{`You have ${points} points.`}</span>
                                 <div className='relative flex w-full'>
                                     <div className='absolute flex justify-evenly w-full'>
                                         <div className='w-[15px] object-fit rotate-90'>
@@ -422,17 +423,17 @@ const Profile = () => {
                                         </div>
                                     </div>
 
-                                    <div className='flex flex-col w-fit items-start justify-start gap-2'>
-                                        <span>{`You have ${points} points.`}</span>
-                                        <progress className='w-full 
-                                            [&::-webkit-progress-bar]:rounded-lg 
-                                            [&::-webkit-progress-value]:rounded-lg 
-                                            [&::-webkit-progress-bar]:bg-[#FFF] 
-                                            [&::-webkit-progress-value]:bg-[#B5C04A]
-                                            [&::-moz-progress-bar]:bg-green-400' value={progressHeightPercent} max="100">
-                                            100%
-                                        </progress>
-                                    </div>
+                                    
+                                        
+                                    <progress className='w-full 
+                                        [&::-webkit-progress-bar]:rounded-lg 
+                                        [&::-webkit-progress-value]:rounded-lg 
+                                        [&::-webkit-progress-bar]:bg-[#FFF] 
+                                        [&::-webkit-progress-value]:bg-[#B5C04A]
+                                        [&::-moz-progress-bar]:bg-green-400' value={progressHeightPercent} max="100">
+                                        100%
+                                    </progress>
+                                    
                                 </div>
 
                                 <div className='grid grid-cols-5 place-items-center'>
