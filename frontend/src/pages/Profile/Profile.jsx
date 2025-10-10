@@ -433,6 +433,27 @@ const Profile = () => {
                                         [&::-moz-progress-bar]:bg-green-400' value={progressHeightPercent} max="100">
                                         100%
                                     </progress>
+                                    <div className='flex items-center justify-between'>
+                                        <div className='size-12 object-cover'>
+                                            <img src="/assets/badge/trainee-badge-icon.png" alt="" className='w-full h-full object-cover'/>
+                                        </div>
+
+                                        <div className='size-12 object-cover'>
+                                            <img src="/assets/badge/trainee-badge-icon.png" alt="" className='w-full h-full object-cover'/>
+                                        </div>
+
+                                        <div className='size-12 object-cover'>
+                                            <img src="/assets/badge/trainee-badge-icon.png" alt="" className='w-full h-full object-cover'/>
+                                        </div>
+
+                                        <div className='size-12 object-cover'>
+                                            <img src="/assets/badge/trainee-badge-icon.png" alt="" className='w-full h-full object-cover'/>
+                                        </div>
+
+                                        <div className='size-12 object-cover'>
+                                            <img src="/assets/badge/trainee-badge-icon.png" alt="" className='w-full h-full object-cover'/>
+                                        </div>
+                                    </div>
                                     
                                 </div>
 

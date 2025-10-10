@@ -156,20 +156,29 @@ const Feeding = () => {
       setFeedingDate(dateString);
       setHasSubmittedReport(has_report);
 
-      // Append 8:00 PM time manually
-      const feedingDateTime = new Date(`${dateString}T20:00:00`);
-      const now = new Date();
+      // Feeding date at 8:00 PM PH time
+      const feedingDateTime = new Date(`${dateString}T20:00:00+08:00`);
 
-      if (feedingDateTime < now) {
+      // Add 2 hours to feeding date (so it's valid until 10:00 PM)
+      const feedingDatePlusTwoHours = new Date(feedingDateTime.getTime() + 2 * 60 * 60 * 1000);
+
+      // Current time in Philippine timezone
+      const now = new Date(
+        new Date().toLocaleString('en-US', { timeZone: 'Asia/Manila' })
+      );
+
+      // Compare if current time (PH) is past 2 hours after feeding date
+      if (now >= feedingDatePlusTwoHours) {
         setIsFeedingDatePassed(true);
       } else {
         setIsFeedingDatePassed(false);
       }
 
     } catch (err) {
-      console.error('Failed to fetch feeding date.');
+      console.error('Failed to fetch feeding date.', err);
     }
   };
+
 
   useEffect(() => {
     const fetchVolunteerData = async () => {
