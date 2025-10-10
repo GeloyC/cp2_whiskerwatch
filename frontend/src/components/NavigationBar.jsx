@@ -137,19 +137,7 @@ const NavigationBar = () => {
               <div className='flex items-center justify-center w-fit border-box gap-2'>
 
                 {/* Menu */}
-                <div ref={mobileMenuRef}  className='relative'>
-                  <button onClick={toggleShowMenu} className={`flex xl:hidden lg:hidden md:hidden sm:flex size-9 relative flex gap-2 items-center active:scale-90 ${MenuVisible ? 'rotate-90' : 'rotate-180'} transition-all duration-100`}>
-                    <img src="/assets/icons/burger-bar.png" alt="" />
-                  </button>
-
-                  {/* Dropdown for mobile view */}
-                  <div className={MenuVisible ? 'absolute top-1 right-8 w-auto h-auto flex flex-col xl:hidden lg:hidden md:hidden bg-[#FFF] rounded-[10px] rounded-tr-[0px] border-2 border-[#DC8801] overflow-hidden whitespace-nowrap' : 'hidden'}>
-                    <Link to='/home' className='p-2 px-4 active:bg-[#F9F7DC] cursor-pointer'>HOME</Link>
-                    <Link to='/aboutus' className='p-2 px-4 active:bg-[#F9F7DC] cursor-pointer'>ABOUT US</Link>
-                    <Link to='/catcareguides' className='p-2 px-4 active:bg-[#F9F7DC] cursor-pointer'>CAT CARE GUIDES</Link>
-                    <Link to='/contactus' className='p-2 px-4 active:bg-[#F9F7DC] cursor-pointer'>CONTACT US</Link>
-                  </div>
-                </div>
+                
 
                 <NotificationBell />
                 <div ref={profileMenuRef} className='relative flex-col'>
@@ -184,6 +172,21 @@ const NavigationBar = () => {
               </div>
             ) : (
               <div className='flex items-center gap-1'>
+                
+                
+                <div ref={mobileMenuRef}  className='relative'>
+                  <button onClick={toggleShowMenu} className={`flex xl:hidden lg:hidden md:hidden sm:flex size-9 relative flex gap-2 items-center active:scale-90 ${MenuVisible ? 'rotate-90' : 'rotate-180'} transition-all duration-100`}>
+                    <img src="/assets/icons/burger-bar.png" alt="" />
+                  </button>
+
+                  {/* Dropdown for mobile view */}
+                  <div className={MenuVisible ? 'absolute top-1 right-8 w-auto h-auto flex flex-col xl:hidden lg:hidden md:hidden bg-[#FFF] rounded-[10px] rounded-tr-[0px] border-2 border-[#DC8801] overflow-hidden whitespace-nowrap' : 'hidden'}>
+                    <Link to='/home' className='p-2 px-4 active:bg-[#F9F7DC] cursor-pointer'>HOME</Link>
+                    <Link to='/aboutus' className='p-2 px-4 active:bg-[#F9F7DC] cursor-pointer'>ABOUT US</Link>
+                    <Link to='/catcareguides' className='p-2 px-4 active:bg-[#F9F7DC] cursor-pointer'>CAT CARE GUIDES</Link>
+                    <Link to='/contactus' className='p-2 px-4 active:bg-[#F9F7DC] cursor-pointer'>CONTACT US</Link>
+                  </div>
+                </div>
                 <Link to='/login'
                 className='bg-[#FFF] font-bold text-[#889132] rounded-[5px] px-4 py-1 border-2 border-[#B5C04A] hover:scale-105 active:scale-97 transition-all duration-100'>
                   Log in
