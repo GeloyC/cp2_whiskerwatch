@@ -155,11 +155,15 @@ const NavigationBar = () => {
                 <div ref={profileMenuRef} className='relative flex-col'>
                   <div onClick={toggleProfileMenu} className='cursor-pointer relative size-10 rounded-[25px] bg-[#FFF] border-3 border-[#DC8801] overflow-hidden
                   active:scale-95 active:bg-white/50'>
-                    <img src={
-                      profileImage
-                        ? `${url}/FileUploads/${profileImage}`
-                        : "/assets/icons/account.png"
-                    } alt="" />
+                    <img
+                      src={
+                        profileImage
+                          ? profileImage.startsWith("http")
+                            ? profileImage
+                            : `${url}/FileUploads/${profileImage}`
+                          : "/assets/icons/account.png"
+                          }
+                    alt="profile" />
                   </div>
 
                   {/* dropdown: Show User fullname, my profile page,  */}

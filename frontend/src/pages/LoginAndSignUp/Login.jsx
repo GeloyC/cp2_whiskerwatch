@@ -44,14 +44,14 @@ const Login = () => {
         { withCredentials: true }
       );
 
-      const token = response.data.token; // Ensure the backend sends the token
-      Cookies.set("token", token, {
-        expires: 7, // 7 days
-        path: "/",
-        secure: process.env.NODE_ENV === "production", // Use true for HTTPS
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      });
-      console.log("Token set:", Cookies.get("token"));
+      // const token = response.data.token; // Ensure the backend sends the token
+      // Cookies.set("token", token, {
+      //   expires: 7, // 7 days
+      //   path: "/",
+      //   secure: process.env.NODE_ENV === "production", // Use true for HTTPS
+      //   sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      // });
+      // console.log("Token set:", Cookies.get("token"));
 
       const user = response.data.user;
       if (!user) {

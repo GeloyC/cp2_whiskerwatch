@@ -133,12 +133,12 @@ export function useSession() {
     const triggerWhiskerUpdate = () => setWhiskerUpdateTrigger(Date.now());
 
     const refreshSession = async () => {
-        const token = Cookies.get("token");
+        // const token = Cookies.get("token");
         console.log('Refresh token from cookie:', token);
         if (!token) {
-        setUser(null);
-        setLoading(false);
-        return;
+            setUser(null);
+            setLoading(false);
+            return;
         }
 
         try {
