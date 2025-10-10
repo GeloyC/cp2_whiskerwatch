@@ -134,12 +134,12 @@ export function useSession() {
 
     const refreshSession = async () => {
         // const token = Cookies.get("token");
-        console.log('Refresh token from cookie:', token);
-        if (!token) {
-            setUser(null);
-            setLoading(false);
-            return;
-        }
+        // console.log('Refresh token from cookie:', token);
+        // if (!token) {
+        //     setUser(null);
+        //     setLoading(false);
+        //     return;
+        // }
 
         try {
         const response = await axios.get(`${url}/user/api/session`, {
