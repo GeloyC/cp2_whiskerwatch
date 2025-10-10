@@ -305,6 +305,7 @@ const AdminLogin = () => {
             path: '/',
             secure: false, // Test with false
             sameSite: 'lax', // Test with lax
+            domain: '.whiskerwatch-0j6g.onrender.com', // Ensure domain matches
         });
         console.log('Cookies after set:', Cookies.get('token'));
 
@@ -317,8 +318,7 @@ const AdminLogin = () => {
 
         setUser(user);
         login(user);
-        // Add delay to ensure cookie is set
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise(resolve => setTimeout(resolve, 200)); // Increased delay
         await refreshSession();
         if (user.role === 'admin' || user.role === 'head_volunteer') {
             navigate('/dashboard');

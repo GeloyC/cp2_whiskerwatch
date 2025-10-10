@@ -420,9 +420,10 @@ UserRoute.post('/reset_password', async (req, res) => {
 // });
 
 UserRoute.get('/api/session', (req, res) => {
+  console.log('All cookies:', req.cookies); // Log all cookies
   const token = req.cookies.token || (req.headers.authorization?.split(' ')[1] || '');
-  console.log('Received token:', token); // Debug token
-  console.log('Request headers:', req.headers); // Debug all headers
+  console.log('Received token:', token);
+  console.log('Request headers:', req.headers);
   if (!token) {
     console.log('No token found in request');
     return res.json({ loggedIn: false, user: null });
