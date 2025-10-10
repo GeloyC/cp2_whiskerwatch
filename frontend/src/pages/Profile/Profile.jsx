@@ -36,7 +36,10 @@ const Profile = () => {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const token = Cookies.get('token');
+                const token = Cookies.get('token') || localStorage.getItem('token');
+                console.log("Token from cookie:", token);
+                
+
                 if (!token) throw new Error('No authentication token found');
 
                 const response = await axios.get(`${url}/user/profile`, {

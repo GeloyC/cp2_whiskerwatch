@@ -122,7 +122,7 @@ export function useSession() {
     return context;
     }
 
-    export function SessionProvider({ children }) {
+export function SessionProvider({ children }) {
     const url = `https://whiskerwatch-0j6g.onrender.com`;
 
     const [user, setUser] = useState(null);
@@ -130,6 +130,7 @@ export function useSession() {
     const [notifications, setNotifications] = useState([]);
     const [whiskerUpdateTrigger, setWhiskerUpdateTrigger] = useState(0);
 
+    axios.defaults.withCredentials = true;
     const triggerWhiskerUpdate = () => setWhiskerUpdateTrigger(Date.now());
 
     const refreshSession = async () => {
