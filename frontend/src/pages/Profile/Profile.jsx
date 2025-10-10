@@ -28,7 +28,7 @@ const Profile = () => {
 
     const { user, whiskerUpdateTrigger } = useSession();
     const [points, setPoints] = useState(0);
-    axios.defaults.withCredentials = true;
+    
 
     // whiskermeter
     const MAX_POINTS = 500;
@@ -180,9 +180,10 @@ const Profile = () => {
         try {
             const token = Cookies.get('token');
             const response = await axios.get(`${url}/whisker/whiskermeter/${user.user_id}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+                withCredentials: true, 
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
             });
             setPoints(response.data.points || 0);
         } catch (err) {
@@ -214,17 +215,13 @@ const Profile = () => {
                                 </div>
                                 {!updateProfile && (
                                     <>
-                                        {profile && Object.keys(profile).length > 0 && (
+                                        {profile && (
                                             <div className='relative flex flex-col p-[2%] xl:flex-row lg:flex-row gap-5'>
                                                 <div className='flex flex-row xl:flex-col lg:flex-col gap-3 justify-center'>
                                                     <div className='flex w-[250px] h-[250px] bg-[#B5C04A] rounded-sm p-2'>
                                                         <img
-                                                            src={
-                                                                profile.profile_image
-                                                                ? `${url}/FileUploads/${profile.profile_image}`
-                                                                : "/assets/UserProfile/default_profile_image.jpg"
-                                                            }
-                                                        alt="" className='w-full h-full object-cover'/>
+                                                            src={`${`${url}/FileUploads/${profile.profile_image}` || '/assets/UserProfile/default_profile_image.jpg'}`}
+                                                            alt="" className='w-full h-full object-cover'/>
                                                     </div>
 
                                                     <div className='flex flex-row gap-2'>
@@ -304,7 +301,7 @@ const Profile = () => {
 
                                 {updateProfile && (
                                     <>
-                                    {profile && Object.keys(profile).length > 0 && (
+                                    {profile && (
                                         <form onSubmit={(e) => { e.preventDefault(); handleSave(); }} className='relative flex flex-col items-center xl:items-start lg:items-start xl:flex-row lg:flex-row gap-5'>
                                             <div className='relative flex w-[250px] h-[200px] bg-[#B5C04A] rounded-sm p-2'>
                                                 <label htmlFor="profile_image" className='absolute bottom-3 left-3 bg-[#DC8801] rounded-[15px] cursor-pointer  pl-2 pr-2'>
