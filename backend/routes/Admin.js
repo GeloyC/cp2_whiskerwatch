@@ -370,8 +370,16 @@ AdminRoute.patch('/form/status_update/:application_id', verifyUser, async (req, 
             // 2.2 Insert into volunteer table
             await db.query(`
                 INSERT INTO volunteer (feeder_id, name, feeding_date, application_date, status)
-                VALUES (?, ?, NOW(), ?, 'Approved')
+                VALUES (
+                    ?, 
+                    ?, 
+                    DATE_FORMAT(CONVERT_TZ(DATE_ADD(NOW(), INTERVAL 3 DAY), '+00:00', '+08:00'), '%Y-%m-%d 20:00:00'), 
+                    ?, 
+                    'Approved'
+                )
             `, [user_id, fullName, application_date]);
+
+
 
             if (totalPointsEarned > 0) {
                 // Check if user already has a whiskermeter entry
@@ -410,7 +418,7 @@ AdminRoute.patch('/form/status_update/:application_id', verifyUser, async (req, 
                     [newBadge, user_id]
                 );
 
-                let message = `Congratulations on achieving a badge of ${newBadge}. Keep on going!`;
+                let message = `Congratulations, you now have ${points} points. Keep on going!`;
 
                 await db.query(
                     `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,

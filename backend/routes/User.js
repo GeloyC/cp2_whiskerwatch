@@ -1019,7 +1019,7 @@ UserRoute.post('/adoption/form', uploadAdoptionForm.single('file'), async (req, 
 
         // Check if a user has pending application
         const [userPending] = await db.query(`
-            SELECT * FROM adoption_application
+          SELECT * FROM adoption_application
             WHERE user_id = ? AND cat_id = ? AND status = 'Pending';    
         `, [user_id, cat_id]);
 
