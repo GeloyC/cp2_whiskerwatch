@@ -154,6 +154,8 @@ const Profile = () => {
             setUpdateProfile(false);
             setError('');
 
+            window.location.reload();
+
         } catch (err) {
             console.error("Failed to update profile", err);
             setError(err.response?.data?.error || 'Failed to update profile');
