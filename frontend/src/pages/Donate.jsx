@@ -284,7 +284,7 @@ const Donate = () => {
                           <div className='flex flex-col items-center w-full pb-2'>
                             <label htmlFor="">Scan the QR code to complete the transaction</label>
                             <div className='w-[300px] h-[300px] object-fit rounded-[10px] overflow-hidden'>
-                              <img src="/assets/UserProfile/test_qr_code.jpg" alt="qr_code" className='w-full h-full object-cover'/>
+                              <img src="/assets/QR_Code.jpg" alt="qr_code" className='w-full h-full object-cover'/>
                             </div>
                           </div>
                         </div>
