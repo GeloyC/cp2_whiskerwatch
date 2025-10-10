@@ -58,7 +58,7 @@ const NotificationBell = () => {
 
 
   return (
-    <div ref={menuRef} className="relative xl:flex lg:flex md:flex">
+    <div ref={menuRef} className="relative xl:flex lg:flex md:flex w-full h-full">
       {/* Bell Button */}
       <button onClick={toggleDropdown} className="cursor-pointer relative hover:scale-103 active:scale-95">
         <div className='relative flex items-center justify-center size-8 rounded-[10px]'>
