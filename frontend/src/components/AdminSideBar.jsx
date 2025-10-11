@@ -552,11 +552,11 @@ const AdminSideBar = ({ className }) => {
 
           <div className={`absolute ${sidebarShow ? 'left-75 bottom-12' : 'left-15 bottom-5'} flex flex-col w-auto gap-2 box-border bg-[#FFF] shadow-md rounded-[15px] rounded-bl-[0px] z-[9999]`}>
             {isLoggedIn && (
-              <div className={isVisible ? 'flex flex-col w-fit p-2 gap-2' : 'hidden'}>
-                <Link ref={menuRef} to="/home" className="text-[#000] text-center p-3 pl-6 pr-6 w-full bg-[#f0f2c8] hover:bg-[#E3E697] active:bg-[#f0f2c8] active:text-[#FFF] rounded-[10px]">
+              <div ref={menuRef} className={isVisible ? 'flex flex-col w-fit p-2 gap-2' : 'hidden'}>
+                <Link to="/home" className="text-[#000] text-center p-3 pl-6 pr-6 w-full bg-[#f0f2c8] hover:bg-[#E3E697] active:bg-[#f0f2c8] active:text-[#FFF] rounded-[10px]">
                   <label className="w-full whitespace-nowrap">Home</label>
                 </Link>
-                <Link ref={menuRef} to="/login" onClick={handleLogout} className="text-[#000] text-center p-3 pl-6 pr-6 w-full bg-[#f0f2c8] hover:bg-[#E3E697] active:bg-[#f0f2c8] active:text-[#FFF] rounded-[10px]">
+                <Link to="/login" onClick={handleLogout} className="text-[#000] text-center p-3 pl-6 pr-6 w-full bg-[#f0f2c8] hover:bg-[#E3E697] active:bg-[#f0f2c8] active:text-[#FFF] rounded-[10px]">
                   <label className="w-full whitespace-nowrap">Log out</label>
                 </Link>
               </div>

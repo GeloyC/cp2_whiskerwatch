@@ -522,101 +522,6 @@ CatRoute.post('/uploadcatimages/:cat_id', upload.array('images'), async (req, re
 });
 
 
-// CatRoute.delete('/image/:filename', async (req, res) => {
-//     const db = getDB();
-//     const filename = req.params.filename;
-
-//     try {
-//         const filePath = path.join(__dirname, 'FileUploads', filename);
-
-//         // Delete the file
-//         fs.unlink(filePath, async (err) => {
-//         if (err && err.code !== 'ENOENT') {
-//             console.error(`Error deleting file: ${filename}`, err);
-//             return res.status(500).json({ error: 'Failed to delete image file' });
-//         }
-
-//         // Delete DB record
-//         await db.query(`DELETE FROM cat_images WHERE image_filename = ?`, [filename]);
-
-//         res.json({ message: `Deleted image ${filename}` });
-//         console.log({ message: `Deleted image ${filename}` })
-//         });
-
-//     } catch (err) {
-//         console.error('Error deleting image:', err);
-//         res.status(500).json({ error: 'Failed to delete image' });
-//     }
-// });
-
-
-// CatRoute.delete('/image/:filename', async (req, res) => {
-//   const db = getDB();
-//   const filename = req.params.filename;
-
-//   try {
-//     // Step 1: Find the record in DB (we need its cloudinary_id)
-//     const [rows] = await db.query(
-//       'SELECT cloudinary_id FROM cat_images WHERE image_filename = ? OR image_filename LIKE ?',
-//       [filename, `%${filename}%`]
-//     );
-
-//     if (!rows.length) {
-//       return res.status(404).json({ error: 'Image not found in database' });
-//     }
-
-//     const cloudinaryId = rows[0].cloudinary_id;
-
-//     // Step 2: Delete from Cloudinary using the public_id
-//     if (cloudinaryId) {
-//       await cloudinary.uploader.destroy(cloudinaryId);
-//       console.log(`Deleted from Cloudinary: ${cloudinaryId}`);
-//     }
-
-//     // Step 3: Delete the record from database
-//     await db.query('DELETE FROM cat_images WHERE image_filename = ?', [filename]);
-
-//     res.json({ message: `Successfully deleted image: ${filename}` });
-//   } catch (err) {
-//     console.error('Error deleting image:', err);
-//     res.status(500).json({ error: 'Failed to delete image' });
-//   }
-// });
-
-
-// CatRoute.delete('/image/:id', async (req, res) => {
-//   const db = getDB();
-//   const image_id = req.params.id;
-
-//   try {
-//     // Step 1: Find image info from database
-//     const [rows] = await db.query(
-//       'SELECT cloudinary_id, image_filename FROM cat_images WHERE image_id = ?',
-//       [image_id]
-//     );
-
-//     if (!rows.length) {
-//       return res.status(404).json({ error: 'Image not found in database' });
-//     }
-
-//     const { cloudinary_id, image_filename } = rows[0];
-
-//     // Step 2: Delete from Cloudinary
-//     if (cloudinary_id) {
-//       await cloudinary.uploader.destroy(cloudinary_id);
-//       console.log(`Deleted from Cloudinary: ${cloudinary_id}`);
-//     }
-
-//     // Step 3: Delete from database
-//     await db.query('DELETE FROM cat_images WHERE image_id = ?', [image_id]);
-
-//     res.json({ message: `Successfully deleted image: ${image_filename}` });
-//   } catch (err) {
-//     console.error('Error deleting image:', err);
-//     res.status(500).json({ error: 'Failed to delete image' });
-//   }
-// });
-
 CatRoute.patch('/update/:cat_id', async (req, res) => {
     const db = getDB();
     const cat_id = req.params.cat_id;
@@ -712,11 +617,17 @@ CatRoute.get('/adoption_history/:cat_id', async (req, res) => {
 
   try {
     const [adopters] = await db.query(`
-        SELECT adoption_id, cat_name, adopter, 
-            DATE_FORMAT(adoption_date, '%Y-%m-%d') AS adoption_date,
-            certificate, contactnumber
-        FROM adoption
-        WHERE adoptedcat_id = ?;
+        SELECT 
+            a.adoption_id,
+            a.cat_name,
+            a.adopter,
+            DATE_FORMAT(a.adoption_date, '%Y-%m-%d') AS adoption_date,
+            a.certificate,
+            a.contactnumber,
+            u.address
+        FROM adoption a
+        LEFT JOIN users u ON a.adopter_id = u.user_id
+        WHERE a.adoptedcat_id = ?;
     `, [cat_id]);
 
     return res.json(adopters);
