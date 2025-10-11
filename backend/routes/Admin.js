@@ -1074,10 +1074,10 @@ AdminRoute.post(
         }
 
         // Optionally, store in separate certificates table
-        await db.query(
-            "INSERT INTO certificates (adoption_id, certificate_url) VALUES (?, ?) ON DUPLICATE KEY UPDATE certificate_url = VALUES(certificate_url)",
-            [adoption_id, certificateUrl]
-        );
+        // await db.query(
+        //     "INSERT INTO certificates (adoption_id, certificate_url) VALUES (?, ?) ON DUPLICATE KEY UPDATE certificate_url = VALUES(certificate_url)",
+        //     [adoption_id, certificateUrl]
+        // );
 
         res.status(200).json({
             message: "Certificate uploaded successfully.",
