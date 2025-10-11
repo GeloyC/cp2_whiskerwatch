@@ -200,21 +200,21 @@ const AdopterApplicationView = () => {
         }
     };
 
-    const getInlinePdfUrl = (url) => {
-        if (!url) return '';
-        if (url.includes('/raw/upload/')) {
-            return url.replace('/raw/upload/', '/raw/upload/fl_attachment:false/');
-        }
-        return url;
-    };
+    // const getInlinePdfUrl = (url) => {
+    //     if (!url) return '';
+    //     if (url.includes('/raw/upload/')) {
+    //         return url.replace('/raw/upload/', '/raw/upload/fl_attachment:false/');
+    //     }
+    //     return url;
+    // };
 
-    const getDownloadPdfUrl = (url) => {
-        if (!url) return '';
-        if (url.includes('/raw/upload/')) {
-            return url.replace('/raw/upload/', '/raw/upload/fl_attachment/');
-        }
-        return url;
-    };
+    // const getDownloadPdfUrl = (url) => {
+    //     if (!url) return '';
+    //     if (url.includes('/raw/upload/')) {
+    //         return url.replace('/raw/upload/', '/raw/upload/fl_attachment/');
+    //     }
+    //     return url;
+    // };
 
     if (sessionLoading) return <div>Loading...</div>;
     if (!user) return <div>Please log in to view this page.</div>;
@@ -286,9 +286,9 @@ const AdopterApplicationView = () => {
                         </div>
 
                         {applicant.application_form && (
-                            <>
+                            <div className='flex items-start'>
                                 <iframe
-                                    src={getInlinePdfUrl(applicant.application_form)}
+                                    src={applicant.application_form}
                                     title="Adoption Application PDF"
                                     width="100%"
                                     height="600px"
@@ -297,7 +297,7 @@ const AdopterApplicationView = () => {
                                 />
                                 {pdfError && <p className="text-red-500">{pdfError}</p>}
                                 <a
-                                    href={getDownloadPdfUrl(applicant.application_form)}
+                                    href={applicant.application_form}
                                     download
                                     target="_blank"
                                     rel="noopener noreferrer"
@@ -305,7 +305,7 @@ const AdopterApplicationView = () => {
                                 >
                                     Download the PDF
                                 </a>
-                            </>
+                            </div>
                         )}
                     </div>
                 </div>
