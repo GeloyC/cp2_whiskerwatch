@@ -118,20 +118,55 @@ CatRoute.get('/list', async (req, res) => {
 
 
 // Client Side fetching
+// CatRoute.get('/catlist', async (req, res) => {
+//     const db = getDB();
+//     try{  
+//         const [rows] = await db.query(`
+//         SELECT 
+//           c.cat_id, 
+//           c.name, 
+//           c.gender, 
+//           c.age, 
+//           c.description, 
+//           c.sterilization_status,
+//           ci.image_filename AS thumbnail
+//         FROM cat c
+//         LEFT JOIN cat_images ci ON c.cat_id = ci.cat_id 
+//         AND ci.image_id = (
+//           SELECT image_id 
+//           FROM cat_images
+//           WHERE cat_id = c.cat_id
+//           ORDER BY is_primary DESC, uploaded_at DESC 
+//           LIMIT 1
+//         )
+//         WHERE c.adoption_status = 'Available';
+//         `)
+
+//         return res.json(rows);
+
+//     } catch(err) {
+//         console.error('Error fetching cat profiles:', err);
+//         return res.status(500).json({ err: 'Failed to fetch cat profiles' });   
+//     }
+// })
+
 CatRoute.get('/catlist', async (req, res) => {
-    const db = getDB();
-    try{  
-        const [rows] = await db.query(`
-        SELECT 
-          c.cat_id, 
-          c.name, 
-          c.gender, 
-          c.age, 
-          c.description, 
-          c.sterilization_status,
-          ci.image_filename AS thumbnail
-        FROM cat c
-        LEFT JOIN cat_images ci ON c.cat_id = ci.cat_id 
+  const db = getDB();
+
+  try {
+    const [rows] = await db.query(`
+      SELECT 
+        c.cat_id, 
+        c.name, 
+        c.gender, 
+        c.age, 
+        c.description, 
+        c.sterilization_status,
+        ci.image_filename,
+        ci.cloudinary_id
+      FROM cat c
+      LEFT JOIN cat_images ci 
+        ON c.cat_id = ci.cat_id 
         AND ci.image_id = (
           SELECT image_id 
           FROM cat_images
@@ -139,16 +174,34 @@ CatRoute.get('/catlist', async (req, res) => {
           ORDER BY is_primary DESC, uploaded_at DESC 
           LIMIT 1
         )
-        WHERE c.adoption_status = 'Available';
-        `)
+      WHERE c.adoption_status = 'Available';
+    `);
 
-        return res.json(rows);
+    // Format the images for Cloudinary or local path fallback
+    const formatted = rows.map(cat => {
+      let thumbnail = null;
 
-    } catch(err) {
-        console.error('Error fetching cat profiles:', err);
-        return res.status(500).json({ err: 'Failed to fetch cat profiles' });   
-    }
-})
+      if (cat.image_filename?.startsWith('http')) {
+        // It's already a Cloudinary URL
+        thumbnail = cat.image_filename;
+      } else if (cat.cloudinary_id) {
+        // Construct from Cloudinary ID
+        thumbnail = `https://res.cloudinary.com/dop5djsfg/image/upload/${cat.cloudinary_id}.jpg`;
+      } else if (cat.image_filename) {
+        // Fallback: old local file
+        thumbnail = `https://whiskerwatch-0j6g.onrender.com/uploads/cats/${cat.image_filename}`;
+      }
+
+      return { ...cat, thumbnail };
+    });
+
+    res.json(formatted);
+  } catch (err) {
+    console.error('Error fetching cat profiles:', err);
+    res.status(500).json({ error: 'Failed to fetch cat profiles' });
+  }
+});
+
 
 // Get all cats that are adopter
 CatRoute.get('/adopted', async (req, res) => {

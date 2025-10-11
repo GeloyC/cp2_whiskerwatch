@@ -24,9 +24,11 @@ const CatAdoption = () => {
         const response = await axios.get(`${url}/cat/catlist`);
         const formattedCats = response.data.map(cat => ({
           ...cat,
-          thumbnail: cat.thumbnail
-            ? `${url}/FileUploads/cats/${cat.thumbnail}`
-            : null,
+          thumbnail: cat.cloudinary_id
+          ? cat.cloudinary_id.startsWith('http')
+            ? cat.cloudinary_id
+            : `https://res.cloudinary.com/dop5djsfg/image/upload/${cat.cloudinary_id}.jpg`
+          : '/assets/default-cat.jpg',
         }));
         setCatList(formattedCats);
       } catch (err) {
