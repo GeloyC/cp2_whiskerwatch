@@ -59,7 +59,7 @@ const UserProfile = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.patch(`${url}/admin/manage/userupdate/${user_id}`, {
+            await axios.patch(`${url}/admin/manage/userupdate/${user_id}`, {
                 firstname: profile.firstname,
                 lastname: profile.lastname,
                 role: profile.role,
@@ -110,7 +110,10 @@ const UserProfile = () => {
 
                             <div className='flex gap-3 items-center'>
                                 <div className='flex w-[250px] h-[250px] object-fit rounded-[10px] overflow-hidden'>
-                                    <img src={`${url}/FileUploads/${profile.profile_image}`} alt="User profile image" className="bg-[#a3a3a3] w-full h-full object-cover"/>
+                                    <img src={profile.profile_image || '/src/assets/UserProfile/default_profile_image.jpg'}
+                                        alt="User profile image" className="bg-[#a3a3a3] w-full h-full object-cover"
+                                        onError={(e) => { e.target.src = '/src/assets/UserProfile/default_profile_image.jpg'; }}
+                                    />
                                 </div>
 
                             </div>

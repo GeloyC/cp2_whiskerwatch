@@ -53,7 +53,13 @@ const AdoptersList = () => {
         },
       });
 
-      // Optional: refetch or update adopter state to reflect new certificate
+      // Update the adopter state with the new certificate URL
+      const updatedAdopters = adopters.map((a) =>
+        a.adoption_id === adoptee.adoption_id ? { ...a, certificate: response.data.certificateUrl } : a
+      );
+      setAdopters(updatedAdopters);
+
+
     } catch (error) {
       console.error('Upload failed:', error.response?.data || error.message);
     }
@@ -118,7 +124,7 @@ const AdoptersList = () => {
 
                       {/* CREATE A GET REQUEST FOR THE FILE LINK ON Admin.js */}
                       {adoptee.certificate ? (
-                        <a href={`${url}/FileUploads/certificate/${adoptee.certificate}`} target='_blank' 
+                        <a href={adoptee.certificate} target='_blank' 
                         type="image/png" className='flex items-center justify-between self-start gap-3 p-1 pl-4 pr-4 bg-[#FDF5D8] text-[#2F2F2F] rounded-[10px] hover:underline border-dashed border-2 border-[#595959]'>
                         View Certificate
                         </a>

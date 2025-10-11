@@ -37,7 +37,7 @@ const NavigationBar = () => {
   useEffect(() => { 
     const fetchProfileImage = async () => {
       if (!user) {
-        setProfileImage(null);
+        setProfileImage('/assets/icons/account.png');
         return;
       }
 
