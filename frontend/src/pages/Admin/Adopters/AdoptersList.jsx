@@ -192,7 +192,7 @@ const AdoptersList = () => {
 
     // Safely extract file extension
     const extension = file.name.includes('.') ? file.name.slice(file.name.lastIndexOf('.')) : '';
-    const filename = `Certificate_${adoptee.adopter.replace(/\s+/g, '_')}_${adoptee.adoption_id}${extension}`;
+    const filename = `Certificate_${adoptee.adopter}`;
 
     const certificateForm = new FormData();
     certificateForm.append('certificate', file, filename);
