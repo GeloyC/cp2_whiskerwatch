@@ -34,39 +34,6 @@ const Profile = () => {
     const MAX_POINTS = 500;
     const progressHeightPercent = Math.min((points / MAX_POINTS) * 100, 100);
 
-    // useEffect(() => {
-    //     const fetchProfile = async () => {
-    //         try {
-    //             const token = Cookies.get('token');
-    //             console.log("Token from cookie:", token);
-                
-
-    //             if (!token) throw new Error('No authentication token found');
-
-    //             const response = await axios.get(`${url}/user/profile`, {
-    //                 withCredentials: true,
-    //                 headers: {
-    //                     Authorization: `Bearer ${token}`, // Explicitly send token
-    //                 },
-    //             }); 
-    //             const res = JSON.stringify(response.data)
-
-    //             const certificateResponse = await axios.get(`${url}/admin/adopters_certificate/${user?.user_id}`, {
-    //                 headers: {
-    //                     Authorization: `Bearer ${token}`,
-    //                 },
-    //             });
-    //             setUserCertificates(certificateResponse.data);
-    //             setProfile(response.data);
-    //             setOriginalProfile(response.data);
-
-    //         } catch (err) {
-    //             console.error('Error fetching user:', err.response?.data || err.message);
-    //         }
-    //     }
-    //     if (user?.user_id) fetchProfile()
-    // }, [user?.user_id])
-
     useEffect(() => {
         const fetchProfile = async () => {
             try {
@@ -157,15 +124,6 @@ const Profile = () => {
 
             URL.revokeObjectURL(profile.profile_image); 
 
-
-            // AFTER REPLACING SOME INFOS ON THE UPDATE VIEW, REFETCH THE DATA TO SEE CHANGES ON THE READ VIEW
-            // const updated = await axios.get(`${url}/user/profile`, { 
-            //     withCredentials: true,
-            //     headers: {
-            //         Authorization: `Bearer ${token}`,
-            //     },
-            // });
-
             setProfile(response.data.profile);
             setOriginalProfile(response.data.profile);
             setUpdateProfile(false);
@@ -201,21 +159,6 @@ const Profile = () => {
         };
     }, [profile.profile_image]);
 
-    // useEffect(() => {
-    //     const fetchWhiskerPoints = async () => {
-    //     if (!user?.user_id) return;
-    //     try {
-    //         const response = await axios.get(`${url}/whisker/whiskermeter/${user.user_id}`);
-    //         setPoints(response.data.points || 0);
-
-            
-    //     } catch (err) {
-    //         console.error('Failed to fetch whisker points:', err);
-    //     }
-    //     };
-
-    //     fetchWhiskerPoints();
-    // }, [user, whiskerUpdateTrigger]);
 
     useEffect(() => {
         const fetchWhiskerPoints = async () => {

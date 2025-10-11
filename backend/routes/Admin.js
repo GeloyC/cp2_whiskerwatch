@@ -74,14 +74,14 @@ const uploadCertificate = multer({
     storage: certificateCloudinaryStorage,
     fileFilter: function (req, file, callback) {
         if (
-        file.mimetype === 'image/jpeg' ||
-        file.mimetype === 'image/png' ||
-        file.mimetype === 'application/pdf'
+            file.mimetype === 'image/jpeg' ||
+            file.mimetype === 'image/png' ||
+            file.mimetype === 'application/pdf'
         ) {
-        callback(null, true);
+            callback(null, true);
         } else {
         req.err = 'Invalid file format';
-        callback(null, false);
+            callback(null, false);
         }
     },
 });

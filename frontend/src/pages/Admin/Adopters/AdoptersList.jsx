@@ -184,7 +184,7 @@ const AdoptersList = () => {
   }, []);
 
   const handleUploadCertificate = async (e, adoptee) => {
-    const file = e.target.files?.[0];
+    const file = e.target.files[0];
     if (!file || !file.name) {
       console.warn('No file selected or invalid file object.');
       return;
