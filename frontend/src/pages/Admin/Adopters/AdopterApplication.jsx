@@ -71,7 +71,7 @@ const AdopterApplication = () => {
                   <th>Status</th>
                 </tr>
               </thead>
-              <tbody className='flex flex-col w-full overflow-y-scroll min-h-[550px]'>
+              <tbody className='flex flex-col w-full overflow-y-scroll scrollbar-thin min-h-[550px]'>
                 {applicant.map((adopter) => (
                   <tr key={adopter.application_id} className='grid grid-cols-6 justify-items-start place-items-center w-full bg-[#FFF] p-3 rounded-[15px] text-[#2F2F2F] border-b-1 border-b-[#595959]'>
                     <td>{adopter.application_id}</td>

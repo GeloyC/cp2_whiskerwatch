@@ -73,7 +73,7 @@ const FeedingApplications = () => {
                   <th>Status</th>
                 </tr>
               </thead>
-              <tbody className='flex flex-col w-full overflow-y-scroll min-h-[600px]'>
+              <tbody className='flex flex-col w-full overflow-y-scroll scrollbar-thin min-h-[600px]'>
                 {applicant.map((application) => (
                   <tr key={application.application_number} className='grid grid-cols-5 justify-items-start place-items-center w-full bg-[#FFF] p-3 rounded-[15px] text-[#2F2F2F] border-b-1 border-b-[#595959]'>
                     <td>{application.application_number}</td>
