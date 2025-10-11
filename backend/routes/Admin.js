@@ -905,7 +905,7 @@ AdminRoute.get('/adopters_certificate/:user_id', async (req, res) => {
 
 
 AdminRoute.post('/upload_certificate', uploadCertificate.single('certificate'), async (req, res) => {
-    const dbConnection = getDB(); // Ensure getDB is imported and functional
+    const db = getDB(); // Ensure getDB is imported and functional
     const { adopter_id } = req.body; // Changed from adoption_id to adopter_id
 
     try {
@@ -922,28 +922,29 @@ AdminRoute.post('/upload_certificate', uploadCertificate.single('certificate'), 
         const certificateUrl = req.file.path; // Cloudinary URL
 
         // Begin transaction to ensure atomicity
-        await dbConnection.beginTransaction();
+        await db.beginTransaction();
+        console.log('Executing UPDATE query with:', { certificateUrl, adopter_id });
 
         // Update user/adopter record with Cloudinary URL (assuming a users table)
-        const [updateResult] = await dbConnection.query(
-            'UPDATE users SET certificate = ? WHERE adopter_id = ?', // Adjust table name if different
+        const [updateResult] = await db.query(
+            'UPDATE adoption SET certificate = ? WHERE adopter_id = ?', // Adjust table name if different
             [certificateUrl, adopter_id]
         );
 
         if (updateResult.affectedRows === 0) {
-            await dbConnection.rollback();
+            await db.rollback();
             return res.status(404).json({ error: 'No adopter record found or no changes made' });
         }
 
         // Send notification to adopter
         const message = 'Your adoption certificate is now available. Visit your profile to view it. Congratulations!';
-        await dbConnection.query(
+        await db.query(
             'INSERT INTO notifications (user_id, message, is_read, created_at) VALUES (?, ?, 0, NOW())',
             [adopter_id, message] // Use adopter_id as user_id
         );
 
         // Commit transaction
-        await dbConnection.commit();
+        await db.commit();
 
         res.status(200).json({
             message: 'Certificate uploaded successfully to Cloudinary and notification sent.',
@@ -951,7 +952,7 @@ AdminRoute.post('/upload_certificate', uploadCertificate.single('certificate'), 
         });
     } catch (err) {
         // Rollback transaction on error
-        if (dbConnection) await dbConnection.rollback();
+        if (db) await db.rollback();
         console.error('Error uploading certificate:', {
             error: err.message,
             stack: err.stack,
