@@ -358,8 +358,8 @@ const CatProfileProperty = () => {
                                         {catImage.map((image, index) => (
                                             <div key={index} className='relative flex items-center max-w-[250px] h-[250px] rounded-[10px] overflow-hidden bg-[#CCCCCC] border-1 border-[#CCCCCC]'>
                                                 <button type='button' onClick={() => handleDeleteImage(image.image_id)}
-                                                className='absolute top-2 right-2 bg-[#DC8801] text-[#FFF] p-1 pl-2 pr-2 rounded-[15px] cursor-pointer active:bg-[#2F2F2F]'>delete</button>
-                                                <img src={imageURL.url} alt={`Cat Image ${index}`} className="w-full h-full object-cover"/>
+                                                className='absolute top-2 right-2 bg-[#DC8801] text-[#FFF] p-1 pl-2 pr-2 rounded-[15px] cursor-pointer active:bg-[#2F2F2F]'>Delete</button>
+                                                <img src={image.url} alt={`Cat Image ${index}`} className="w-full h-full object-cover"/>
                                             </div>
                                         ))}
                                         
