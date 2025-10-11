@@ -3,6 +3,7 @@ import cors from "cors";
 import { Router } from "express";
 import {getDB} from "../database.js"
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import cloudinary from "../config/cloudinary.js";
 import bcrypt from 'bcrypt';
 
 
@@ -60,35 +61,26 @@ const uploadProfile = multer({
 });
 
 
-const certificateStorage = multer.diskStorage({
-    destination: function (req, file, callback) {
-        const dir = path.join(process.cwd(), "FileUploads/certificate")
-        
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
-        } 
-        callback(null, dir);
-    },
-    
-    
-    filename: function (req, file, callback) {
-        callback(null, Date.now() + path.extname(file.originalname));
+const certificateCloudinaryStorage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'whiskerwatch/certificates',
+        allowed_formats: ['jpg', 'png', 'pdf'],
+        public_id: (req, file) => `${Date.now()}-${file.originalname.split('.')[0]}`,
     },
 });
 
 const uploadCertificate = multer({
-    storage: certificateStorage, 
-    fileFilter: function(req, file, callback) {
+    storage: certificateCloudinaryStorage,
+    fileFilter: function (req, file, callback) {
         if (
         file.mimetype === 'image/jpeg' ||
         file.mimetype === 'image/png' ||
-        file.mimetype === 'application/pdf' 
+        file.mimetype === 'application/pdf'
         ) {
         callback(null, true);
         } else {
-        req.err = 'File is invalid!';
-        if (!req.invalidFiles) req.invalidFiles = [];
-        req.invalidFiles.push(file.originalname);
+        req.err = 'Invalid file format';
         callback(null, false);
         }
     },
@@ -812,41 +804,89 @@ AdminRoute.get('/adopters_certificate/:user_id', async (req, res) => {
 
 
 
+// AdminRoute.post('/upload_certificate', uploadCertificate.single('certificate'), async (req, res) => {
+//     const db = getDB();
+//     const { adoption_id } = req.body;
+//     const filename = req.file.filename;
+
+//     try {
+//         await db.query(
+//             'UPDATE adoption SET certificate = ? WHERE adoption_id = ?',
+//             [filename, adoption_id]
+//         );
+
+//         const [userResult] = await db.query(
+//             `SELECT adopter_id FROM adoption WHERE adoption_id = ?`,
+//             [adoption_id]
+//         );
+
+//         if (!userResult || userResult.length === 0) {
+//             return res.status(404).json({ error: 'Adoption record not found' });
+//         }
+
+//         const user_id = userResult[0].adopter_id;
+
+//         const message = 'Your adoption certificate is now available. Visit your profile to view it. Congratulations!';
+//         await db.query(
+//             `INSERT INTO notifications (user_id, message, is_read, created_at)
+//             VALUES (?, ?, 0, NOW())`,
+//             [user_id, message]
+//         );
+
+//         res.json({ message: 'Certificate uploaded and notification sent' });
+
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).json({ error: 'Failed to upload certificate and notify user' });
+//     }
+// });
+
+
 AdminRoute.post('/upload_certificate', uploadCertificate.single('certificate'), async (req, res) => {
     const db = getDB();
     const { adoption_id } = req.body;
-    const filename = req.file.filename;
 
     try {
+        if (!req.file || !req.file.path) {
+        return res.status(400).json({ error: 'No file uploaded' });
+        }
+
+        const certificateUrl = req.file.path; // Cloudinary automatically provides the file URL
+
+        // Update adoption record with Cloudinary URL
         await db.query(
-            'UPDATE adoption SET certificate = ? WHERE adoption_id = ?',
-            [filename, adoption_id]
+        'UPDATE adoption SET certificate = ? WHERE adoption_id = ?',
+        [certificateUrl, adoption_id]
         );
 
+        // Get adopter_id for notification
         const [userResult] = await db.query(
-            `SELECT adopter_id FROM adoption WHERE adoption_id = ?`,
-            [adoption_id]
+        `SELECT adopter_id FROM adoption WHERE adoption_id = ?`,
+        [adoption_id]
         );
 
         if (!userResult || userResult.length === 0) {
-            return res.status(404).json({ error: 'Adoption record not found' });
+        return res.status(404).json({ error: 'Adoption record not found' });
         }
 
         const user_id = userResult[0].adopter_id;
 
+        // Send notification
         const message = 'Your adoption certificate is now available. Visit your profile to view it. Congratulations!';
         await db.query(
-            `INSERT INTO notifications (user_id, message, is_read, created_at)
-            VALUES (?, ?, 0, NOW())`,
-            [user_id, message]
+        `INSERT INTO notifications (user_id, message, is_read, created_at)
+        VALUES (?, ?, 0, NOW())`,
+        [user_id, message]
         );
 
-        res.json({ message: 'Certificate uploaded and notification sent' });
-
+        res.json({
+        message: 'Certificate uploaded successfully to Cloudinary and notification sent.',
+        certificate_url: certificateUrl,
+        });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Failed to upload certificate and notify user' });
-    }
+        console.error('Error uploading certificate:', err);
+        res.status(500).json({ error: 'Failed to upload certificate to Cloudinary' });
+    } 
 });
 
 

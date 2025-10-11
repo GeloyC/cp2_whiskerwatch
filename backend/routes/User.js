@@ -764,70 +764,143 @@ UserRoute.post('/feeding/form', upload.single('file'), async (req, res) => {
 })
 
 
-UserRoute.post('/adoption/form', uploadAdoptionForm.single('file'), async (req, res) => {
-    const db = getDB();
-    const { user_id, cat_id } = req.body;
-    const file = req.file;
+// UserRoute.post('/adoption/form', uploadAdoptionForm.single('file'), async (req, res) => {
+//     const db = getDB();
+//     const { user_id, cat_id } = req.body;
+//     const file = req.file;
 
-    if (!file || !user_id || !cat_id) {
-        return res.status(400).json({ message: 'Missing required fields or file.' });
-    }
+//     if (!file || !user_id || !cat_id) {
+//         return res.status(400).json({ message: 'Missing required fields or file.' });
+//     }
 
-    try {
-        const filename = file.filename;
+//     try {
+//         const filename = file.filename;
 
-        const [catRows] = await db.query(`
-            SELECT adoption_status FROM cat WHERE cat_id = ?
-        `, [cat_id]);
+//         const [catRows] = await db.query(`
+//             SELECT adoption_status FROM cat WHERE cat_id = ?
+//         `, [cat_id]);
 
-        if (catRows.length === 0) {
-            return res.status(404).json({ message: 'Cat not found.' });
-        }
+//         if (catRows.length === 0) {
+//             return res.status(404).json({ message: 'Cat not found.' });
+//         }
 
-        if (catRows[0].adoption_status !== 'Available') {
-            return res.status(400).json({ message: 'This cat is no longer available for adoption.' });
-        }
+//         if (catRows[0].adoption_status !== 'Available') {
+//             return res.status(400).json({ message: 'This cat is no longer available for adoption.' });
+//         }
 
-        // Check if a user has pending application
-        const [userPending] = await db.query(`
-          SELECT * FROM adoption_application
-            WHERE user_id = ? AND cat_id = ? AND status = 'Pending';    
-        `, [user_id, cat_id]);
+//         // Check if a user has pending application
+//         const [userPending] = await db.query(`
+//           SELECT * FROM adoption_application
+//             WHERE user_id = ? AND cat_id = ? AND status = 'Pending';    
+//         `, [user_id, cat_id]);
 
-        if (userPending.length > 0) {
-            return res.status(409).json({ message: 'You already have a pending application for this cat.' });
-        }
+//         if (userPending.length > 0) {
+//             return res.status(409).json({ message: 'You already have a pending application for this cat.' });
+//         }
 
-        // Check if a user already applied for the cat thus preventing other from trying to apply to the cat
-        const [catPending] = await db.query(`
-            SELECT * FROM adoption_application
-            WHERE cat_id = ? AND status = 'Pending'
-        `, [cat_id]);
+//         // Check if a user already applied for the cat thus preventing other from trying to apply to the cat
+//         const [catPending] = await db.query(`
+//             SELECT * FROM adoption_application
+//             WHERE cat_id = ? AND status = 'Pending'
+//         `, [cat_id]);
 
-        if (catPending.length > 0) {
-            return res.status(409).json({ message: 'Another user already has a pending application for this cat.' });
-        }
+//         if (catPending.length > 0) {
+//             return res.status(409).json({ message: 'Another user already has a pending application for this cat.' });
+//         }
 
-        // Insert into adoption_application table
-        const [result] = await db.query(`
-            INSERT INTO adoption_application (
-                user_id,
-                cat_id,
-                application_form,
-                status
-            ) VALUES (?, ?, ?, 'Pending')
-        `, [user_id, cat_id, filename]);
+//         // Insert into adoption_application table
+//         const [result] = await db.query(`
+//             INSERT INTO adoption_application (
+//                 user_id,
+//                 cat_id,
+//                 application_form,
+//                 status
+//             ) VALUES (?, ?, ?, 'Pending')
+//         `, [user_id, cat_id, filename]);
 
-        return res.status(200).json({ message: 'Application submitted successfully.', application_id: result.insertId });
+//         return res.status(200).json({ message: 'Application submitted successfully.', application_id: result.insertId });
 
-    } catch (err) {
-        console.error(err);
-        return res.status(500).json({ message: 'Server error occurred.' });
-    }
-});
+//     } catch (err) {
+//         console.error(err);
+//         return res.status(500).json({ message: 'Server error occurred.' });
+//     }
+// });
 
 
 // Post Request for Feeding Report
+
+UserRoute.post('/adoption/form', uploadAdoptionForm.single('file'), async (req, res) => {
+  const db = getDB();
+  const { user_id, cat_id } = req.body;
+  const file = req.file;
+
+  if (!file || !user_id || !cat_id) {
+    return res.status(400).json({ message: 'Missing required fields or file.' });
+  }
+
+  try {
+    const fileUrl = file.path; // <-- Cloudinary returns a .path that is actually the file's URL
+
+    // Check if cat exists and is available
+    const [catRows] = await db.query(
+      `SELECT adoption_status FROM cat WHERE cat_id = ?`,
+      [cat_id]
+    );
+
+    if (catRows.length === 0) {
+      return res.status(404).json({ message: 'Cat not found.' });
+    }
+
+    if (catRows[0].adoption_status !== 'Available') {
+      return res.status(400).json({ message: 'This cat is no longer available for adoption.' });
+    }
+
+    // Check if user already has a pending application for this cat
+    const [userPending] = await db.query(
+      `SELECT * FROM adoption_application
+        WHERE user_id = ? AND cat_id = ? AND status = 'Pending'`,
+      [user_id, cat_id]
+    );
+
+    if (userPending.length > 0) {
+      return res.status(409).json({ message: 'You already have a pending application for this cat.' });
+    }
+
+    // Check if another user has already applied for this cat
+    const [catPending] = await db.query(
+      `SELECT * FROM adoption_application
+          WHERE cat_id = ? AND status = 'Pending'`,
+      [cat_id]
+    );
+
+    if (catPending.length > 0) {
+      return res.status(409).json({ message: 'Another user already has a pending application for this cat.' });
+    }
+
+    // Insert new application with Cloudinary URL
+    const [result] = await db.query(
+      `INSERT INTO adoption_application (
+          user_id,
+          cat_id,
+          application_form,
+          status
+      ) VALUES (?, ?, ?, 'Pending')`,
+      [user_id, cat_id, fileUrl]
+    );
+
+    return res.status(200).json({
+      message: 'Application submitted successfully.',
+      application_id: result.insertId,
+      file_url: fileUrl,
+    });
+
+  } catch (err) {
+    console.error('Error during adoption form upload:', err);
+    return res.status(500).json({ message: 'Server error occurred.' });
+  }
+});
+
+
 UserRoute.post('/feeding_report/:user_id', async (req, res) => {
   const db = getDB();
   const { report } = req.body;
