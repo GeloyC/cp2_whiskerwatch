@@ -183,31 +183,60 @@ const AdoptersList = () => {
     fetchAdopter();
   }, []);
 
+  // const handleUploadCertificate = async (e, adoptee) => {
+  //   const file = e.target.files[0];
+  //   if (!file || !file.name) {
+  //     console.warn('No file selected or invalid file object.');
+  //     return;
+  //   }
+
+  //   // Safely extract file extension
+  //   const extension = file.name.includes('.') ? file.name.slice(file.name.lastIndexOf('.')) : '';
+  //   const filename = `Certificate_${adoptee.adopter}`;
+
+  //   const certificateForm = new FormData();
+  //   certificateForm.append('certificate', file, filename);
+  //   certificateForm.append('adoption_id', adoptee.adoption_id);
+
+  //   try {
+  //     const response = await axios.post(`${url}/admin/upload_certificate/:${adoptee.adoption_id}`, certificateForm, {
+  //       headers: {
+  //         'Content-Type': 'multipart/form-data',
+  //       },
+  //     });
+
+  //     // Update the adopter state with the new certificate URL
+  //     const updatedAdopters = adopters.map((a) =>
+  //       a.adoption_id === adoptee.adoption_id ? { ...a, certificate: response.data.certificateUrl } : a
+  //     );
+  //     setAdopters(updatedAdopters);
+  //   } catch (error) {
+  //     console.error('Upload failed:', error.response?.data || error.message);
+  //     alert('Failed to upload certificate. Please try again.');
+  //   }
+  // };
+
   const handleUploadCertificate = async (e, adoptee) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (!file || !file.name) {
       console.warn('No file selected or invalid file object.');
       return;
     }
 
-    // Safely extract file extension
     const extension = file.name.includes('.') ? file.name.slice(file.name.lastIndexOf('.')) : '';
-    const filename = `Certificate_${adoptee.adopter}`;
+    const filename = `Certificate_${adoptee.adopter.replace(/\s+/g, '_')}_${adoptee.adoption_id}${extension}`;
 
     const certificateForm = new FormData();
     certificateForm.append('certificate', file, filename);
-    certificateForm.append('adoption_id', adoptee.adoption_id);
+    certificateForm.append('adopter_id', adoptee.adopter_id); // Use adopter_id if available
 
     try {
-      const response = await axios.post(`${url}/admin/upload_certificate/:${adoptee.adoption_id}`, certificateForm, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+      const response = await axios.post(`${url}/admin/upload_certificate`, certificateForm, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
-
-      // Update the adopter state with the new certificate URL
+      console.log('Upload response:', response.data); // Debug
       const updatedAdopters = adopters.map((a) =>
-        a.adoption_id === adoptee.adoption_id ? { ...a, certificate: response.data.certificateUrl } : a
+        a.adopter_id === adoptee.adopter_id ? { ...a, certificate: response.data.certificateUrl } : a
       );
       setAdopters(updatedAdopters);
     } catch (error) {
@@ -259,7 +288,7 @@ const AdoptersList = () => {
                   <td>{adoptee.adoption_date}</td>
                   <td>{adoptee.contactnumber}</td>
                   <td className='flex items-center justify-start gap-2'>
-                    {adoptee.certificate ? (
+                    {/* {adoptee.certificate ? (
                       <a
                         href={adoptee.certificate}
                         target='_blank'
@@ -286,7 +315,37 @@ const AdoptersList = () => {
                         />
                         <img src="/assets/icons/add-white.png" alt="" className='w-full h-full object-cover'/>
                       </label>
+                    )} */}
+
+                    {adoptee.certificate ? (
+                      <a
+                        href={adoptee.certificate}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='flex items-center justify-between self-start gap-3 p-1 pl-4 pr-4 bg-[#FDF5D8] text-[#2F2F2F] rounded-[10px] hover:underline border-dashed border-2 border-[#595959]'
+                      >
+                        View Certificate
+                        <div className='w-[25px] h-auto'>
+                          <img src="/src/assets/icons/document-black.png" alt="" />
+                        </div>
+                      </a>
+                    ) : (
+                      <label className='p-1 pl-4 pr-4 bg-[#FDF5D8] text-[#DC8801] rounded-[10px]'>No Certificate</label>
                     )}
+
+                    {!adoptee.certificate && (
+                      <label htmlFor={`adoption_certificate_${adoptee.adoption_id}`} className='w-[25px] h-[25px] object-fit p-2 bg-[#2F2F2F] rounded-[15px] cursor-pointer hover:bg-[#595959] active:bg-[#2F2F2F]'>
+                        <input
+                          type="file"
+                          accept='image/jpeg, image/png'
+                          id={`adoption_certificate_${adoptee.adoption_id}`}
+                          hidden
+                          onChange={(e) => handleUploadCertificate(e, adoptee)}
+                        />
+                        <img src="/assets/icons/add-white.png" alt="" className='w-full h-full object-cover'/>
+                      </label>
+                    )}
+
                   </td>
                 </tr>
               ))}
