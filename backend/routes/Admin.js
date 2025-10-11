@@ -765,7 +765,7 @@ AdminRoute.get('/adopters', async (req, res) => {
     const db = getDB();
     try {
         const [adopters] = await db.query(`
-            SELECT adoption_id, cat_name, adopter, 
+            SELECT adoption_id, cat_name, adopter, adopter_id,
                 DATE_FORMAT(adoption_date, '%Y-%m-%d') AS adoption_date,
                 certificate, contactnumber
             FROM adoption;
@@ -850,118 +850,130 @@ AdminRoute.get('/adopters_certificate/:user_id', async (req, res) => {
 //     }
 // });
 
-
-// AdminRoute.post('/upload_certificate/:adoption_id', uploadCertificate.single('certificates'), async (req, res) => {
-//     const db = getDB();
-//     const { adoption_id } = req.params;
-
-//     try {
-//         if (!req.file || !req.file.path) {
-//             return res.status(400).json({ error: 'No file uploaded' });
-//         }
-//         // Check if file was uploaded
-//         if (!req.file || !req.file.path) {
-//             return res.status(400).json({ error: 'No file uploaded' });
-//         }
-
-//         const certificateUrl = req.file.path; // Cloudinary automatically provides the file URL
-
-//         // Update adoption record with Cloudinary URL
-//         await db.query(
-//             'UPDATE adoption SET certificate = ? WHERE adoption_id = ?',
-//             [certificateUrl, adoption_id]
-//         );
-
-//         // Get adopter_id for notification
-//         const [userResult] = await db.query(
-//             `SELECT adopter_id FROM adoption WHERE adoption_id = ?`,
-//             [adoption_id]
-//         );
-
-//         if (!userResult || userResult.length === 0) {
-//             return res.status(404).json({ error: 'Adoption record not found' });
-//         }
-
-//         const user_id = userResult[0].adopter_id;
-
-//         // Send notification
-//         const message = 'Your adoption certificate is now available. Visit your profile to view it. Congratulations!';
-//         await db.query(
-//             `INSERT INTO notifications (user_id, message, is_read, created_at)
-//             VALUES (?, ?, 0, NOW())`,
-//             [user_id, message]
-//         );
-
-//         res.json({
-//             message: 'Certificate uploaded successfully to Cloudinary and notification sent.',
-//             certificate_url: certificateUrl,
-//         });
-//     } catch (err) {
-//         console.error('Error uploading certificate:', err);
-//         res.status(500).json({ error: 'Failed to upload certificate to Cloudinary' });
-//     } 
-// });
-
-
-
 AdminRoute.post('/upload_certificate', uploadCertificate.single('certificate'), async (req, res) => {
-    const db = getDB(); // Ensure getDB is imported and functional
-    const { adopter_id } = req.body; // Changed from adoption_id to adopter_id
+    const dbConnection = getDB();
+    const { adoption_id } = req.body;
 
     try {
-        // Validate adopter_id
-        if (!adopter_id) {
-            return res.status(400).json({ error: 'Adopter ID is required' });
+        if (!adoption_id) {
+            return res.status(400).json({ error: 'Adoption ID is required' });
         }
 
-        // Check if file was uploaded
         if (!req.file || !req.file.path) {
-            return res.status(400).json({ error: 'No file uploaded' });
+            return res.status(400).json({ 
+                error: 'No file uploaded or invalid file format', 
+                details: req.err || 'Unknown file upload issue' 
+            });
         }
 
-        const certificateUrl = req.file.path; // Cloudinary URL
+        const certificateUrl = req.file.path;
 
-        // Begin transaction to ensure atomicity
-        await db.beginTransaction();
-        console.log('Executing UPDATE query with:', { certificateUrl, adopter_id });
+        await dbConnection.beginTransaction();
 
-        // Update user/adopter record with Cloudinary URL (assuming a users table)
-        const [updateResult] = await db.query(
-            'UPDATE adoption SET certificate = ? WHERE adopter_id = ?', // Adjust table name if different
-            [certificateUrl, adopter_id]
+        console.log('Executing UPDATE query with:', { certificateUrl, adoption_id });
+
+        const [updateResult] = await dbConnection.query(
+            'UPDATE adoption SET certificate = ? WHERE adoption_id = ?',
+            [certificateUrl, adoption_id]
         );
 
         if (updateResult.affectedRows === 0) {
-            await db.rollback();
-            return res.status(404).json({ error: 'No adopter record found or no changes made' });
+            await dbConnection.rollback();
+            return res.status(404).json({ error: 'No adoption record found for the provided adoption_id' });
         }
 
-        // Send notification to adopter
         const message = 'Your adoption certificate is now available. Visit your profile to view it. Congratulations!';
-        await db.query(
+        await dbConnection.query(
             'INSERT INTO notifications (user_id, message, is_read, created_at) VALUES (?, ?, 0, NOW())',
-            [adopter_id, message] // Use adopter_id as user_id
+            [adoption_id, message] // Adjust if notifications uses adopter_id
         );
 
-        // Commit transaction
-        await db.commit();
+        await dbConnection.commit();
 
         res.status(200).json({
             message: 'Certificate uploaded successfully to Cloudinary and notification sent.',
             certificateUrl: certificateUrl,
         });
     } catch (err) {
-        // Rollback transaction on error
-        if (db) await db.rollback();
+        if (dbConnection) await dbConnection.rollback();
         console.error('Error uploading certificate:', {
-            error: err.message,
+            error: err.message || 'No error message provided',
             stack: err.stack,
+            sqlError: err.sqlMessage || 'No SQL error message',
+            sqlState: err.sqlState || 'No SQL state',
+            code: err.code || 'No error code',
             requestBody: req.body,
             file: req.file ? { filename: req.file.originalname, path: req.file.path } : null,
         });
-        res.status(500).json({ error: 'Failed to upload certificate to Cloudinary', details: err.message });
+        res.status(500).json({
+            error: 'Failed to upload certificate to Cloudinary',
+            details: err.message || 'Unknown server error',
+            sqlError: err.sqlMessage || null,
+        });
+    } finally {
+        if (dbConnection && dbConnection.release) dbConnection.release();
     }
 });
+
+
+// AdminRoute.post('/upload_certificate', uploadCertificate.single('certificate'), async (req, res) => {
+//     const db = getDB(); // Ensure getDB is imported and functional
+//     const { adopter_id } = req.body; // Changed from adoption_id to adopter_id
+
+//     try {
+//         // Validate adopter_id
+//         if (!adopter_id) {
+//             return res.status(400).json({ error: 'Adopter ID is required' });
+//         }
+
+//         // Check if file was uploaded
+//         if (!req.file || !req.file.path) {
+//             return res.status(400).json({ error: 'No file uploaded' });
+//         }
+
+//         const certificateUrl = req.file.path; // Cloudinary URL
+
+//         // Begin transaction to ensure atomicity
+//         await db.beginTransaction();
+//         console.log('Executing UPDATE query with:', { certificateUrl, adopter_id });
+
+//         // Update user/adopter record with Cloudinary URL (assuming a users table)
+//         const [updateResult] = await db.query(
+//             'UPDATE adoption SET certificate = ? WHERE adopter_id = ?', // Adjust table name if different
+//             [certificateUrl, adopter_id]
+//         );
+
+//         if (updateResult.affectedRows === 0) {
+//             await db.rollback();
+//             return res.status(404).json({ error: 'No adopter record found or no changes made' });
+//         }
+
+//         // Send notification to adopter
+//         const message = 'Your adoption certificate is now available. Visit your profile to view it. Congratulations!';
+//         await db.query(
+//             'INSERT INTO notifications (user_id, message, is_read, created_at) VALUES (?, ?, 0, NOW())',
+//             [adopter_id, message] // Use adopter_id as user_id
+//         );
+
+//         // Commit transaction
+//         await db.commit();
+
+//         res.status(200).json({
+//             message: 'Certificate uploaded successfully to Cloudinary and notification sent.',
+//             certificateUrl: certificateUrl,
+//         });
+//     } catch (err) {
+//         // Rollback transaction on error
+//         if (db) await db.rollback();
+//         console.error('Error uploading certificate:', {
+//             error: err.message,
+//             stack: err.stack,
+//             requestBody: req.body,
+//             file: req.file ? { filename: req.file.originalname, path: req.file.path } : null,
+//         });
+//         res.status(500).json({ error: 'Failed to upload certificate to Cloudinary', details: err.message });
+//     }
+// });
 
 
 
