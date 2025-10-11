@@ -96,21 +96,22 @@ const CatProfile = () => {
                 const catId = catInfo[currentCatIndex].cat_id;
                 const response = await axios.get(`${url}/cat/images/${catId}`);
 
-                // const imageUrls = response.data.map(image => ({
-                //     filename: image.image_filename,
-                //     url: image.image_filename, // Cloudinary URL
-                // }));
-                setCatImage(response.data)
+                const imageUrls = response.data.map(image => ({
+                    ...image,
+                    url: image.url || image.image_filename, // fallback just in case
+                }));
 
-                // if (imageUrls.length === 0) {
-                //     setCatImage([]);
-                //     setSelectedImage('');
-                //     setSelectedImageIndex(null);
-                // } else {
-                //     setCatImage(imageUrls);
-                //     setSelectedImage(imageUrls[0].url);
-                //     setSelectedImageIndex(0);
-                // }
+                setCatImage(imageUrls);
+
+                if (imageUrls.length === 0) {
+                    setCatImage([]);
+                    setSelectedImage('');
+                    setSelectedImageIndex(null);
+                } else {
+                    setCatImage(imageUrls);
+                    setSelectedImage(imageUrls[0].url);
+                    setSelectedImageIndex(0);
+                }
             } catch (err) {
                 console.error('Error fetching cat images:', err);
             }
