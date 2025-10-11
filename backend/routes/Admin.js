@@ -1043,46 +1043,44 @@ AdminRoute.get('/adopters_certificate/:user_id', async (req, res) => {
 // });
 
 
-AdminRoute.post(
-  "/upload_certificate",
-  (req, res, next) => {
-    uploadCertificate.single("certificate")(req, res, (err) => {
-      if (err) {
-        console.error("Multer error:", err); // ✅ This shows file rejection errors
-        return res.status(400).json({ error: err.message });
-      }
-      next();
-    });
-  },
-  async (req, res) => {
-    try {
-      console.log("Body received:", req.body);
-      console.log("File received:", req.file);
+AdminRoute.post("/upload_certificate", (req, res, next) => {
+        uploadCertificate.single("certificate")(req, res, (err) => {
+        if (err) {
+            console.error("Multer error:", err); 
+            return res.status(400).json({ error: err.message });
+        }
+        next();
+        });
+    },
+    async (req, res) => {
+        try {
+        console.log("Body received:", req.body);
+        console.log("File received:", req.file);
 
-      const { adoption_id } = req.body;
-      if (!req.file || !req.file.path) {
-        console.error("File missing or invalid format!");
-        return res.status(400).json({ error: "No file uploaded or invalid file format" });
-      }
+        const { adoption_id } = req.body;
+        if (!req.file || !req.file.path) {
+            console.error("File missing or invalid format!");
+            return res.status(400).json({ error: "No file uploaded or invalid file format" });
+        }
 
-      const certificateUrl = req.file.path;
+        const certificateUrl = req.file.path;
 
-      const [updateResult] = await getDB().query(
-        "UPDATE adoption SET certificate = ? WHERE adoption_id = ?",
-        [certificateUrl, adoption_id]
-      );
+        const [updateResult] = await getDB().query(
+            "UPDATE adoption SET certificate = ? WHERE adoption_id = ?",
+            [certificateUrl, adoption_id]
+        );
 
-      console.log("Update result:", updateResult);
+        console.log("Update result:", updateResult);
 
-      res.status(200).json({
-        message: "Certificate uploaded successfully",
-        certificateUrl,
-      });
-    } catch (err) {
-      console.error("Server error during certificate upload:", err);
-      res.status(500).json({ error: "Server error", message: err.message });
+        res.status(200).json({
+            message: "Certificate uploaded successfully",
+            certificateUrl,
+        });
+        } catch (err) {
+        console.error("Server error during certificate upload:", err);
+        res.status(500).json({ error: "Server error", message: err.message });
+        }
     }
-  }
 );
 
 
