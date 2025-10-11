@@ -30,10 +30,10 @@ const AllUsers = () => {
   })  
 
   return (
-    <div className='relative flex flex-col h-screen'>
+    <div className='relative flex flex-col h-screen overflow-hidden'>
       <div className='flex flex-row w-full'> 
           <AdminSideBar className='max-w-[400px]'/>
-          <div className='flex flex-col items-center xl:p-10 lg:p-10 min-h-screen gap-5 w-full mx-auto overflow-hidden'>
+          <div className='flex flex-col items-center xl:p-10 lg:p-10 min-h-screen gap-5 w-full mx-auto'>
             <div className='xl:hidden lg:hidden flex flex-col justify-center items-center h-screen w-full gap-3 rounded-[15px]'>
                 <label className='text-2xl text-[#2F2F2F] text-center'>Unable to access this page</label>
                 <label className='text-[#8f8f8f] text-center'>You can access the page on larger screen size such as desktop/laptop screens</label>
@@ -62,7 +62,7 @@ const AllUsers = () => {
                   <th></th>
                 </tr>
               </thead>
-              <tbody className='flex flex-col w-full gap-1 overflow-y-auto scrollbar-thin min-h-[550px]'>
+              <tbody className='flex flex-col w-full gap-1 overflow-y-scroll scrollbar-thin h-[550px]'>
                 {filteredItems.map((user) => (
                   <tr key={user.user_id} className='grid grid-cols-[10%_20%_30%_30%_20%] w-full place-items-center justify-items-start bg-[#FFF] text-[#2F2F2F] rounded-[10px] p-3 border-b-1 border-b-[#595959]'>
                     <td>{user.user_id}</td>
