@@ -102,23 +102,19 @@ const AdopterApplicationView = () => {
 
                         {applicant.application_form && (
                             <object
-                                data={
-                                    applicant.application_form.startsWith('http')
-                                        ? applicant.application_form
-                                        : `${url}/uploads/adoption_form/${applicant.application_form}`
-                                }
+                                data={applicant.application_form}
                                 type="application/pdf"
                                 width="100%"
                                 height="600px" >
-                                <p> Your browser does not support embedded PDFs.
-                                    <a href={
-                                        applicant.application_form.startsWith('http')
-                                            ? applicant.application_form
-                                            : `${url}/uploads/adoption_form/${applicant.application_form}`
-                                    } target="_blank" rel="noopener noreferrer">
-                                        Click here to download the PDF.
-                                    </a>
-                                </p>
+
+                                <a href={
+                                    applicant.application_form.startsWith('http')
+                                        ? applicant.application_form
+                                        : `${url}/uploads/adoption_form/${applicant.application_form}`
+                                } target="_blank" rel="noopener noreferrer">
+                                    Click here to download the PDF.
+                                </a>
+
                             </object>
                         )}
     
