@@ -69,10 +69,15 @@ const CatProfile = () => {
             try {
             const catId = catInfo[currentCatIndex].cat_id;
             const response = await axios.get(`${url}/cat/image/${catId}`);
-            const imageUrls = response.data.map(filename => ({
-                filename: filename,
-                url: `${url}/FileUploads/cats/${filename}`
-            }));
+            const imageUrls = response.data.map(image => {
+                const file = image.image_filename;
+                return {
+                    filename: file,
+                    url: file.startsWith('http')
+                    ? file
+                    : `${url}/FileUploads/cats/${file}`,
+                };
+            });
 
             setCatImage(imageUrls);
             setSelectedImage(imageUrls[0]?.url || '');
