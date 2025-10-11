@@ -44,18 +44,19 @@ const imageStorage = new CloudinaryStorage({
 });
 
 const adoptionFormStorage = new CloudinaryStorage({
-  cloudinary,
-  params: async (req, file) => {
-    const ext = file.mimetype.split('/')[1]; // e.g., pdf, jpeg, png
-    const isPDF = file.mimetype === 'application/pdf';
+    cloudinary,
+    params: async (req, file) => {
+        const ext = file.mimetype.split('/')[1];
+        const isPDF = file.mimetype === 'application/pdf';
 
-    return {
-      folder: 'whiskerwatch/uploads/adoption_forms',
-      resource_type: isPDF ? 'raw' : 'image', // 🔥 PDFs are stored as 'raw'
-      allowed_formats: ['pdf', 'jpg', 'jpeg', 'png'],
-      public_id: `${Date.now()}-${file.originalname.split('.')[0]}`,
-    };
-  },
+        return {
+            folder: 'whiskerwatch/uploads/adoption_forms',
+            resource_type: isPDF ? 'raw' : 'image', // Ensure 'raw' for PDFs
+            allowed_formats: ['pdf', 'jpg', 'jpeg', 'png'],
+            public_id: `${Date.now()}-${file.originalname.split('.')[0]}`,
+            format: isPDF ? 'pdf' : ext, // Explicitly set format for PDFs
+        };
+    },
 });
 
 
