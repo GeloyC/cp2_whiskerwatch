@@ -116,32 +116,6 @@ const CatProfileProperty = () => {
     }
 
 
-    // const handleUploadImages = async (cat_id) => {
-    //     try {
-    //         const formData = new FormData();
-
-    //         catImagePreview.forEach(({file}) => {
-    //             formData.append('images', file);
-    //         });
-
-    //         const response = await axios.post(
-    //             `${url}/cat/uploadcatimages/${cat_id}`,
-    //             formData, {
-    //                 headers: {
-    //                     'Content-Type': 'multipart/form-data'
-    //                 },
-    //             }
-    //         );
-
-    //         if (response.status === 200) {
-    //             setCatImagePreview([])
-    //             setUploaderVisible(false);  
-    //             await fetchCatImage();
-    //         } 
-    //     } catch(err) {
-    //         console.error('Image upload failed: ', err.response?.data || err.message);
-    //     }
-    // }
 
     const handleUploadImages = async (cat_id) => {
         try {
@@ -166,21 +140,6 @@ const CatProfileProperty = () => {
 
 
 
-    // Fetching Image data of the CAT
-    // const fetchCatImage = async () => {
-    //     try {
-    //         const response = await axios.get(`${url}/cat/image/${cat_id}`);
-
-    //         const imageUrls = response.data.map(filename => ({
-    //             filename: filename,
-    //             url: `${url}/FileUploads/cats/${filename}`
-    //         }));
-
-    //         setCatImage(imageUrls);
-    //     } catch(err) {
-    //         console.error('Error fetching cat Image:', err);
-    //     }
-    // }
 
     const fetchCatImage = async () => {
         try {
@@ -306,6 +265,11 @@ const CatProfileProperty = () => {
                                         <div className='flex flex-row gap-5'>
                                             <label className='text-[#595959]'>Adopter: </label>
                                             <label className='text-[#2F2F2F] font-bold'>{adoptionHistory[0].adopter}</label>
+                                        </div>
+
+                                        <div className='flex flex-row gap-5'>
+                                            <label className='text-[#595959]'>Adopter address: </label>
+                                            <label className='text-[#2F2F2F] font-bold'>{adoptionHistory[0].address}</label>
                                         </div>
 
                                         <div className='flex flex-row gap-5'>
