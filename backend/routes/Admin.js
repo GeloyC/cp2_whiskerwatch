@@ -1084,8 +1084,12 @@ AdminRoute.post(
             certificateUrl,
         });
         } catch (err) {
-        console.error("Certificate upload error:", err);
-        res.status(500).json({ error: "Server error", details: err.message });
+            console.error("Certificate upload error:", err);
+            res.status(500).json({
+                error: "Server error during certificate upload",
+                message: err.message,
+                stack: err.stack
+            });
         }
     }
 );
