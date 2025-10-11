@@ -851,9 +851,9 @@ AdminRoute.get('/adopters_certificate/:user_id', async (req, res) => {
 // });
 
 
-AdminRoute.post('/upload_certificate', uploadCertificate.single('certificates'), async (req, res) => {
+AdminRoute.post('/upload_certificate/:adoption_id', uploadCertificate.single('certificates'), async (req, res) => {
     const db = getDB();
-    const { adoption_id } = req.body;
+    const { adoption_id } = req.params;
 
     try {
         if (!req.file || !req.file.path) {

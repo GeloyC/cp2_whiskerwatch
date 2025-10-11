@@ -199,7 +199,7 @@ const AdoptersList = () => {
     certificateForm.append('adoption_id', adoptee.adoption_id);
 
     try {
-      const response = await axios.post(`${url}/admin/upload_certificate`, certificateForm, {
+      const response = await axios.post(`${url}/admin/upload_certificate/:${adoptee.adoption_id}`, certificateForm, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -282,7 +282,7 @@ const AdoptersList = () => {
                           accept='image/jpeg, image/png, application/pdf'
                           id={`adoption_certificate_${adoptee.adoption_id}`}
                           hidden
-                          onChange={(e) => handleUploadCertificate(e, adoptee)}
+                          onChange={(e) => handleUploadCertificate(e, adoptee.adoption_id)}
                         />
                         <img src="/assets/icons/add-white.png" alt="" className='w-full h-full object-cover'/>
                       </label>
