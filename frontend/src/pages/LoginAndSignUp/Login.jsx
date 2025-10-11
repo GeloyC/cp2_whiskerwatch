@@ -295,7 +295,7 @@ const Login = () => {
   const [captchaToken, setCaptchaToken] = useState(null);
   const [resetPassForm, setResetPassForm] = useState(false);
 
-  axios.defaults.withCredentials = true;
+  // axios.defaults.withCredentials = true;
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
