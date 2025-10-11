@@ -296,22 +296,17 @@ CatRoute.get("/images/:cat_id", async (req, res) => {
     const [rows] = await db.query(
       `
       SELECT
-        ci.image_id,
-        ci.cat_id,
-        ci.image_filename,
-        ci.cloudinary_id,
-        ci.image_url AS url
-      FROM
-        cat_images ci
-      WHERE
-        ci.cat_id = ?;
+        image_id,
+        cat_id,
+        image_filename AS url,
+        cloudinary_id,
+        uploaded_at,
+        is_primary
+      FROM cat_images
+      WHERE cat_id = ?;
       `,
       [cat_id]
     );
-
-    if (!rows.length) {
-      return res.status(200).json([]);
-    }
 
     res.json(rows);
   } catch (err) {
@@ -319,6 +314,7 @@ CatRoute.get("/images/:cat_id", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch cat images" });
   }
 });
+
 
 
 // RETRIEVES ALL CAT IMAGES 
