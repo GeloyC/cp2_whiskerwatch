@@ -54,11 +54,20 @@ const FeedingApplicationView = () => {
         }
     }
 
-    const getInlineUrl = (url) => {
+    const getInlinePdfUrl = (url) => {
         if (!url) return '';
         if (url.includes('/upload/')) {
-            // add inline display flag for PDFs
+            // Ensure inline display for PDFs
             return url.replace('/upload/', '/upload/fl_attachment:false/');
+        }
+        return url;
+    };
+
+    const getDownloadPdfUrl = (url) => {
+        if (!url) return '';
+        if (url.includes('/upload/')) {
+            // Force download with attachment flag
+            return url.replace('/upload/', '/upload/fl_attachment/');
         }
         return url;
     };
@@ -110,23 +119,23 @@ const FeedingApplicationView = () => {
                             </div>
 
                             {applicant.application_form && (
-                                <object
-                                    data={getInlinePdfUrl(applicant.application_form)}
-                                    type="application/pdf"
-                                    width="100%"
-                                    height="600px" >
-
-                                    <a href={
-                                        applicant.application_form.startsWith('http')
-                                            ? applicant.application_form
-                                            : `${url}/FileUploads/${applicant.application_form}`
-                                        } 
-                                        target="_blank" 
-                                        rel="noopener noreferrer" className="text-[#889132] underline">
-                                        Click here to download the PDF.
+                                <>
+                                    <iframe
+                                        src={getInlinePdfUrl(applicant.application_form)}
+                                        title="Adoption Application PDF"
+                                        width="100%"
+                                        height="600px"
+                                        style={{ border: 'none' }}
+                                    />
+                                    <a
+                                        href={getDownloadPdfUrl(applicant.application_form)}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-[#889132] underline mt-2 inline-block"
+                                    >
+                                        Download the PDF
                                     </a>
-
-                                </object>
+                                </>
                             )}
         
                         </div>
