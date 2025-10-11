@@ -81,7 +81,7 @@ const FeedingApplications = () => {
                     <td>{application.date_applied}</td>
                     <td>
                       <Link to={`/feedingapplications/feedingapplicationview/${application.application_number}`} className='flex items-center gap-4 text-[#DC8801] underline font-bold hover:text-[#977655] active:text-[#DC8801]'>
-                        {application.application_form}
+                        View Application
                       </Link>
                     </td>
                     <td className={application.status == 'Accepted' 

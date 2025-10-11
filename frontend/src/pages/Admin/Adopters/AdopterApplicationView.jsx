@@ -105,7 +105,7 @@ const AdopterApplicationView = () => {
                                 data={
                                     applicant.application_form.startsWith('http')
                                         ? applicant.application_form
-                                        : `${url}/FileUploads/adoption_form/${applicant.application_form}`
+                                        : `${url}/uploads/adoption_form/${applicant.application_form}`
                                 }
                                 type="application/pdf"
                                 width="100%"
@@ -114,7 +114,7 @@ const AdopterApplicationView = () => {
                                     <a href={
                                         applicant.application_form.startsWith('http')
                                             ? applicant.application_form
-                                            : `${url}/FileUploads/adoption_form/${applicant.application_form}`
+                                            : `${url}/uploads/adoption_form/${applicant.application_form}`
                                     } target="_blank" rel="noopener noreferrer">
                                         Click here to download the PDF.
                                     </a>

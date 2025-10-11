@@ -79,8 +79,8 @@ const AdopterApplication = () => {
                     <td>{adopter.cat_name}</td>
                     <td>{adopter.application_date}</td>
                     <td>
-                      <Link to={`/adopterapplication/adopterapplicationview/${adopter.application_id}`} className='flex items-center gap-4 text-[#DC8801] underline font-bold hover:text-[#977655] active:text-[#DC8801]'>
-                        {adopter.application_form}
+                      <Link to={`/adopterapplication/adopterapplicationview/${adopter.application_id}`} className='flex items-center gap-4 text-[#DC8801] break-all underline font-bold hover:text-[#977655] active:text-[#DC8801]'>
+                        View Application
                       </Link>
                     </td>
                     <td className='bg-[#B5C04A] text-[#FFF] font-bold p-2 pl-4 pr-4 rounded-[10px]'>Pending</td>
