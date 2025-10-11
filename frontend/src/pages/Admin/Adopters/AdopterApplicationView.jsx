@@ -10,6 +10,9 @@ import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 
+import { PdfJs } from '@react-pdf-viewer/core';
+PdfJs.GlobalWorkerOptions.workerSrc = 'pdfjs-dist/build/pdf.worker.min.js';
+
 const AdopterApplicationView = () => {
     const url = `https://whiskerwatch-0j6g.onrender.com`;
     const { user, logout, loading: sessionLoading } = useSession();
@@ -157,7 +160,7 @@ const AdopterApplicationView = () => {
 
                         {applicant.application_form ? (
                             <div style={{ height: '600px' }}>
-                                <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
+                                <Worker workerUrl={PdfJs.GlobalWorkerOptions.workerSrc}>
                                     <Viewer
                                         fileUrl={getPdfUrl(applicant.application_form)}
                                         plugins={[defaultLayoutPluginInstance]}
