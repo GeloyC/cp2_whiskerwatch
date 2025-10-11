@@ -52,8 +52,14 @@ const FeedingApplicationView = () => {
         } catch (err) {
             console.error('Update failed:', err.response?.data || err.message);
         }
-
     }
+
+    const getInlinePdfUrl = (url) => {
+        if (!url) return '';
+        return url.includes('/upload/')
+        ? url.replace('/upload/', '/upload/fl_attachment:false/')
+        : url;
+    };
 
 
     return (
@@ -103,7 +109,7 @@ const FeedingApplicationView = () => {
 
                             {applicant.application_form && (
                                 <object
-                                    data={applicant.application_form}
+                                    data={getInlinePdfUrl(applicant.application_form)}
                                     type="application/pdf"
                                     width="100%"
                                     height="600px" >
@@ -114,7 +120,7 @@ const FeedingApplicationView = () => {
                                             : `${url}/FileUploads/${applicant.application_form}`
                                         } 
                                         target="_blank" 
-                                        rel="noopener noreferrer">
+                                        rel="noopener noreferrer" className="text-[#889132] underline">
                                         Click here to download the PDF.
                                     </a>
 
