@@ -761,21 +761,38 @@ AdminRoute.patch('/adoption_form/status_update/:application_id', verifyUser, asy
 });
 
 
-AdminRoute.get('/adopters', async (req, res) => {
-    const db = getDB();
-    try {
-        const [adopters] = await db.query(`
-            SELECT adoption_id, cat_name, adopter, adopter_id,
-                DATE_FORMAT(adoption_date, '%Y-%m-%d') AS adoption_date,
-                certificate, contactnumber
-            FROM adoption;
-        `);
+// AdminRoute.get('/adopters', async (req, res) => {
+//     const db = getDB();
+//     try {
+//         const [adopters] = await db.query(`
+//             SELECT adoption_id, cat_name, adopter, adopter_id,
+//                 DATE_FORMAT(adoption_date, '%Y-%m-%d') AS adoption_date,
+//                 certificate, contactnumber
+//             FROM adoption;
+//         `);
 
-        return res.json(adopters);
+//         return res.json(adopters);
+//     } catch (err) {
+//         return res.status(500).json({err: 'Failed to retrieve adopters!'})
+//     }
+// })
+
+AdminRoute.get('/adopters', async (req, res) => {
+    const dbConnection = getDB();
+    try {
+        const [rows] = await dbConnection.query(
+            'SELECT a.adoption_id, a.adopter_id, a.cat_name, a.adopter, a.adoption_date, a.contactnumber, c.certificate_url AS certificate ' +
+            'FROM adoption a LEFT JOIN certificates c ON a.adoption_id = c.adoption_id'
+        );
+        res.status(200).json(rows);
     } catch (err) {
-        return res.status(500).json({err: 'Failed to retrieve adopters!'})
+        console.error('Error fetching adopters:', err);
+        res.status(500).json({ error: 'Failed to fetch adopters' });
     }
-})
+});
+
+
+
 
 AdminRoute.get('/adopters/month', async (req, res) => {
     const db = getDB();
@@ -976,6 +993,60 @@ AdminRoute.get('/adopters_certificate/:user_id', async (req, res) => {
 // });
 
 
+// AdminRoute.post('/upload_certificate', uploadCertificate.single('certificate'), async (req, res) => {
+//     const dbConnection = getDB();
+//     const { adoption_id } = req.body;
+
+//     try {
+//         if (!adoption_id) {
+//             return res.status(400).json({ error: 'Adoption ID is required' });
+//         }
+
+//         if (!req.file || !req.file.path) {
+//             return res.status(400).json({ 
+//                 error: 'No file uploaded or invalid file format', 
+//                 details: req.err || 'Unknown file upload issue' 
+//             });
+//         }
+
+//         const certificateUrl = req.file.path;
+
+//         console.log('Executing UPDATE query with:', { certificateUrl, adoption_id });
+
+//         const [updateResult] = await dbConnection.query(
+//             'UPDATE adoption SET certificate = ? WHERE adoption_id = ?',
+//             [certificateUrl, adoption_id]
+//         );
+
+//         if (updateResult.affectedRows === 0) {
+//             return res.status(404).json({ error: 'No adoption record found for the provided adoption_id' });
+//         }
+
+//         res.status(200).json({
+//             message: 'Certificate uploaded successfully to Cloudinary.',
+//             certificateUrl: certificateUrl,
+//         });
+//     } catch (err) {
+//         console.error('Error uploading certificate:', {
+//             error: err.message || 'No error message provided',
+//             stack: err.stack,
+//             sqlError: err.sqlMessage || 'No SQL error message',
+//             sqlState: err.sqlState || 'No SQL state',
+//             code: err.code || 'No error code',
+//             requestBody: req.body,
+//             file: req.file ? { filename: req.file.originalname, path: req.file.path } : null,
+//         });
+//         res.status(500).json({
+//             error: 'Failed to upload certificate to Cloudinary',
+//             details: err.message || 'Unknown server error',
+//             sqlError: err.sqlMessage || null,
+//         });
+//     } finally {
+//         if (dbConnection && dbConnection.release) dbConnection.release();
+//     }
+// });
+
+
 AdminRoute.post('/upload_certificate', uploadCertificate.single('certificate'), async (req, res) => {
     const dbConnection = getDB();
     const { adoption_id } = req.body;
@@ -994,15 +1065,15 @@ AdminRoute.post('/upload_certificate', uploadCertificate.single('certificate'), 
 
         const certificateUrl = req.file.path;
 
-        console.log('Executing UPDATE query with:', { certificateUrl, adoption_id });
+        console.log('Executing INSERT query with:', { certificateUrl, adoption_id });
 
-        const [updateResult] = await dbConnection.query(
-            'UPDATE adoption SET certificate = ? WHERE adoption_id = ?',
-            [certificateUrl, adoption_id]
+        const [insertResult] = await dbConnection.query(
+            'INSERT INTO certificates (adoption_id, certificate_url) VALUES (?, ?)',
+            [adoption_id, certificateUrl]
         );
 
-        if (updateResult.affectedRows === 0) {
-            return res.status(404).json({ error: 'No adoption record found for the provided adoption_id' });
+        if (insertResult.affectedRows === 0) {
+            return res.status(500).json({ error: 'Failed to insert certificate record' });
         }
 
         res.status(200).json({
@@ -1028,7 +1099,6 @@ AdminRoute.post('/upload_certificate', uploadCertificate.single('certificate'), 
         if (dbConnection && dbConnection.release) dbConnection.release();
     }
 });
-
 
 
 export default AdminRoute;
