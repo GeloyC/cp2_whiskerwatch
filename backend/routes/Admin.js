@@ -87,7 +87,7 @@ const uploadCertificate = multer({
 });
 
 
-const upload = multer({ storage, fileFilter });
+// const upload = multer({ storage, fileFilter });
 
 
 
