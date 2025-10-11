@@ -1,6 +1,8 @@
 import express from "express";
 import { Router } from "express";
-import {getDB} from "../database.js"
+import { getDB } from "../database.js"
+import cloudinary from "../config/cloudinary.js";
+import streamifier from 'streamifier';
 
 import multer from 'multer';
 import fs from 'fs';
@@ -16,40 +18,59 @@ const __dirname = path.dirname(__filename);
 
 // ---------------- MULTER STORAGE ---------------- //
 
-const storage = multer.diskStorage({
-  destination: function (req, file, callback) {
-    const dir = path.join(process.cwd(), "FileUploads/cats")
+// const storage = multer.diskStorage({
+//   destination: function (req, file, callback) {
+//     const dir = path.join(process.cwd(), "FileUploads/cats")
 
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    } 
-    callback(null, dir);
-  },
+//     if (!fs.existsSync(dir)) {
+//       fs.mkdirSync(dir, { recursive: true });
+//     } 
+//     callback(null, dir);
+//   },
 
-  filename: function (req, file, callback) {
-    callback(null, Date.now() + path.extname(file.originalname));
-  },
-});
+//   filename: function (req, file, callback) {
+//     callback(null, Date.now() + path.extname(file.originalname));
+//   },
+// });
 
+
+
+
+
+// const upload = multer({
+//   storage,
+//   fileFilter: function(req, file, callback) {
+//     if (
+//       file.mimetype === 'image/jpeg' ||
+//       file.mimetype === 'image/png' ||
+//       file.mimetype === 'application/pdf' 
+//     ) {
+//       callback(null, true)
+//     } else {
+//       req.err = 'File is invalid!'
+//       // callback(null, false)
+
+//       if (!req.invalidFiles) req.invalidFiles = [];
+//       req.invalidFiles.push(file.originalname);
+//       callback(null, false);
+//     };
+//   },
+// });
+
+const storage = multer.memoryStorage();
 
 const upload = multer({
   storage,
   fileFilter: function(req, file, callback) {
-    if (
-      file.mimetype === 'image/jpeg' ||
-      file.mimetype === 'image/png' ||
-      file.mimetype === 'application/pdf' 
-    ) {
-      callback(null, true)
+    const allowedTypes = ['image/jpeg', 'image/png'];
+    if (allowedTypes.includes(file.mimetype)) {
+      callback(null, true);
     } else {
-      req.err = 'File is invalid!'
-      // callback(null, false)
-
       if (!req.invalidFiles) req.invalidFiles = [];
       req.invalidFiles.push(file.originalname);
       callback(null, false);
-    };
-  },
+    }
+  }
 });
 
 
@@ -290,126 +311,216 @@ CatRoute.get('/image/:cat_id', async (req, res) => {
 
 // RETRIEVES ALL CAT IMAGES 
 // PURPOSE: Display images of cat in the Home page
+// CatRoute.get("/images", async (req, res) => {
+//   const db = getDB();
+
+//   try {
+//     const [rows] = await db.query(
+//       // `SELECT image_id, cat_id, image_filename, is_primary, 
+//       //         CONCAT('http://localhost:5000/uploads/cats/', image_filename) AS url 
+//       //  FROM cat_images`
+
+//       `
+//         SELECT
+//           ci.image_id, ci.cat_id, ci.image_filename, ci.is_primary,
+//           CONCAT('https://whiskerwatch-0j6g.onrender.com/uploads/cats/', ci.image_filename) AS url
+//         FROM
+//           cat_images ci
+//         JOIN
+//           cat c ON ci.cat_id = c.cat_id
+//         WHERE
+//           c.adoption_status = 'Available';
+//       `
+//     );
+//     if (!rows.length) {
+//       return res.status(200).json([]); // no images yet
+//     }
+
+//     res.json(rows);
+//   } catch (err) {
+//       console.error("Error fetching cat images:", err);
+//       res.status(500).json({ error: "Failed to fetch cat images" });
+//   }
+// });
+
 CatRoute.get("/images", async (req, res) => {
   const db = getDB();
 
   try {
-    const [rows] = await db.query(
-      // `SELECT image_id, cat_id, image_filename, is_primary, 
-      //         CONCAT('http://localhost:5000/uploads/cats/', image_filename) AS url 
-      //  FROM cat_images`
+    const [rows] = await db.query(`
+      SELECT
+        ci.image_id, ci.cat_id, ci.image_filename AS url, ci.is_primary
+      FROM cat_images ci
+      JOIN cat c ON ci.cat_id = c.cat_id
+      WHERE c.adoption_status = 'Available'
+    `);
 
-      `
-        SELECT
-          ci.image_id, ci.cat_id, ci.image_filename, ci.is_primary,
-          CONCAT('https://whiskerwatch-0j6g.onrender.com/uploads/cats/', ci.image_filename) AS url
-        FROM
-          cat_images ci
-        JOIN
-          cat c ON ci.cat_id = c.cat_id
-        WHERE
-          c.adoption_status = 'Available';
-      `
-    );
-    if (!rows.length) {
-      return res.status(200).json([]); // no images yet
-    }
+    if (!rows.length) return res.status(200).json([]);
 
     res.json(rows);
   } catch (err) {
-      console.error("Error fetching cat images:", err);
-      res.status(500).json({ error: "Failed to fetch cat images" });
+    console.error("Error fetching cat images:", err);
+    res.status(500).json({ error: "Failed to fetch cat images" });
   }
 });
 
-// Fetch cat images by cat_id
-// CatRoute.get("/:cat_id/images", async (req, res) => {
-//   const db = getDB();
-//   const { cat_id } = req.params;
-//   try {
-//     const [rows] = await db.query(
-//       "SELECT image_filename FROM cat_images WHERE cat_id = ?",
-//       [cat_id]
-//     );
-//     const formatted = rows.map((img) => ({
-//       filename: img.image_filename,
-//       url: `$/uploads/cats/${img.image_filename}`, // ✅ direct URL
-//     }));
-//     res.json(formatted);
-//   } catch (err) {
-//     console.error("Error fetching cat images:", err);
-//     res.status(500).json({ error: "Failed to fetch images" });
-//   }
+
+// CatRoute.post('/uploadcatimages/:cat_id', upload.array('images'), async (req, res) => {
+//     console.log(req.files)
+//     const db = getDB();
+    
+//     if (req.invalidFiles) {
+//         return res.status(200).json({
+//             warning: true,
+//             message: 'Some documents did not upload due to invalid file type: ' + req.invalidFiles.join(', '),
+//         }) 
+//     }
+
+//     if (!req.files || req.files.length === 0) {
+//             return res.status(200).json({
+//                 warning: true,
+//                 message: 'No valid Images were uploaded.',
+//         });
+//     }
+
+//     const cat_id = req.params.cat_id
+//     try {
+
+//         for (const file of req.files) {
+//         const filename = file.filename;
+
+//         await db.query(
+//             `INSERT INTO cat_images (cat_id, image_filename) VALUES (?, ?)`, 
+//             [cat_id, filename]
+//         );
+//         }
+
+//         return res.status(200).json({ 
+//             warning: false, 
+//             message: 'Images uploaded succesfully!',
+//         })
+
+//     } catch(err) {
+//         console.error(err);
+//         return res.status(500).json({message: 'Database error while saving image info!'})
+//     }
 // });
 
-
 CatRoute.post('/uploadcatimages/:cat_id', upload.array('images'), async (req, res) => {
-    console.log(req.files)
-    const db = getDB();
-    
+  const db = getDB();
+  const { cat_id } = req.params;
+
+  try {
     if (req.invalidFiles) {
-        return res.status(200).json({
-            warning: true,
-            message: 'Some documents did not upload due to invalid file type: ' + req.invalidFiles.join(', '),
-        }) 
+      return res.status(200).json({
+        warning: true,
+        message: `Some files were skipped: ${req.invalidFiles.join(', ')}`,
+      });
     }
 
     if (!req.files || req.files.length === 0) {
+      return res.status(200).json({
+        warning: true,
+        message: 'No valid images were uploaded.',
+      });
+    }
+
+    const uploadResults = [];
+
+    for (const file of req.files) {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        { folder: 'whiskerwatch/cats' },
+        async (error, result) => {
+          if (error) {
+            console.error('Cloudinary upload failed:', error);
+            return res.status(500).json({ message: 'Cloudinary upload failed' });
+          }
+
+          await db.query(
+            'INSERT INTO cat_images (cat_id, image_filename, cloudinary_id) VALUES (?, ?, ?)',
+            [cat_id, result.secure_url, result.public_id]
+          );
+          uploadResults.push(result.secure_url);
+
+          if (uploadResults.length === req.files.length) {
             return res.status(200).json({
-                warning: true,
-                message: 'No valid Images were uploaded.',
-        });
-    }
-
-    const cat_id = req.params.cat_id
-
-    try {
-        for (const file of req.files) {
-        const filename = file.filename;
-
-        await db.query(
-            `INSERT INTO cat_images (cat_id, image_filename) VALUES (?, ?)`, 
-            [cat_id, filename]
-        );
+              warning: false,
+              message: 'Images uploaded successfully!',
+              images: uploadResults,
+            });
+          }
         }
+      );
 
-        return res.status(200).json({ 
-            warning: false, 
-            message: 'Images uploaded succesfully!',
-        })
-
-    } catch(err) {
-        console.error(err);
-        return res.status(500).json({message: 'Database error while saving image info!'})
+      streamifier.createReadStream(file.buffer).pipe(uploadStream);
     }
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Error uploading to Cloudinary!' });
+  }
 });
+
+
+// CatRoute.delete('/image/:filename', async (req, res) => {
+//     const db = getDB();
+//     const filename = req.params.filename;
+
+//     try {
+//         const filePath = path.join(__dirname, 'FileUploads', filename);
+
+//         // Delete the file
+//         fs.unlink(filePath, async (err) => {
+//         if (err && err.code !== 'ENOENT') {
+//             console.error(`Error deleting file: ${filename}`, err);
+//             return res.status(500).json({ error: 'Failed to delete image file' });
+//         }
+
+//         // Delete DB record
+//         await db.query(`DELETE FROM cat_images WHERE image_filename = ?`, [filename]);
+
+//         res.json({ message: `Deleted image ${filename}` });
+//         console.log({ message: `Deleted image ${filename}` })
+//         });
+
+//     } catch (err) {
+//         console.error('Error deleting image:', err);
+//         res.status(500).json({ error: 'Failed to delete image' });
+//     }
+// });
 
 CatRoute.delete('/image/:filename', async (req, res) => {
-    const db = getDB();
-    const filename = req.params.filename;
+  const db = getDB();
+  const filename = req.params.filename;
 
-    try {
-        const filePath = path.join(__dirname, 'FileUploads', filename);
+  try {
+    // Step 1: Find the record in DB (we need its cloudinary_id)
+    const [rows] = await db.query(
+      'SELECT cloudinary_id FROM cat_images WHERE image_filename = ? OR image_filename LIKE ?',
+      [filename, `%${filename}%`]
+    );
 
-        // Delete the file
-        fs.unlink(filePath, async (err) => {
-        if (err && err.code !== 'ENOENT') {
-            console.error(`Error deleting file: ${filename}`, err);
-            return res.status(500).json({ error: 'Failed to delete image file' });
-        }
-
-        // Delete DB record
-        await db.query(`DELETE FROM cat_images WHERE image_filename = ?`, [filename]);
-
-        res.json({ message: `Deleted image ${filename}` });
-        console.log({ message: `Deleted image ${filename}` })
-        });
-
-    } catch (err) {
-        console.error('Error deleting image:', err);
-        res.status(500).json({ error: 'Failed to delete image' });
+    if (!rows.length) {
+      return res.status(404).json({ error: 'Image not found in database' });
     }
+
+    const cloudinaryId = rows[0].cloudinary_id;
+
+    // Step 2: Delete from Cloudinary using the public_id
+    if (cloudinaryId) {
+      await cloudinary.uploader.destroy(cloudinaryId);
+      console.log(`Deleted from Cloudinary: ${cloudinaryId}`);
+    }
+
+    // Step 3: Delete the record from database
+    await db.query('DELETE FROM cat_images WHERE image_filename = ?', [filename]);
+
+    res.json({ message: `Successfully deleted image: ${filename}` });
+  } catch (err) {
+    console.error('Error deleting image:', err);
+    res.status(500).json({ error: 'Failed to delete image' });
+  }
 });
+
 
 CatRoute.patch('/update/:cat_id', async (req, res) => {
     const db = getDB();
@@ -455,25 +566,50 @@ CatRoute.patch('/update/:cat_id', async (req, res) => {
     }
 });
 
-CatRoute.get('/image/:cat_id', async (req, res) => {
-    const db = getDB();
-    const cat_id = req.params.cat_id;
+// CatRoute.get('/image/:cat_id', async (req, res) => {
+//     const db = getDB();
+//     const cat_id = req.params.cat_id;
 
-    try {
-        const [images] = await db.query(
-            `SELECT image_filename FROM cat_images WHERE cat_id = ?`,
-            [cat_id]
-        );  
+//     try {
+//         const [images] = await db.query(
+//             `SELECT image_filename FROM cat_images WHERE cat_id = ?`,
+//             [cat_id]
+//         );  
 
-        const filenames = images.map(img => img.image_filename)
+//         const filenames = images.map(img => img.image_filename)
 
-        res.json(filenames);
-        console.log(filenames)
-    } catch(err) {
-        console.error('Error fetching cat images: ', err);
-        return res.status(500).json({error: 'Failed to fetch cat images'})
-    }
-})
+//         res.json(filenames);
+//         console.log(filenames)
+//     } catch(err) {
+//         console.error('Error fetching cat images: ', err);
+//         return res.status(500).json({error: 'Failed to fetch cat images'})
+//     }
+// })
+
+CatRoute.delete("/image/:id", async (req, res) => {
+  const db = getDB();
+  const image_id = req.params.image_id;
+
+  try {
+    // Get Cloudinary public_id
+    const [rows] = await db.query(`SELECT cloudinary_id FROM cat_images WHERE image_id = ?`, [image_id]);
+    if (!rows.length) return res.status(404).json({ error: "Image not found" });
+
+    const cloudinaryId = rows[0].cloudinary_id;
+
+    // Delete from Cloudinary
+    await cloudinary.uploader.destroy(cloudinaryId);
+
+    // Delete from DB
+    await db.query(`DELETE FROM cat_images WHERE image_id = ?`, [image_id]);
+
+    res.json({ message: "Image deleted successfully." });
+  } catch (err) {
+    console.error("Error deleting image:", err);
+    res.status(500).json({ error: "Failed to delete image" });
+  }
+});
+
 
 CatRoute.get('/adoption_history/:cat_id', async (req, res) => {
   const db = getDB();

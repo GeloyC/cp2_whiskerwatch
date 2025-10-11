@@ -19,6 +19,7 @@
     "@react-email/components": "^0.5.5",
     "@sendgrid/mail": "^8.1.6",
     "bcrypt": "^6.0.0",
+    "cloudinary": "^1.41.3",
     "concurrently": "^9.2.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -28,6 +29,7 @@
     "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.2",
+    "multer-storage-cloudinary": "^4.0.0",
     "mysql2": "^3.14.3",
     "nodemailer": "^7.0.6",
     "redis": "^5.8.2"

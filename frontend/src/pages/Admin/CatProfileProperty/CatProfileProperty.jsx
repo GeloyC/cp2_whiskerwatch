@@ -116,52 +116,87 @@ const CatProfileProperty = () => {
     }
 
 
+    // const handleUploadImages = async (cat_id) => {
+    //     try {
+    //         const formData = new FormData();
+
+    //         catImagePreview.forEach(({file}) => {
+    //             formData.append('images', file);
+    //         });
+
+    //         const response = await axios.post(
+    //             `${url}/cat/uploadcatimages/${cat_id}`,
+    //             formData, {
+    //                 headers: {
+    //                     'Content-Type': 'multipart/form-data'
+    //                 },
+    //             }
+    //         );
+
+    //         if (response.status === 200) {
+    //             setCatImagePreview([])
+    //             setUploaderVisible(false);  
+    //             await fetchCatImage();
+    //         } 
+    //     } catch(err) {
+    //         console.error('Image upload failed: ', err.response?.data || err.message);
+    //     }
+    // }
+
     const handleUploadImages = async (cat_id) => {
         try {
             const formData = new FormData();
+            catImagePreview.forEach(({ file }) => formData.append('images', file));
 
-            catImagePreview.forEach(({file}) => {
-                formData.append('images', file);
+            const response = await axios.post(`${url}/cat/uploadcatimages/${cat_id}`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
             });
 
-            const response = await axios.post(
-                `${url}/cat/uploadcatimages/${cat_id}`,
-                formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    },
-                }
-            );
-
             if (response.status === 200) {
-                setCatImagePreview([])
-                setUploaderVisible(false);  
-                await fetchCatImage();
-            } 
-        } catch(err) {
-            console.error('Image upload failed: ', err.response?.data || err.message);
+            setCatImagePreview([]);
+            setUploaderVisible(false);
+            await fetchCatImage(); // Refresh images after upload
+            }
+        } catch (err) {
+            console.error('Image upload failed:', err.response?.data || err.message);
         }
-    }
+    };
+
+
+
+
 
     // Fetching Image data of the CAT
+    // const fetchCatImage = async () => {
+    //     try {
+    //         const response = await axios.get(`${url}/cat/image/${cat_id}`);
+
+    //         const imageUrls = response.data.map(filename => ({
+    //             filename: filename,
+    //             url: `${url}/FileUploads/cats/${filename}`
+    //         }));
+
+    //         setCatImage(imageUrls);
+    //     } catch(err) {
+    //         console.error('Error fetching cat Image:', err);
+    //     }
+    // }
+
     const fetchCatImage = async () => {
         try {
-            const response = await axios.get(`${url}/cat/image/${cat_id}`);
-
-            const imageUrls = response.data.map(filename => ({
-                filename: filename,
-                url: `${url}/FileUploads/cats/${filename}`
-            }));
-
-            setCatImage(imageUrls);
-        } catch(err) {
-            console.error('Error fetching cat Image:', err);
+            const response = await axios.get(`${url}/cat/images/${cat_id}`); 
+            setCatImage(response.data);
+        } catch (err) {
+            console.error('Error fetching cat images:', err);
         }
-    }
+    };
 
-    const handleDeleteImage = async (filename) => {
-    try {
-        await axios.delete(`${url}/cat/image/${filename}`);
+
+
+    const handleDeleteImage = async (image_id) => {
+        try {
+        // await axios.delete(`${url}/cat/image/${filename}`);
+        await axios.delete(`${url}/cat/image/${image_id}`);
             fetchCatImage(); // Refresh the image list
 
         } catch (err) {
@@ -320,9 +355,9 @@ const CatProfileProperty = () => {
                                     <div className='grid grid-cols-5 gap-2 w-full'>
 
                                         {/* SINGLE IMAGE CONTAINER */}
-                                        {catImage.map((imageURL, index) => (
+                                        {catImage.map((image, index) => (
                                             <div key={index} className='relative flex items-center max-w-[250px] h-[250px] rounded-[10px] overflow-hidden bg-[#CCCCCC] border-1 border-[#CCCCCC]'>
-                                                <button type='button' onClick={() => handleDeleteImage(imageURL.filename)}
+                                                <button type='button' onClick={() => handleDeleteImage(imageURL.image_id)}
                                                 className='absolute top-2 right-2 bg-[#DC8801] text-[#FFF] p-1 pl-2 pr-2 rounded-[15px] cursor-pointer active:bg-[#2F2F2F]'>delete</button>
                                                 <img src={imageURL.url} alt={`Cat Image ${index}`} className="w-full h-full object-cover"/>
                                             </div>
