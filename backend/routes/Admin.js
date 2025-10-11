@@ -429,11 +429,20 @@ AdminRoute.patch('/form/status_update/:application_id', verifyUser, async (req, 
             );
 
         } else if (status === 'Rejected') {
-            let message = `Your volunteer application is ${status}. You can always apply again!`;
+            const [userData] = await db.query(
+                `SELECT user_id FROM volunteer_application WHERE application_id = ?`,
+                [application_id]
+            );
+
+            if (userData.length === 0) {
+                return res.status(404).json({ err: 'Application not found' });
+            }
+
+            const { user_id } = userData[0];
 
             await db.query(
                 `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
-                [user_id, message]
+                [user_id, `Your volunteer application is ${status}. You can always apply again!`]
             );
         }
 
