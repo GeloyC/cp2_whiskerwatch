@@ -254,20 +254,22 @@ const FeedingApplicationView = () => {
                             </div>
 
                             {applicant.application_form && (
-                                <div style={{ height: '600px', overflowY: 'auto' }}>
-                                    <img
-                                        src={getImageUrl(applicant.application_form)}
-                                        alt="Feeding Application"
-                                        style={{ maxWidth: '100%', height: 'auto' }}
-                                    />
-                                    <a
-                                        href={getImageUrl(applicant.application_form)}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-[#889132] underline mt-2 inline-block"
-                                    >
-                                        Download the Image
-                                    </a>
+                                <div>
+                                    <div className='py-10' style={{ height: '600px', overflowY: 'auto' }}>
+                                        <img
+                                            src={getImageUrl(applicant.application_form)}
+                                            alt="Feeding Application"
+                                            style={{ maxWidth: '100%', height: 'auto' }}
+                                        />
+                                        <a
+                                            href={getImageUrl(applicant.application_form)}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-[#889132] underline mt-2 inline-block bg-[#F9F7DC] px-2 py-4 rounded-[10px]"
+                                        >
+                                            Download the Image
+                                        </a>
+                                    </div>
                                 </div>
                             )}
                         </div>

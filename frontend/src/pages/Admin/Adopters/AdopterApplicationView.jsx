@@ -498,23 +498,25 @@ const AdopterApplicationView = () => {
                         </div>
 
                         {applicant.application_form ? (
-                            <div style={{ height: '600px', overflowY: 'auto' }}>
-                                <img
-                                    src={getImageUrl(applicant.application_form)}
-                                    alt="Adoption Application"
-                                    style={{ maxWidth: '100%', height: 'auto' }}
-                                    onError={() => setImageError('Failed to load image. Please contact support.')}
-                                />
-                                {imageError && <p className="text-red-500">{imageError}</p>}
-                                <a
-                                    href={getImageUrl(applicant.application_form)}
-                                    download
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-[#889132] underline mt-2 inline-block"
-                                >
-                                    Download the Image
-                                </a>
+                            <div className='py-10'>
+                                <div style={{ height: '600px', overflowY: 'auto' }}>
+                                    <img
+                                        src={getImageUrl(applicant.application_form)}
+                                        alt="Adoption Application"
+                                        style={{ maxWidth: '100%', height: 'auto' }}
+                                        onError={() => setImageError('Failed to load image. Please contact support.')}
+                                    />
+                                    {imageError && <p className="text-red-500">{imageError}</p>}
+                                    <a
+                                        href={getImageUrl(applicant.application_form)}
+                                        download
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-[#889132] underline mt-2 inline-block bg-[#F9F7DC] px-2 py-4 rounded-[10px]"
+                                    >
+                                        Download the Image
+                                    </a>
+                                </div>
                             </div>
                         ) : (
                             <p className="text-red-500">No application form available.</p>

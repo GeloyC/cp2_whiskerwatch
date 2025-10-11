@@ -590,7 +590,7 @@ const Feeding = () => {
       const { message, fileUrl } = response.data;
 
       setSubmitMessage(
-        `${message}\n\nYou successfully submitted your application!\nPlease wait for approval.\n\nForm uploaded to Cloudinary: ${fileUrl}`
+        `${message}\n\nYou successfully submitted your application!\nPlease wait for approval.`
       );
     } catch (err) {
       if (err.response && err.response.status === 409) {
@@ -689,7 +689,7 @@ const Feeding = () => {
       <Whisker />
 
       <div className="flex flex-col h-full w-full">
-        <div className="flex flex-col justify-center">
+        <div className="flex flex-col justify-center h-full">
           <div className={`relative flex flex-col items-center w-auto rounded-[25px] ${!feedingDate ? 'gap-3' : 'gap-0 xl:gap-3 lg:gap-3'} xl:py-10 lg:py-10`}>
             {!feedingDate ? (
               <div className="hidden xl:flex lg:flex xl:flex-row lg:flex-row lg:w-[875px] gap-2 w-fit">
