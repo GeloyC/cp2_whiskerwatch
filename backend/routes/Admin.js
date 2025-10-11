@@ -794,10 +794,14 @@ AdminRoute.get('/adopters', async (req, res) => {
         const [rows] = await dbConnection.query(
             'SELECT adoption_id, adoptedcat_id, adopter_id, cat_name, adopter, adoption_date, contactnumber, certificate FROM adoption'
         );
-        console.log('Adopters fetched:', rows); // Debug log
+        console.log('Adopters fetched:', JSON.stringify(rows, null, 2)); // Detailed log
         res.status(200).json(rows);
     } catch (err) {
-        console.error('Error fetching adopters:', err);
+        console.error('Error fetching adopters:', {
+            error: err.message,
+            sqlError: err.sqlMessage,
+            sqlState: err.sqlState
+        });
         res.status(500).json({ error: 'Failed to fetch adopters' });
     } finally {
         if (dbConnection && dbConnection.release) dbConnection.release();
