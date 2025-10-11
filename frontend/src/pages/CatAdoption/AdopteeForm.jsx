@@ -425,7 +425,6 @@ import SideNavigation from '../../components/SideNavigation';
 import CatBot from '../../components/CatBot';
 import axios from 'axios';
 import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
 import { useSession } from '../../context/SessionContext';
 
 const AdopteeForm = () => {
@@ -502,35 +501,20 @@ const AdopteeForm = () => {
                 useCORS: true, // Handle cross-origin images if needed
                 logging: true, // Enable logging for debugging
             });
-            const imgData = canvas.toDataURL('image/png');
-
-            // Convert to PDF
-            const pdf = new jsPDF({
-                orientation: 'portrait',
-                unit: 'px',
-                format: 'a4',
-            });
-
-            const pageWidth = pdf.internal.pageSize.getWidth();
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfWidth = pageWidth;
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-            let heightLeft = pdfHeight;
-            let position = 0;
-
-            // Handle multi-page PDF if content overflows
-            while (heightLeft > 0) {
-                pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-                heightLeft -= pageWidth;
-                position -= 841.89; // A4 height in px (at 72 DPI)
-                if (heightLeft > 0) pdf.addPage();
+            const imgData = canvas.toDataURL('image/png'); // Generate PNG image
+            const byteString = atob(imgData.split(',')[1]);
+            const mimeString = imgData.split(',')[0].split(':')[1].split(';')[0];
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            for (let i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
             }
+            const blob = new Blob([ab], { type: mimeString });
 
-            const pdfBlob = pdf.output('blob');
-            const filename = `Adoption_form_${user.firstname || 'User'}_${user.lastname || 'Unknown'}.pdf`;
+            const filename = `Adoption_form_${user.firstname || 'User'}_${user.lastname || 'Unknown'}.png`;
 
             const formData = new FormData();
-            formData.append('file', pdfBlob, filename);
+            formData.append('file', blob, filename);
             formData.append('user_id', user.user_id);
             formData.append('cat_id', catprofile.cat_id);
 
