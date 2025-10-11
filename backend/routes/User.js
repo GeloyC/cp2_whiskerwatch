@@ -663,105 +663,105 @@ UserRoute.get(`/all_users`, async (req, res) => {
   }
 });
 
-UserRoute.post('/feeding/form', upload.single('file'), async (req, res) => {
-    const db = getDB();
-    const { user_id } = req.body;
-    const file = req.file;
+// UserRoute.post('/feeding/form', upload.single('file'), async (req, res) => {
+//     const db = getDB();
+//     const { user_id } = req.body;
+//     const file = req.file;
 
-    try {
-        if (!file || !user_id) {
-            return res.status(400).json({error: 'Missing data'});
-        }
+//     try {
+//         if (!file || !user_id) {
+//             return res.status(400).json({error: 'Missing data'});
+//         }
 
-        const [existing] = await db.query(`
-            SELECT * FROM volunteer_application
-            WHERE user_id = ? AND status = 'Pending'    
-        `, [user_id]);
+//         const [existing] = await db.query(`
+//             SELECT * FROM volunteer_application
+//             WHERE user_id = ? AND status = 'Pending'    
+//         `, [user_id]);
 
-        if (existing.length > 0) {
-            return res.status(409).json({
-                error: 'You already have a pending application. Please wait for it to be reviewed before submitting again.',
-            });
-        }
+//         if (existing.length > 0) {
+//             return res.status(409).json({
+//                 error: 'You already have a pending application. Please wait for it to be reviewed before submitting again.',
+//             });
+//         }
 
-        // TODO: REMOVE EXPIRATION DATES
-        const [activeVolunteer] = await db.query(`
-            SELECT * FROM volunteer
-            WHERE feeder_id = ? 
-                AND status = 'Approved'
-                AND feeding_date
-        `, [user_id]);
+//         // TODO: REMOVE EXPIRATION DATES
+//         const [activeVolunteer] = await db.query(`
+//             SELECT * FROM volunteer
+//             WHERE feeder_id = ? 
+//                 AND status = 'Approved'
+//                 AND feeding_date
+//         `, [user_id]);
 
-        if (activeVolunteer.length > 0) {
-            return res.status(409).json({
-                error: 'You already have an approved volunteer application. Please wait until it expires before applying again.',
+//         if (activeVolunteer.length > 0) {
+//             return res.status(409).json({
+//                 error: 'You already have an approved volunteer application. Please wait until it expires before applying again.',
                 
-            });
-        }
+//             });
+//         }
 
-        let totalPointsEarned = 0;
+//         let totalPointsEarned = 0;
         
 
-        const feeding_form = file.filename;
-        await db.query(`
-            INSERT INTO volunteer_application
-                (user_id, application_form)
-                VALUES (?, ?)`,
-                [user_id, feeding_form]
-            );
+//         const feeding_form = file.filename;
+//         await db.query(`
+//             INSERT INTO volunteer_application
+//                 (user_id, application_form)
+//                 VALUES (?, ?)`,
+//                 [user_id, feeding_form]
+//             );
 
-        totalPointsEarned += 10;
+//         totalPointsEarned += 10;
 
-        let message = `Your application form is submitted, please wait for approval. Thank you! `;
-        await db.query(
-            `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
-            [user_id, message]
-        );
+//         let message = `Your application form is submitted, please wait for approval. Thank you! `;
+//         await db.query(
+//             `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
+//             [user_id, message]
+//         );
 
-        if (totalPointsEarned > 0) {
-          // Check if user already has a whiskermeter entry
-          const [rows] = await db.query(
-            `SELECT points FROM whiskermeter WHERE user_id = ?`,
-            [user_id]
-          );
+//         if (totalPointsEarned > 0) {
+//           // Check if user already has a whiskermeter entry
+//           const [rows] = await db.query(
+//             `SELECT points FROM whiskermeter WHERE user_id = ?`,
+//             [user_id]
+//           );
 
-          if (rows.length > 0) {
-            // Update existing points by adding earned points
-            await db.query(
-              `UPDATE whiskermeter SET points = points + ?, last_updated = CURRENT_TIMESTAMP WHERE user_id = ?`,
-              [totalPointsEarned, user_id]
-            );
-          } else {
-            // Insert new whiskermeter row
-            await db.query(
-              `INSERT INTO whiskermeter (user_id, points) VALUES (?, ?)`,
-              [user_id, totalPointsEarned]
-            );
-          }
+//           if (rows.length > 0) {
+//             // Update existing points by adding earned points
+//             await db.query(
+//               `UPDATE whiskermeter SET points = points + ?, last_updated = CURRENT_TIMESTAMP WHERE user_id = ?`,
+//               [totalPointsEarned, user_id]
+//             );
+//           } else {
+//             // Insert new whiskermeter row
+//             await db.query(
+//               `INSERT INTO whiskermeter (user_id, points) VALUES (?, ?)`,
+//               [user_id, totalPointsEarned]
+//             );
+//           }
 
-          const [[{ points }]] = await db.query(
-            `SELECT points FROM whiskermeter WHERE user_id = ?`,
-            [user_id]
-          );
+//           const [[{ points }]] = await db.query(
+//             `SELECT points FROM whiskermeter WHERE user_id = ?`,
+//             [user_id]
+//           );
 
-          let newBadge = 'Toe Bean Trainee';
-          if (points >= 500) newBadge = 'The Catnip Captain';
-          else if (points >= 300) newBadge = 'Meowtain Mover';
-          else if (points >= 200) newBadge = 'Furmidable Friend';
-          else if (points >= 100) newBadge = 'Snuggle Scout';
+//           let newBadge = 'Toe Bean Trainee';
+//           if (points >= 500) newBadge = 'The Catnip Captain';
+//           else if (points >= 300) newBadge = 'Meowtain Mover';
+//           else if (points >= 200) newBadge = 'Furmidable Friend';
+//           else if (points >= 100) newBadge = 'Snuggle Scout';
 
-          await db.query(
-            `UPDATE users SET badge = ? WHERE user_id = ?`,
-            [newBadge, user_id]
-          );
-        }
+//           await db.query(
+//             `UPDATE users SET badge = ? WHERE user_id = ?`,
+//             [newBadge, user_id]
+//           );
+//         }
 
-        return res.json({ message: 'File uploaded and DB updated successfully.' });
-    } catch (err) {
-        console.error('Feeding form error:', err);
-        res.status(500).json({ err: 'Internal server error' });
-    } 
-})
+//         return res.json({ message: 'File uploaded and DB updated successfully.' });
+//     } catch (err) {
+//         console.error('Feeding form error:', err);
+//         res.status(500).json({ err: 'Internal server error' });
+//     } 
+// })
 
 
 // UserRoute.post('/adoption/form', uploadAdoptionForm.single('file'), async (req, res) => {
@@ -829,19 +829,187 @@ UserRoute.post('/feeding/form', upload.single('file'), async (req, res) => {
 
 // Post Request for Feeding Report
 
+UserRoute.post('/feeding/form', uploadFeedingForm.single('file'), async (req, res) => {
+  const db = getDB();
+  const { user_id } = req.body;
+  const file = req.file;
+
+  try {
+    if (!file || !user_id) {
+      return res.status(400).json({ error: 'Missing data' });
+    }
+
+    // 🧩 Prevent multiple pending applications
+    const [existing] = await db.query(
+      `SELECT * FROM volunteer_application WHERE user_id = ? AND status = 'Pending'`,
+      [user_id]
+    );
+
+    if (existing.length > 0) {
+      return res.status(409).json({
+        error: 'You already have a pending application. Please wait for it to be reviewed before submitting again.',
+      });
+    }
+
+    // 🧩 Check if user already has an active Approved volunteer
+    const [activeVolunteer] = await db.query(
+      `SELECT * FROM volunteer WHERE feeder_id = ? AND status = 'Approved'`,
+      [user_id]
+    );
+
+    if (activeVolunteer.length > 0) {
+      return res.status(409).json({
+        error: 'You already have an approved volunteer record. Wait until it expires before applying again.',
+      });
+    }
+
+    // ☁️ Store Cloudinary file URL
+    const feeding_form_url = file.path;
+
+    // 🧾 Insert into volunteer_application
+    await db.query(
+      `
+      INSERT INTO volunteer_application (user_id, application_form, status)
+      VALUES (?, ?, 'Pending')
+      `,
+      [user_id, feeding_form_url]
+    );
+
+    // 🟣 Add points and notification
+    const pointsEarned = 10;
+    const message = 'Your feeding volunteer application has been submitted. Please wait for review.';
+
+    await db.query(`INSERT INTO notifications (user_id, message) VALUES (?, ?)`, [
+      user_id,
+      message,
+    ]);
+
+    // 🧮 Update Whiskermeter Points
+    const [existingPoints] = await db.query(
+      `SELECT points FROM whiskermeter WHERE user_id = ?`,
+      [user_id]
+    );
+
+    if (existingPoints.length > 0) {
+      await db.query(
+        `UPDATE whiskermeter SET points = points + ?, last_updated = CURRENT_TIMESTAMP WHERE user_id = ?`,
+        [pointsEarned, user_id]
+      );
+    } else {
+      await db.query(`INSERT INTO whiskermeter (user_id, points) VALUES (?, ?)`, [
+        user_id,
+        pointsEarned,
+      ]);
+    }
+
+    // 🏅 Update user badge
+    const [[{ points }]] = await db.query(
+      `SELECT points FROM whiskermeter WHERE user_id = ?`,
+      [user_id]
+    );
+
+    let newBadge = 'Toe Bean Trainee';
+    if (points >= 500) newBadge = 'The Catnip Captain';
+    else if (points >= 300) newBadge = 'Meowntain Mover';
+    else if (points >= 200) newBadge = 'Furmidable Friend';
+    else if (points >= 100) newBadge = 'Snuggle Scout';
+
+    await db.query(`UPDATE users SET badge = ? WHERE user_id = ?`, [newBadge, user_id]);
+
+    // ✅ Success
+    return res.status(200).json({
+      message: 'Feeding form uploaded successfully.',
+      file_url: feeding_form_url,
+    });
+  } catch (err) {
+    console.error('Feeding form error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+// UserRoute.post('/adoption/form', uploadAdoptionForm.single('file'), async (req, res) => {
+//   const db = getDB();
+//   const { user_id, cat_id } = req.body;
+//   const file = req.file;
+
+//   if (!file || !user_id || !cat_id) {
+//     return res.status(400).json({ message: 'Missing required fields or file.' });
+//   }
+
+//   try {
+//     const fileUrl = file.path; // <-- Cloudinary returns a .path that is actually the file's URL
+
+//     // Check if cat exists and is available
+//     const [catRows] = await db.query(
+//       `SELECT adoption_status FROM cat WHERE cat_id = ?`,
+//       [cat_id]
+//     );
+
+//     if (catRows.length === 0) {
+//       return res.status(404).json({ message: 'Cat not found.' });
+//     }
+
+//     if (catRows[0].adoption_status !== 'Available') {
+//       return res.status(400).json({ message: 'This cat is no longer available for adoption.' });
+//     }
+
+//     // Check if user already has a pending application for this cat
+//     const [userPending] = await db.query(
+//       `SELECT * FROM adoption_application
+//         WHERE user_id = ? AND cat_id = ? AND status = 'Pending'`,
+//       [user_id, cat_id]
+//     );
+
+//     if (userPending.length > 0) {
+//       return res.status(409).json({ message: 'You already have a pending application for this cat.' });
+//     }
+
+//     // Check if another user has already applied for this cat
+//     const [catPending] = await db.query(
+//       `SELECT * FROM adoption_application
+//           WHERE cat_id = ? AND status = 'Pending'`,
+//       [cat_id]
+//     );
+
+//     if (catPending.length > 0) {
+//       return res.status(409).json({ message: 'Another user already has a pending application for this cat.' });
+//     }
+
+//     // Insert new application with Cloudinary URL
+//     const [result] = await db.query(
+//       `INSERT INTO adoption_application (
+//           user_id,
+//           cat_id,
+//           application_form,
+//           status
+//       ) VALUES (?, ?, ?, 'Pending')`,
+//       [user_id, cat_id, fileUrl]
+//     );
+
+//     return res.status(200).json({
+//       message: 'Application submitted successfully.',
+//       application_id: result.insertId,
+//       file_url: fileUrl,
+//     });
+
+//   } catch (err) {
+//     console.error('Error during adoption form upload:', err);
+//     return res.status(500).json({ message: 'Server error occurred.' });
+//   }
+// });
+
 UserRoute.post('/adoption/form', uploadAdoptionForm.single('file'), async (req, res) => {
   const db = getDB();
   const { user_id, cat_id } = req.body;
   const file = req.file;
 
-  if (!file || !user_id || !cat_id) {
-    return res.status(400).json({ message: 'Missing required fields or file.' });
-  }
-
   try {
-    const fileUrl = file.path; // <-- Cloudinary returns a .path that is actually the file's URL
+    if (!file || !user_id || !cat_id) {
+      return res.status(400).json({ message: 'Missing required fields or file.' });
+    }
 
-    // Check if cat exists and is available
+    // 🧩 Check cat availability
     const [catRows] = await db.query(
       `SELECT adoption_status FROM cat WHERE cat_id = ?`,
       [cat_id]
@@ -855,47 +1023,56 @@ UserRoute.post('/adoption/form', uploadAdoptionForm.single('file'), async (req, 
       return res.status(400).json({ message: 'This cat is no longer available for adoption.' });
     }
 
-    // Check if user already has a pending application for this cat
+    // 🧩 Prevent multiple pending applications for same user-cat
     const [userPending] = await db.query(
-      `SELECT * FROM adoption_application
-        WHERE user_id = ? AND cat_id = ? AND status = 'Pending'`,
+      `SELECT * FROM adoption_application WHERE user_id = ? AND cat_id = ? AND status = 'Pending'`,
       [user_id, cat_id]
     );
 
     if (userPending.length > 0) {
-      return res.status(409).json({ message: 'You already have a pending application for this cat.' });
+      return res.status(409).json({
+        message: 'You already have a pending application for this cat.',
+      });
     }
 
-    // Check if another user has already applied for this cat
+    // 🧩 Prevent multiple users from applying for same cat if there's already a pending
     const [catPending] = await db.query(
-      `SELECT * FROM adoption_application
-          WHERE cat_id = ? AND status = 'Pending'`,
+      `SELECT * FROM adoption_application WHERE cat_id = ? AND status = 'Pending'`,
       [cat_id]
     );
 
     if (catPending.length > 0) {
-      return res.status(409).json({ message: 'Another user already has a pending application for this cat.' });
+      return res.status(409).json({
+        message: 'Another user already has a pending application for this cat.',
+      });
     }
 
-    // Insert new application with Cloudinary URL
+    // ☁️ Save Cloudinary file URL
+    const adoption_form_url = file.path;
+
+    // 🧾 Insert into adoption_application
     const [result] = await db.query(
-      `INSERT INTO adoption_application (
-          user_id,
-          cat_id,
-          application_form,
-          status
-      ) VALUES (?, ?, ?, 'Pending')`,
-      [user_id, cat_id, fileUrl]
+      `
+      INSERT INTO adoption_application (user_id, cat_id, application_form, status)
+      VALUES (?, ?, ?, 'Pending')
+      `,
+      [user_id, cat_id, adoption_form_url]
+    );
+
+    // 🟣 Notify user
+    const message = 'Your adoption application has been submitted and is now pending review.';
+    await db.query(
+      `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
+      [user_id, message]
     );
 
     return res.status(200).json({
       message: 'Application submitted successfully.',
       application_id: result.insertId,
-      file_url: fileUrl,
+      file_url: adoption_form_url,
     });
-
   } catch (err) {
-    console.error('Error during adoption form upload:', err);
+    console.error('Adoption form upload error:', err);
     return res.status(500).json({ message: 'Server error occurred.' });
   }
 });

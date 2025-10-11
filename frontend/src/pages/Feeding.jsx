@@ -94,37 +94,44 @@ const Feeding = () => {
     const element = printRef.current
     if (!element) { return };
 
-    const canvas = await html2canvas(element, { scale: 2 });
-
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'px',
-      format: 'a4'
-    })
-
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const imgProps = pdf.getImageProperties(imgData);
-    const pdfWidth = pageWidth;
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    setLoading(true);
+    setError('');
+    setSubmitMessage('');
     
-    const pdfBlob = pdf.output('blob');
-    // pdf.save('feeding-form.pdf');
-
-    const formData = new FormData();
-    const filename = `feeding-form-${userData.firstname}-${userData.lastname}.pdf`;
-
-    formData.append('file', pdfBlob, filename);
-    formData.append('user_id', userData.user_id);
-
     try {
-      await axios.post(`${url}/user/feeding/form`, formData, {
-        headers: {'Content-Type': 'multipart/form-data' },
+      const canvas = await html2canvas(element, { scale: 2 });
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'px',
+        format: 'a4'
+      })
+
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pageWidth;
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      
+      const pdfBlob = pdf.output('blob');
+      const filename = `feeding-form-${userData.firstname}-${userData.lastname}.pdf`;
+
+      const formData = new FormData();
+      formData.append('file', pdfBlob, filename);
+      formData.append('user_id', userData.user_id);
+
+      const response = await axios.post(`${url}/user/feeding/form`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      setSubmitMessage('You successfully submitted your application!\nPlease wait for approval. Thank you!');
+      const { message, fileUrl } = response.data;
+
+      setSubmitMessage(
+        `${message}\n\nYou successfully submitted your application!\nPlease wait for approval.\n\nForm uploaded to Cloudinary: ${fileUrl}`
+      );
+
+
     } catch (err) {
         if (err.response && err.response.status === 409) {
           const errorMsg = err.response.data?.error;
@@ -139,7 +146,6 @@ const Feeding = () => {
         } else {
           setError('Your submission failed. Please try again.');
         }
-      // console.error('Submission failed:', err);
     } finally {
       setLoading(false);
     }
@@ -353,7 +359,19 @@ const Feeding = () => {
                     {error ? (
                       <label className='font-[14px] italic text-[#DC8801]'>{error}</label>
                     ) : (
-                      <label className='text-[#DC8801] text-center '>{submitMessage}</label>
+                      <div className="text-center">
+                        <p className="text-[#DC8801] whitespace-pre-line">{submitMessage}</p>
+                        {submitMessage.includes('https://') && (
+                          <a
+                            href={submitMessage.match(/https:\/\/[^\s]+/)[0]}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 underline mt-2 inline-block"
+                          >
+                            View Uploaded Form
+                          </a>
+                        )}
+                      </div>
                     )}
                   </div>
                 )
