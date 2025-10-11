@@ -65,7 +65,7 @@ const certificateCloudinaryStorage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
         folder: 'whiskerwatch/certificates',
-        allowed_formats: ['jpg', 'png', 'pdf'],
+        allowed_formats: ['jpg', 'png'],
         public_id: (req, file) => `${Date.now()}-${file.originalname.split('.')[0]}`,
     },
 });
@@ -1081,15 +1081,15 @@ AdminRoute.post('/upload_certificate', uploadCertificate.single('certificate'), 
             certificateUrl: certificateUrl,
         });
     } catch (err) {
-        console.error('Error uploading certificate:', {
-            error: err.message || 'No error message provided',
-            stack: err.stack,
-            sqlError: err.sqlMessage || 'No SQL error message',
-            sqlState: err.sqlState || 'No SQL state',
-            code: err.code || 'No error code',
-            requestBody: req.body,
-            file: req.file ? { filename: req.file.originalname, path: req.file.path } : null,
-        });
+        // console.error('Error uploading certificate:', {
+        //     error: err.message || 'No error message provided',
+        //     stack: err.stack,
+        //     sqlError: err.sqlMessage || 'No SQL error message',
+        //     sqlState: err.sqlState || 'No SQL state',
+        //     code: err.code || 'No error code',
+        //     requestBody: req.body,
+        //     file: req.file ? { filename: req.file.originalname, path: req.file.path } : null,
+        // });
         res.status(500).json({
             error: 'Failed to upload certificate to Cloudinary',
             details: err.message || 'Unknown server error',
