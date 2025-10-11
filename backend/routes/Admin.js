@@ -1044,55 +1044,47 @@ AdminRoute.get('/adopters_certificate/:user_id', async (req, res) => {
 
 
 AdminRoute.post(
-    "/upload_certificate",
-    uploadCertificate.single("certificate"),
-    async (req, res) => {
-        const db = getDB();
-        const { adoption_id } = req.body;
+  "/upload_certificate",
+  (req, res, next) => {
+    uploadCertificate.single("certificate")(req, res, (err) => {
+      if (err) {
+        console.error("Multer error:", err); // ✅ This shows file rejection errors
+        return res.status(400).json({ error: err.message });
+      }
+      next();
+    });
+  },
+  async (req, res) => {
+    try {
+      console.log("Body received:", req.body);
+      console.log("File received:", req.file);
 
-        try {
-        // Validation
-        if (!adoption_id) {
-            return res.status(400).json({ error: "adoption_id is required." });
-        }
-        if (!req.file || !req.file.path) {
-            return res.status(400).json({ error: "No file uploaded." });
-        }
+      const { adoption_id } = req.body;
+      if (!req.file || !req.file.path) {
+        console.error("File missing or invalid format!");
+        return res.status(400).json({ error: "No file uploaded or invalid file format" });
+      }
 
-        const certificateUrl = req.file.path;
+      const certificateUrl = req.file.path;
 
-        // Update adoption table with certificate URL
-        const [updateResult] = await db.query(
-            "UPDATE adoption SET certificate = ? WHERE adoption_id = ?",
-            [certificateUrl, adoption_id]
-        );
+      const [updateResult] = await getDB().query(
+        "UPDATE adoption SET certificate = ? WHERE adoption_id = ?",
+        [certificateUrl, adoption_id]
+      );
 
-        if (updateResult.affectedRows === 0) {
-            return res
-            .status(404)
-            .json({ error: "Adoption ID not found. Cannot attach certificate." });
-        }
+      console.log("Update result:", updateResult);
 
-        // Optionally, store in separate certificates table
-        // await db.query(
-        //     "INSERT INTO certificates (adoption_id, certificate_url) VALUES (?, ?) ON DUPLICATE KEY UPDATE certificate_url = VALUES(certificate_url)",
-        //     [adoption_id, certificateUrl]
-        // );
-
-        res.status(200).json({
-            message: "Certificate uploaded successfully.",
-            certificateUrl,
-        });
-        } catch (err) {
-            console.error("Certificate upload error:", err);
-            res.status(500).json({
-                error: "Server error during certificate upload",
-                message: err.message,
-                stack: err.stack
-            });
-        }
+      res.status(200).json({
+        message: "Certificate uploaded successfully",
+        certificateUrl,
+      });
+    } catch (err) {
+      console.error("Server error during certificate upload:", err);
+      res.status(500).json({ error: "Server error", message: err.message });
     }
+  }
 );
+
 
 
 export default AdminRoute;
