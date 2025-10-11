@@ -53,6 +53,17 @@ const adoptionFormStorage = new CloudinaryStorage({
 });
 
 
+const feedingFormStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "whiskerwatch/feeding_forms", // your Cloudinary folder
+    allowed_formats: ["jpg", "png", "pdf"],
+    public_id: (req, file) => `${Date.now()}-${file.originalname.split(".")[0]}`,
+  },
+});
+const uploadFeedingForm = multer({ storage: feedingFormStorage });
+
+
 const upload = multer({
   storage: imageStorage,
   fileFilter: (req, file, callback) => {
