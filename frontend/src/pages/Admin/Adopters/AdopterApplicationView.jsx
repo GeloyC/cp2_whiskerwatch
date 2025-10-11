@@ -376,10 +376,6 @@ import AdminSideBar from '../../../components/AdminSideBar';
 import { useSession } from '../../../context/SessionContext';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Document, Page, pdfjs } from 'react-pdf';
-
-// Set the worker source to match the installed pdfjs-dist version
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`;
 
 const AdopterApplicationView = () => {
     const url = `https://whiskerwatch-0j6g.onrender.com`;
@@ -388,8 +384,7 @@ const AdopterApplicationView = () => {
 
     const [applicant, setApplicant] = useState({});
     const [statusMessage, setStatusMessage] = useState('');
-    const [pdfError, setPdfError] = useState('');
-    const [numPages, setNumPages] = useState(null);
+    const [imageError, setImageError] = useState('');
 
     useEffect(() => {
         const fetchApplications = async () => {
@@ -425,22 +420,12 @@ const AdopterApplicationView = () => {
         }
     };
 
-    const getPdfUrl = (url) => {
+    const getImageUrl = (url) => {
         if (!url) return '';
-        if (url.includes('/raw/upload/')) {
-            return url.replace('/raw/upload/', '/raw/upload/fl_attachment:false/'); // Inline display
+        if (url.includes('/image/upload/')) {
+            return url; // Use the original URL for images
         }
         return url;
-    };
-
-    const onDocumentLoadSuccess = ({ numPages }) => {
-        setNumPages(numPages);
-        setPdfError(''); // Clear error on successful load
-    };
-
-    const onDocumentLoadError = (error) => {
-        console.error('PDF Load Error:', error);
-        setPdfError('Failed to load PDF. Please try downloading it or contact support if the issue persists.');
     };
 
     if (sessionLoading) return <div>Loading...</div>;
@@ -514,32 +499,21 @@ const AdopterApplicationView = () => {
 
                         {applicant.application_form ? (
                             <div style={{ height: '600px', overflowY: 'auto' }}>
-                                <Document
-                                    file={getPdfUrl(applicant.application_form)}
-                                    onLoadSuccess={onDocumentLoadSuccess}
-                                    onLoadError={onDocumentLoadError}
-                                    loading={<p>Loading PDF...</p>}
-                                    error={<p className="text-red-500">Error loading PDF. Please contact support.</p>}
-                                >
-                                    {Array.from({ length: numPages || 1 }, (_, index) => (
-                                        <Page
-                                            key={index + 1}
-                                            pageNumber={index + 1}
-                                            width={window.innerWidth * 0.8}
-                                            renderTextLayer={false} // Disable text layer for image-based PDFs
-                                            renderAnnotationLayer={false} // Disable annotations for simplicity
-                                        />
-                                    ))}
-                                </Document>
-                                {pdfError && <p className="text-red-500">{pdfError}</p>}
+                                <img
+                                    src={getImageUrl(applicant.application_form)}
+                                    alt="Adoption Application"
+                                    style={{ maxWidth: '100%', height: 'auto' }}
+                                    onError={() => setImageError('Failed to load image. Please contact support.')}
+                                />
+                                {imageError && <p className="text-red-500">{imageError}</p>}
                                 <a
-                                    href={getPdfUrl(applicant.application_form).replace('/fl_attachment:false/', '/fl_attachment/')}
+                                    href={getImageUrl(applicant.application_form)}
                                     download
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-[#889132] underline mt-2 inline-block"
                                 >
-                                    Download the PDF
+                                    Download the Image
                                 </a>
                             </div>
                         ) : (
