@@ -175,7 +175,10 @@ const AdoptersList = () => {
     const fetchAdopter = async () => {
       try {
         const response = await axios.get(`${url}/admin/adopters`);
+        console.log('Adopters response:', response.data);
+
         setAdopters(response.data);
+        
       } catch (err) {
         console.error('Error fetching adopter data: ', err.response?.data || err.message);
       }
@@ -262,19 +265,19 @@ const AdoptersList = () => {
         return;
     }
 
-    if (!adoptee.adopter_id) {
+    if (!adoptee.adoption_id ) {
         console.error('Adopter ID is missing:', adoptee);
         alert('Adopter ID is missing. Please try again.');
         return;
     }
 
     const formData = new FormData();
-    const filename = `Certificate_${adoptee.adopter.replace(/\s+/g, '_')}_${adoptee.adopter_id}${file.name.slice(file.name.lastIndexOf('.'))}`;
+    const filename = `Certificate_${adoptee.adopter.replace(/\s+/g, '_')}_${adoptee.adoption_id }${file.name.slice(file.name.lastIndexOf('.'))}`;
     formData.append('certificate', file, filename);
-    formData.append('adopter_id', adoptee.adopter_id);
+    formData.append('adopter_id', adoptee.adoption_id );
 
     try {
-        console.log('Uploading certificate for:', { adopter_id: adoptee.adopter_id, filename });
+        console.log('Uploading certificate for:', { adoption_id : adoptee.adoption_id , filename });
         const response = await axios.post(`${url}/admin/upload_certificate`, formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
         });
@@ -282,7 +285,7 @@ const AdoptersList = () => {
 
         // Update adopters state
         const updatedAdopters = adopters.map((a) =>
-            a.adopter_id === adoptee.adopter_id ? { ...a, certificate: response.data.certificateUrl } : a
+            a.adoption_id  === adoptee.adoption_id  ? { ...a, certificate: response.data.certificateUrl } : a
         );
         setAdopters(updatedAdopters);
 
