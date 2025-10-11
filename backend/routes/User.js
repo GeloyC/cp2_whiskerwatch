@@ -5,6 +5,8 @@ import { getDB } from "../database.js"
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import cookieParser from "cookie-parser";
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import cloudinary from "../config/cloudinary.js";
 
 import axios from 'axios';
 
@@ -32,78 +34,50 @@ UserRoute.use('/FileUploads', express.static(path.join(__dirname, 'FileUploads')
 
 
 
-const storage = multer.diskStorage({
-    destination: function (req, file, callback) {
-        const dir = path.join(process.cwd(), "FileUploads")
-        
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
-        } 
-        callback(null, dir);
-    },
-    
-    // PURPOSE: Upload pdf files
-    // const upload = multer({ storage, fileFilter });
-    
-    
-    filename: function (req, file, callback) {
-        callback(null, Date.now() + path.extname(file.originalname));
-    },
+const imageStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "whiskerwatch/uploads/images",
+    allowed_formats: ["jpg", "jpeg", "png"],
+    public_id: (req, file) => `${Date.now()}-${file.originalname.split(".")[0]}`,
+  },
 });
 
-const adoptionFormStorage = multer.diskStorage({
-    destination: function (req, file, callback) {
-        const dir = path.join(process.cwd(), "FileUploads/adoption_form")
-        
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
-        } 
-        callback(null, dir);
-    },
-    
-    // PURPOSE: Upload pdf files
-    // const upload = multer({ storage, fileFilter });
-    
-    
-    filename: function (req, file, callback) {
-        callback(null, Date.now() + path.extname(file.originalname));
-    },
+const adoptionFormStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "whiskerwatch/uploads/adoption_forms",
+    allowed_formats: ["pdf", "jpg", "jpeg", "png"],
+    public_id: (req, file) => `${Date.now()}-${file.originalname.split(".")[0]}`,
+  },
 });
 
 
 const upload = multer({
-  storage,
-  fileFilter: function(req, file, callback) {
-    if (
-      file.mimetype === 'image/jpeg' ||
-      file.mimetype === 'image/png' ||
-      file.mimetype === 'application/pdf' 
-    ) {
-      callback(null, true)
+  storage: imageStorage,
+  fileFilter: (req, file, callback) => {
+    const allowedTypes = ["image/jpeg", "image/png"];
+    if (allowedTypes.includes(file.mimetype)) {
+      callback(null, true);
     } else {
-      req.err = 'File is invalid!'
-      // callback(null, false)
-
-      if (!req.invalidFiles) req.invalidFiles = [];
-      req.invalidFiles.push(file.originalname);
+      req.err = "Only JPG or PNG images are allowed!";
       callback(null, false);
-    };
+    }
   },
 });
 
 const uploadAdoptionForm = multer({
-  storage: adoptionFormStorage, 
-  fileFilter: function(req, file, callback) {
-    if (
-      file.mimetype === 'image/jpeg' ||
-      file.mimetype === 'image/png' ||
-      file.mimetype === 'application/pdf' 
-    ) {
+  storage: adoptionFormStorage,
+  fileFilter: (req, file, callback) => {
+    const allowedTypes = [
+      "application/pdf",
+      "image/jpeg",
+      "image/png",
+    ];
+    if (allowedTypes.includes(file.mimetype)) {
       callback(null, true);
     } else {
-      req.err = 'File is invalid!';
-      if (!req.invalidFiles) req.invalidFiles = [];
-      req.invalidFiles.push(file.originalname);
+      req.err = "Only PDF or image files are allowed for adoption forms!";
       callback(null, false);
     }
   },
@@ -114,78 +88,6 @@ const uploadAdoptionForm = multer({
 // add this to render.com env variable later
 const JWT_SECRET = process.env.JWT_SECRET || 'whisker_secret'; 
 
-
-
-// UserRoute.post('/signup', async (req, res) => {
-//   let db = getDB();
-//   try {
-//     const { firstname, lastname, contactnumber, birthday, email, username, address, password, otp } = req.body;
-
-//     // Validate OTP
-//     // const otpResult = await validateOtp(email, otp);
-//     // if (!otpResult.success) {
-//     //   return res.status(400).json({ message: otpResult.message || 'OTP validation failed.' });
-//     // }
-
-//     const captchaResponse = await axios.post(
-//       `https://www.google.com/recaptcha/api/siteverify`,
-//       null,
-//       {
-//         params: {
-//           secret: process.env.RECAPTCHA_SECRET_KEY, // Your Secret Key from Google reCAPTCHA
-//           response: captchaToken, // Token from frontend
-//           remoteip: req.ip, // Optional: Client IP for added security
-//         },
-//       }
-//     );
-
-//     if (!captchaResponse.data.success || captchaResponse.data.score < 0.5) {
-//       return res.status(400).json({ message: 'CAPTCHA verification failed. Are you a bot?' });
-//     }
-
-//     // Check for existing email
-//     const [existingUsers] = await db.query('SELECT email FROM users WHERE email = ?', [email]);
-//     if (existingUsers.length > 0) {
-//       return res.status(400).json({ message: 'Email already registered.' });
-//     }
-
-//     // Hash password
-//     const saltRounds = 10;
-//     const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-//     // Insert user
-//     const [result] = await db.query(
-//       `INSERT INTO users 
-//       (firstname, lastname, contactnumber, birthday, email, username, address, password, role, badge) 
-//       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'regular', 'Toe Bean Trainee')`,
-//       [firstname, lastname, contactnumber, birthday, email, username, address, hashedPassword]
-//     );
-
-//     // Send welcome email (optional)
-//     await sendMail(
-//       email,
-//       'Welcome to Whisker Watch',
-//       `
-//         <h3>Welcome to Whisker Watch!</h3>
-//         <p>Thank you for joining, ${firstname} ${lastname}! Your account is now active.</p>
-//         <p>Start exploring and supporting our feline friends!</p>
-//         <p><strong>Whisker Watch Team</strong></p>
-//       `
-//     );
-
-//     res.status(200).json({
-//       message: 'Account created!',
-//       newUser: {
-//         user_id: result.insertId,
-//         role: 'regular',
-//         badge: 'Toe Bean Trainee',
-//       },
-//     });
-//   } catch (err) {
-//     console.error('Sign up error:', err);
-//     res.status(500).json({ error: 'Internal server error' });
-//   }
-// });
 
 UserRoute.post('/signup', async (req, res) => {
   let db = getDB();
@@ -299,118 +201,6 @@ UserRoute.post('/check_username', async (req, res) => {
   }
 });
 
-
-
-// UserRoute.post("/login", async (req, res) => {
-//   const db = getDB();
-//   try {
-//     const { email, password } = req.body;
-
-//     if (!email || !password) {
-//       return res.status(400).json({ error: "Email and password are required" });
-//     }
-
-//     const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
-//     if (rows.length === 0) {
-//       return res.status(401).json({ error: "Invalid email or password" });
-//     }
-
-//     const user = rows[0];
-
-//     const isMatch = await bcrypt.compare(password, user.password);
-//     if (!isMatch) {
-//       return res.status(401).json({ error: "Invalid email or password" });
-//     }
-
-//     console.log("Login attempt for email:", email);
-
-//     const payload = {
-//       user_id: user.user_id,
-//       role: user.role,
-//       firstname: user.firstname,
-//       lastname: user.lastname,
-//       email: user.email,
-//     };
-
-//     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
-
-
-//     res.cookie("token", token, {
-//       httpOnly: false,
-//       secure: false, // Temporarily disable for local/Render testing without HTTPS
-//       sameSite: 'lax', // Use 'lax' for testing, switch to 'none' with secure: true later
-//       maxAge: 7 * 24 * 60 * 60 * 1000,
-//     });
-
-//     res.status(200).json({
-//       message: "Login successful!",
-//       user: payload,
-//       token: token
-//     });
-//   } catch (err) {
-//     console.error("Login error:", err);
-//     res.status(500).json({ err: "Internal server error" });
-//   }
-// });
-
-
-// UserRoute.post("/login", async (req, res) => {
-//   const db = getDB();
-
-//   try {
-//     const { email, password } = req.body;
-
-//     if (!email || !password) {
-//       return res.status(400).json({ error: "Email and password are required" });
-//     }
-
-//     const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
-//     if (rows.length === 0) {
-//       return res.status(401).json({ error: "Invalid email or password" });
-//     }
-
-//     const user = rows[0];
-//     const isMatch = await bcrypt.compare(password, user.password);
-//     if (!isMatch) {
-//       return res.status(401).json({ error: "Invalid email or password" });
-//     }
-
-//     console.log("✅ Login attempt for email:", email);
-
-//     const payload = {
-//       user_id: user.user_id,
-//       role: user.role,
-//       firstname: user.firstname,
-//       lastname: user.lastname,
-//       email: user.email,
-//       username: user.username,
-//       profile_image: user.profile_image || null,
-//     };
-
-
-//     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
-
-
-//     res.cookie("token", token, {
-//       httpOnly: true,
-//       secure: process.env.NODE_ENV === "production", // true if using HTTPS
-//       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-//       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-//     });
-
-
-
-//     return res.status(200).json({
-//       success: true,
-//       message: "Login successful!",
-//       user: payload,
-//     });
-
-//   } catch (err) {
-//     console.error("❌ Login error:", err);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// });
 
 UserRoute.post("/login", async (req, res) => {
   const db = getDB();
@@ -785,52 +575,39 @@ UserRoute.patch('/profile/update', upload.single('profile_image'), async (req, r
     address = '',
     email = '',
     birthday = '',
-    profile_image = '', // New filename from frontend
-    old_image = '',    // Existing image filename from frontend
+    profile_image = '',
+    old_cloudinary_id = '',
   } = req.body;
-
-  const newImage = req.file ? req.file.filename : null;
 
   try {
     const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
-    if (!token) {
-      return res.status(401).json({ error: 'User not authenticated (no token)' });
-    }
+    if (!token) return res.status(401).json({ error: 'User not authenticated' });
 
-    let decoded;
-    try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET); // Use env variable
-    } catch (err) {
-      return res.status(401).json({ error: 'Invalid or expired token.' });
-    }
-
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user_id = decoded.user_id;
-    console.log('Updating profile for user ID:', user_id);
 
-    // Remove old image if a new one is uploaded
-    if (newImage && old_image && old_image !== newImage) {
-      const filePath = path.join(__dirname, 'FileUploads', old_image);
-      fs.unlink(filePath, (err) => {
-        if (err) {
-          if (err.code !== 'ENOENT') { // ENOENT means file not found, which is okay
-            console.error(`Error deleting file: ${old_image}`, err);
-          }
-        } else {
-          console.log(`Deleted old image: ${old_image}`);
+    let newImageUrl = null;
+    let newCloudinaryId = null;
+
+    if (req.file) {
+      newImageUrl = req.file.path;
+      newCloudinaryId = req.file.filename;
+
+      // Delete old Cloudinary image if exists
+      if (old_cloudinary_id) {
+        try {
+          await cloudinary.uploader.destroy(old_cloudinary_id);
+          console.log(`Deleted old Cloudinary image: ${old_cloudinary_id}`);
+        } catch (err) {
+          console.error("Error deleting old Cloudinary image:", err);
         }
-      });
+      }
     }
 
-    // Update user info
-    const [update] = await db.query(
-      `UPDATE users SET
-        firstname = ?,
-        lastname = ?,
-        address = ?,
-        email = ?,
-        birthday = ?,
-        profile_image = ?,
-        updated_at = CURRENT_TIMESTAMP
+    await db.query(
+      `UPDATE users 
+      SET firstname = ?, lastname = ?, address = ?, email = ?, birthday = ?, 
+          profile_image = ?, cloudinary_id = ?, updated_at = CURRENT_TIMESTAMP
       WHERE user_id = ?`,
       [
         firstname,
@@ -838,40 +615,34 @@ UserRoute.patch('/profile/update', upload.single('profile_image'), async (req, r
         address,
         email,
         birthday,
-        newImage || old_image,
+        newImageUrl || profile_image,
+        newCloudinaryId || old_cloudinary_id,
         user_id,
       ]
     );
 
-    if (update.affectedRows === 0) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
     const [updatedProfile] = await db.query(
-      `SELECT 
-        user_id, firstname, lastname, profile_image, contactnumber,
-        DATE_FORMAT(birthday, '%Y-%m-%d') AS birthday,
-        email, username, role, badge, address,
-        DATE_FORMAT(created_at, '%Y-%m-%d') AS created_at,
-        DATE_FORMAT(updated_at, '%Y-%m-%d') AS updated_at 
+      `SELECT user_id, firstname, lastname, profile_image, cloudinary_id,
+              contactnumber, DATE_FORMAT(birthday, '%Y-%m-%d') AS birthday,
+              email, username, role, badge, address,
+              DATE_FORMAT(created_at, '%Y-%m-%d') AS created_at,
+              DATE_FORMAT(updated_at, '%Y-%m-%d') AS updated_at
       FROM users
       WHERE user_id = ?`,
       [user_id]
     );
 
-    if (!updatedProfile.length) {
-      return res.status(404).json({ error: 'User not found after update' });
-    }
-
-    return res.status(200).json({
-      message: 'User profile updated successfully!',
-      profile_image: newImage || old_image, // Return updated image filename
+    res.status(200).json({
+      message: "User profile updated successfully!",
+      profile: updatedProfile[0],
     });
+
   } catch (err) {
     console.error('Error updating user profile:', err);
-    return res.status(500).json({ error: 'Failed to update profile.' });
+    res.status(500).json({ error: 'Failed to update profile.' });
   }
 });
+
 
 
 UserRoute.get(`/all_users`, async (req, res) => {

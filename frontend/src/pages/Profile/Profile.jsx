@@ -95,20 +95,36 @@ const Profile = () => {
     }, []);
 
 
-    const handleImageChange = async (e) => {
+    // const handleImageChange = async (e) => {
+    //     const file = e.target.files[0];
+    //     if (!file) return;
+
+    //     const previewUrl = URL.createObjectURL(file);
+
+    //     // Sets temporary preview and store file
+    //     setProfile(prev => ({
+    //         ...prev,
+    //         profile_image: previewUrl, 
+    //         _newFile: file,             
+    //         old_image: prev.profile_image 
+    //     }));
+    // };
+
+    const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
         const previewUrl = URL.createObjectURL(file);
-
-        // Sets temporary preview and store file
         setProfile(prev => ({
             ...prev,
-            profile_image: previewUrl, 
-            _newFile: file,             
-            old_image: prev.profile_image 
+            profile_image: previewUrl,
+            _newFile: file,
+            old_image: prev.profile_image,
+            old_cloudinary_id: prev.cloudinary_id, // new field
         }));
     };
+
+
 
     const handleSave = async () => {
         try {
@@ -122,11 +138,12 @@ const Profile = () => {
             formData.append('email', profile.email);
             formData.append('birthday', profile.birthday);
             formData.append('badge', profile.badge); // if needed
+            formData.append('profile_image', profile.profile_image || '');
+            formData.append('old_cloudinary_id', profile.old_cloudinary_id || profile.cloudinary_id || '');
 
             // If there's a new file, include it
             if (profile._newFile) {
                 formData.append('profile_image', profile._newFile);
-                formData.append('old_image', profile.old_image || '');
             }
 
             const response = await axios.patch(`${url}/user/profile/update`, formData, {
@@ -134,7 +151,7 @@ const Profile = () => {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     Authorization: `Bearer ${token}`,
-                }
+                },
             });
 
 
@@ -142,19 +159,19 @@ const Profile = () => {
 
 
             // AFTER REPLACING SOME INFOS ON THE UPDATE VIEW, REFETCH THE DATA TO SEE CHANGES ON THE READ VIEW
-            const updated = await axios.get(`${url}/user/profile`, { 
-                withCredentials: true,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+            // const updated = await axios.get(`${url}/user/profile`, { 
+            //     withCredentials: true,
+            //     headers: {
+            //         Authorization: `Bearer ${token}`,
+            //     },
+            // });
 
-            setProfile(updated.data);
-            setOriginalProfile(updated.data);
+            setProfile(response.data.profile);
+            setOriginalProfile(response.data.profile);
             setUpdateProfile(false);
             setError('');
 
-            window.location.reload();
+            // window.location.reload();
 
         } catch (err) {
             console.error("Failed to update profile", err);
@@ -245,7 +262,17 @@ const Profile = () => {
                                             <div className='relative flex flex-col p-[2%] xl:flex-row lg:flex-row gap-5'>
                                                 <div className='flex flex-row xl:flex-col lg:flex-col gap-3 justify-center'>
                                                     <div className='flex w-[250px] h-[250px] bg-[#B5C04A] rounded-sm p-2'>
-                                                        <img src={`${`${url}/FileUploads/${profile.profile_image}` || '/assets/UserProfile/default_profile_image.jpg'}`} alt="" className='w-full h-full object-cover'/>
+                                                        <img
+                                                            src={
+                                                                profile.profile_image?.startsWith('blob:')
+                                                                ? profile.profile_image
+                                                                : profile.profile_image?.startsWith('http')
+                                                                    ? profile.profile_image
+                                                                    : '/assets/UserProfile/default_profile_image.jpg'
+                                                            }
+                                                            alt="Profile"
+                                                            className="w-full h-full object-cover"
+                                                        />
                                                     </div>
 
                                                     <div className='flex flex-row gap-2'>

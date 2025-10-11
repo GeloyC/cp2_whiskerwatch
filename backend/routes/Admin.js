@@ -2,7 +2,9 @@ import express from "express";
 import cors from "cors";
 import { Router } from "express";
 import {getDB} from "../database.js"
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import bcrypt from 'bcrypt';
+
 
 import multer from 'multer';
 import fs, { stat } from 'fs';
@@ -25,40 +27,38 @@ const __dirname = path.dirname(__filename);
 AdminRoute.use('/FileUploads', express.static(path.join(__dirname, 'FileUploads')));
 
 
-const storage = multer.diskStorage({
-    destination: function(req, file, callback) {
-    const dir = 'FileUploads';
-    if(!fs.existsSync(dir)) {
-        fs.mkdirSync(dir)
-    }
-
-    callback(null, dir);
+const cloudinaryStorage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'whiskerwatch/profiles', // folder name in Cloudinary
+        allowed_formats: ['jpg', 'png'],
+        public_id: (req, file) => `${Date.now()}-${file.originalname.split('.')[0]}`,
     },
-    filename: function(req, file, callback) {
-    callback(null, Date.now() + path.extname(file.originalname))
-    } 
-})
-
-const fileFilter = function(req, file, callback) {
-    if (file.mimetype == 'application/pdf') {
-        callback(null, true)
-    } else {
-        req.err = 'File is invalid!'
-        callback(null, false)
-    }
-}
-
-const uploadImages = multer({
-    storage,
-    fileFilter: function(req, file, callback) {
-        if (file.mimetype == 'image/jpeg' || file.mimetype == 'image/png') {
-        callback(null, true)
-        } else {
-        !req.invalidFiles ? req.invalidFiles = [file.originalname] : req.invalidFiles.push(file.originalname)
-        callback(null, false)
-        }
-    }
 });
+
+
+// const fileFilter = function(req, file, callback) {
+//     if (file.mimetype == 'application/pdf') {
+//         callback(null, true)
+//     } else {
+//         req.err = 'File is invalid!'
+//         callback(null, false)
+//     }
+// }
+
+const uploadProfile = multer({
+    storage: cloudinaryStorage,
+    fileFilter: function (req, file, callback) {
+        if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+        callback(null, true);
+        } else {
+        req.invalidFiles = req.invalidFiles || [];
+        req.invalidFiles.push(file.originalname);
+        callback(null, false);
+        }
+    },
+});
+
 
 const certificateStorage = multer.diskStorage({
     destination: function (req, file, callback) {
