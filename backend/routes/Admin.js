@@ -857,25 +857,29 @@ AdminRoute.post('/upload_certificate', uploadCertificate.single('certificate'), 
 
     try {
         if (!req.file || !req.file.path) {
-        return res.status(400).json({ error: 'No file uploaded' });
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+        // Check if file was uploaded
+        if (!req.file || !req.file.path) {
+            return res.status(400).json({ error: 'No file uploaded' });
         }
 
         const certificateUrl = req.file.path; // Cloudinary automatically provides the file URL
 
         // Update adoption record with Cloudinary URL
         await db.query(
-        'UPDATE adoption SET certificate = ? WHERE adoption_id = ?',
-        [certificateUrl, adoption_id]
+            'UPDATE adoption SET certificate = ? WHERE adoption_id = ?',
+            [certificateUrl, adoption_id]
         );
 
         // Get adopter_id for notification
         const [userResult] = await db.query(
-        `SELECT adopter_id FROM adoption WHERE adoption_id = ?`,
-        [adoption_id]
+            `SELECT adopter_id FROM adoption WHERE adoption_id = ?`,
+            [adoption_id]
         );
 
         if (!userResult || userResult.length === 0) {
-        return res.status(404).json({ error: 'Adoption record not found' });
+            return res.status(404).json({ error: 'Adoption record not found' });
         }
 
         const user_id = userResult[0].adopter_id;
@@ -883,14 +887,14 @@ AdminRoute.post('/upload_certificate', uploadCertificate.single('certificate'), 
         // Send notification
         const message = 'Your adoption certificate is now available. Visit your profile to view it. Congratulations!';
         await db.query(
-        `INSERT INTO notifications (user_id, message, is_read, created_at)
-        VALUES (?, ?, 0, NOW())`,
-        [user_id, message]
+            `INSERT INTO notifications (user_id, message, is_read, created_at)
+            VALUES (?, ?, 0, NOW())`,
+            [user_id, message]
         );
 
         res.json({
-        message: 'Certificate uploaded successfully to Cloudinary and notification sent.',
-        certificate_url: certificateUrl,
+            message: 'Certificate uploaded successfully to Cloudinary and notification sent.',
+            certificate_url: certificateUrl,
         });
     } catch (err) {
         console.error('Error uploading certificate:', err);
