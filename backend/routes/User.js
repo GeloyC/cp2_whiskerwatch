@@ -44,18 +44,12 @@ const imageStorage = new CloudinaryStorage({
 });
 
 const adoptionFormStorage = new CloudinaryStorage({
-    cloudinary,
-    params: async (req, file) => {
-        const ext = file.mimetype.split('/')[1];
-        const isPDF = file.mimetype === 'application/pdf';
-
-        return {
-            folder: 'whiskerwatch/uploads/adoption_forms',
-            resource_type: isPDF ? 'raw' : 'image', // Ensure 'raw' for PDFs
-            allowed_formats: ['pdf', 'jpg', 'jpeg', 'png'],
-            public_id: `${Date.now()}-${file.originalname.split('.')[0]}`,
-            format: isPDF ? 'pdf' : ext, // Explicitly set format for PDFs
-        };
+    cloudinary: cloudinary,
+    params: {
+        folder: 'whiskerwatch/uploads/adoption_forms',
+        resource_type: 'image', // Changed to 'image' for PNG/JPEG
+        allowed_formats: ['png', 'jpg', 'jpeg'],
+        transformation: [{ width: 800, crop: 'limit' }], // Optional: Resize to reduce size
     },
 });
 
@@ -950,7 +944,7 @@ UserRoute.post('/feeding/form', uploadFeedingForm.single('file'), async (req, re
 UserRoute.post('/adoption/form', uploadAdoptionForm.single('file'), async (req, res) => {
   const db = getDB();
   const { user_id, cat_id } = req.body;
-  const file = req.file;
+  const file_url = req.file.path;
 
   try {
     if (!file || !user_id || !cat_id) {
@@ -996,7 +990,7 @@ UserRoute.post('/adoption/form', uploadAdoptionForm.single('file'), async (req, 
     }
 
     // ☁️ Save Cloudinary file URL
-    const adoption_form_url = file.path;
+    // const adoption_form_url = file.path;
 
     // 🧾 Insert into adoption_application
     const [result] = await db.query(
@@ -1004,7 +998,7 @@ UserRoute.post('/adoption/form', uploadAdoptionForm.single('file'), async (req, 
       INSERT INTO adoption_application (user_id, cat_id, application_form, status)
       VALUES (?, ?, ?, 'Pending')
       `,
-      [user_id, cat_id, adoption_form_url]
+      [user_id, cat_id, file_url]
     );
 
     // 🟣 Notify user
@@ -1017,7 +1011,7 @@ UserRoute.post('/adoption/form', uploadAdoptionForm.single('file'), async (req, 
     return res.status(200).json({
       message: 'Application submitted successfully.',
       application_id: result.insertId,
-      file_url: adoption_form_url,
+      file_url: file_url,
     });
   } catch (err) {
     console.error('Adoption form upload error:', err);
