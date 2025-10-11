@@ -171,7 +171,7 @@ const Profile = () => {
             setUpdateProfile(false);
             setError('');
 
-            // window.location.reload();
+            window.location.reload();
 
         } catch (err) {
             console.error("Failed to update profile", err);
