@@ -249,54 +249,98 @@ const AdoptersList = () => {
   // };
 
 
-  const handleUploadCertificate = async (e, adoptee) => {
-    const file = e.target.files?.[0];
-    if (!file || !file.name) {
-        console.warn('No file selected or invalid file object.');
-        alert('Please select a valid file (jpg, png, or pdf).');
-        return;
-    }
+//   const handleUploadCertificate = async (e, adoptee) => {
+//     const file = e.target.files?.[0];
+//     if (!file || !file.name) {
+//         console.warn('No file selected or invalid file object.');
+//         alert('Please select a valid file (jpg, png, or pdf).');
+//         return;
+//     }
 
-    // Validate file type
-    const validTypes = ['image/jpeg', 'image/png', 'application/pdf'];
-    if (!validTypes.includes(file.type)) {
-        console.warn('Invalid file type:', file.type);
-        alert('Please select a jpg, png, or pdf file.');
-        return;
-    }
+//     // Validate file type
+//     const validTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+//     if (!validTypes.includes(file.type)) {
+//         console.warn('Invalid file type:', file.type);
+//         alert('Please select a jpg, png, or pdf file.');
+//         return;
+//     }
 
-    if (!adoptee.adoption_id ) {
-        console.error('Adopter ID is missing:', adoptee);
-        alert('Adopter ID is missing. Please try again.');
-        return;
-    }
+//     if (!adoptee.adoption_id ) {
+//         console.error('Adopter ID is missing:', adoptee);
+//         alert('Adopter ID is missing. Please try again.');
+//         return;
+//     }
 
-    const formData = new FormData();
-    const filename = `Certificate_${adoptee.adopter.replace(/\s+/g, '_')}_${adoptee.adoption_id }${file.name.slice(file.name.lastIndexOf('.'))}`;
-    formData.append('certificate', file, filename);
-    formData.append('adopter_id', adoptee.adoption_id );
+//     const formData = new FormData();
+//     const filename = `Certificate_${adoptee.adopter.replace(/\s+/g, '_')}_${adoptee.adoption_id }${file.name.slice(file.name.lastIndexOf('.'))}`;
+//     formData.append('certificate', file, filename);
+//     formData.append('adopter_id', adoptee.adoption_id );
 
-    try {
-        console.log('Uploading certificate for:', { adoption_id : adoptee.adoption_id , filename });
-        const response = await axios.post(`${url}/admin/upload_certificate`, formData, {
-            headers: { 'Content-Type': 'multipart/form-data' },
-        });
-        console.log('Upload response:', response.data);
+//     try {
+//         console.log('Uploading certificate for:', { adoption_id : adoptee.adoption_id , filename });
+//         const response = await axios.post(`${url}/admin/upload_certificate`, formData, {
+//             headers: { 'Content-Type': 'multipart/form-data' },
+//         });
+//         console.log('Upload response:', response.data);
 
-        // Update adopters state
-        const updatedAdopters = adopters.map((a) =>
-            a.adoption_id  === adoptee.adoption_id  ? { ...a, certificate: response.data.certificateUrl } : a
-        );
-        setAdopters(updatedAdopters);
+//         // Update adopters state
+//         const updatedAdopters = adopters.map((a) =>
+//             a.adoption_id  === adoptee.adoption_id  ? { ...a, certificate: response.data.certificateUrl } : a
+//         );
+//         setAdopters(updatedAdopters);
 
-        alert('Certificate uploaded successfully!');
+//         alert('Certificate uploaded successfully!');
 
-        // Optional: Refresh adopters list like fetchCatImage()
-        // await fetchAdopters(); // Uncomment if you have a fetchAdopters function
-    } catch (error) {
-        console.error('Upload failed:', error.response?.data || error.message);
-        alert(`Failed to upload certificate: ${error.response?.data?.error || 'Unknown error'}`);
-    }
+//         // Optional: Refresh adopters list like fetchCatImage()
+//         // await fetchAdopters(); // Uncomment if you have a fetchAdopters function
+//     } catch (error) {
+//         console.error('Upload failed:', error.response?.data || error.message);
+//         alert(`Failed to upload certificate: ${error.response?.data?.error || 'Unknown error'}`);
+//     }
+// };
+
+
+const handleUploadCertificate = async (e, adoptee) => {
+  const file = e.target.files?.[0];
+  if (!file) {
+    alert("Please select a file.");
+    return;
+  }
+
+  if (file.type !== "image/png") {
+    alert("Only PNG files are allowed!");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append(
+    "certificate",
+    file,
+    `Certificate_${adoptee.adopter.replace(/\s+/g, "_")}_${adoptee.adoption_id}.png`
+  );
+  formData.append("adoption_id", adoptee.adoption_id);
+
+  try {
+    const response = await axios.post(
+      "https://whiskerwatch-0j6g.onrender.com/admin/upload_certificate",
+      formData,
+      { headers: { "Content-Type": "multipart/form-data" } }
+    );
+
+    // Update local state
+    setAdopters((prev) =>
+      prev.map((a) =>
+        a.adoption_id === adoptee.adoption_id
+          ? { ...a, certificate: response.data.certificateUrl }
+          : a
+      )
+    );
+
+    alert("Certificate uploaded successfully!");
+  } catch (err) {
+    console.error("Upload failed:", err.response?.data || err.message);
+    alert(`Upload failed: ${err.response?.data?.error || "Unknown error"}`);
+  }
 };
 
 
@@ -391,15 +435,18 @@ const AdoptersList = () => {
                     )}
 
                     {!adoptee.certificate && (
-                      <label htmlFor={`adoption_certificate_${adoptee.adoption_id}`} className='w-[25px] h-[25px] object-fit p-2 bg-[#2F2F2F] rounded-[15px] cursor-pointer hover:bg-[#595959] active:bg-[#2F2F2F]'>
+                      <label
+                        htmlFor={`adoption_certificate_${adoptee.adoption_id}`}
+                        className='w-[25px] h-[25px] p-2 bg-[#2F2F2F] rounded-[15px] cursor-pointer hover:bg-[#595959]'
+                      >
                         <input
                           type="file"
-                          accept='image/jpeg, image/png'
+                          accept="image/png"
                           id={`adoption_certificate_${adoptee.adoption_id}`}
                           hidden
                           onChange={(e) => handleUploadCertificate(e, adoptee)}
                         />
-                        <img src="/assets/icons/add-white.png" alt="" className='w-full h-full object-cover'/>
+                        <img src="/assets/icons/add-white.png" alt="" className="w-full h-full" />
                       </label>
                     )}
 

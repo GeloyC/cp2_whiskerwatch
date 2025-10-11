@@ -61,27 +61,23 @@ const uploadProfile = multer({
 });
 
 
-const certificateCloudinaryStorage = new CloudinaryStorage({
+const certificateStorage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
-        folder: 'whiskerwatch/certificates',
-        allowed_formats: ['jpg', 'png'],
-        public_id: (req, file) => `${Date.now()}-${file.originalname.split('.')[0]}`,
+        folder: "whiskerwatch/certificates",
+        allowed_formats: ["png", "png"], // ONLY PNG
+        public_id: (req, file) =>
+        `certificate_${req.body.adoption_id}_${Date.now()}`,
     },
 });
 
 const uploadCertificate = multer({
-    storage: certificateCloudinaryStorage,
-    fileFilter: function (req, file, callback) {
-        if (
-            file.mimetype === 'image/jpeg' ||
-            file.mimetype === 'image/png' ||
-            file.mimetype === 'application/pdf'
-        ) {
-            callback(null, true);
+    storage: certificateStorage,
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype === "image/png") {
+        cb(null, true);
         } else {
-        req.err = 'Invalid file format';
-            callback(null, false);
+        cb(new Error("Only PNG files are allowed!"), false);
         }
     },
 });
@@ -1047,58 +1043,52 @@ AdminRoute.get('/adopters_certificate/:user_id', async (req, res) => {
 // });
 
 
-AdminRoute.post('/upload_certificate', uploadCertificate.single('certificate'), async (req, res) => {
-    const dbConnection = getDB();
-    const { adoption_id } = req.body;
+AdminRoute.post(
+    "/upload_certificate",
+    uploadCertificate.single("certificate"),
+    async (req, res) => {
+        const db = getDB();
+        const { adoption_id } = req.body;
 
-    try {
+        try {
+        // Validation
         if (!adoption_id) {
-            return res.status(400).json({ error: 'Adoption ID is required' });
+            return res.status(400).json({ error: "adoption_id is required." });
         }
-
         if (!req.file || !req.file.path) {
-            return res.status(400).json({ 
-                error: 'No file uploaded or invalid file format', 
-                details: req.err || 'Unknown file upload issue' 
-            });
+            return res.status(400).json({ error: "No file uploaded." });
         }
 
         const certificateUrl = req.file.path;
 
-        console.log('Executing INSERT query with:', { certificateUrl, adoption_id });
+        // Update adoption table with certificate URL
+        const [updateResult] = await db.query(
+            "UPDATE adoption SET certificate = ? WHERE adoption_id = ?",
+            [certificateUrl, adoption_id]
+        );
 
-        const [insertResult] = await dbConnection.query(
-            'INSERT INTO certificates (adoption_id, certificate_url) VALUES (?, ?)',
+        if (updateResult.affectedRows === 0) {
+            return res
+            .status(404)
+            .json({ error: "Adoption ID not found. Cannot attach certificate." });
+        }
+
+        // Optionally, store in separate certificates table
+        await db.query(
+            "INSERT INTO certificates (adoption_id, certificate_url) VALUES (?, ?) ON DUPLICATE KEY UPDATE certificate_url = VALUES(certificate_url)",
             [adoption_id, certificateUrl]
         );
 
-        if (insertResult.affectedRows === 0) {
-            return res.status(500).json({ error: 'Failed to insert certificate record' });
-        }
-
         res.status(200).json({
-            message: 'Certificate uploaded successfully to Cloudinary.',
-            certificateUrl: certificateUrl,
+            message: "Certificate uploaded successfully.",
+            certificateUrl,
         });
-    } catch (err) {
-        // console.error('Error uploading certificate:', {
-        //     error: err.message || 'No error message provided',
-        //     stack: err.stack,
-        //     sqlError: err.sqlMessage || 'No SQL error message',
-        //     sqlState: err.sqlState || 'No SQL state',
-        //     code: err.code || 'No error code',
-        //     requestBody: req.body,
-        //     file: req.file ? { filename: req.file.originalname, path: req.file.path } : null,
-        // });
-        res.status(500).json({
-            error: 'Failed to upload certificate to Cloudinary',
-            details: err.message || 'Unknown server error',
-            sqlError: err.sqlMessage || null,
-        });
-    } finally {
-        if (dbConnection && dbConnection.release) dbConnection.release();
+        } catch (err) {
+        console.error("Certificate upload error:", err);
+        res.status(500).json({ error: "Server error", details: err.message });
+        }
     }
-});
+);
 
 
 export default AdminRoute;
