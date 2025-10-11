@@ -18,7 +18,6 @@ const AdoptersList = () => {
 
         setAdopters(response.data);
 
-        console.log(response.data.certificate)
         
       } catch (err) {
         console.error('Error fetching adopter data: ', err.response?.data || err.message);
@@ -157,7 +156,7 @@ const handleUploadCertificate = async (e, adoptee) => {
     adoptee.adopter ? adoptee.adopter.replace(/\s+/g, '_') : 'unknown'
   }_${adoptee.adoption_id}.png`;
 
-  
+
   const formData = new FormData();
   formData.append( "certificate", file,filename);
   formData.append("adoption_id", adoptee.adoption_id);
@@ -169,14 +168,17 @@ const handleUploadCertificate = async (e, adoptee) => {
       { headers: { "Content-Type": "multipart/form-data" } }
     );
 
+    console.log('Upload response:', response.data);
+
     // Update local state
-    setAdopters((prev) =>
-      prev.map((a) =>
-        a.adoption_id === adoptee.adoption_id
-          ? { ...a, certificate: response.data.certificateUrl }
-          : a
-      )
-    );
+    // setAdopters((prev) =>
+    //   prev.map((a) =>
+    //     a.adoption_id === adoptee.adoption_id
+    //       ? { ...a, certificate: response.data.certificateUrl }
+    //       : a
+    //   )
+    // );
+    await fetchAdopter();
 
     alert("Certificate uploaded successfully!");
   } catch (err) {

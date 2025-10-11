@@ -773,20 +773,36 @@ AdminRoute.patch('/adoption_form/status_update/:application_id', verifyUser, asy
 //     }
 // })
 
+// AdminRoute.get('/adopters', async (req, res) => {
+//     const dbConnection = getDB();
+//     try {
+//         const [rows] = await dbConnection.query(
+//             'SELECT a.adoption_id, a.adopter_id, a.cat_name, a.adopter, a.adoption_date, a.contactnumber, c.certificate_url AS certificate ' +
+//             'FROM adoption a LEFT JOIN certificates c ON a.adoption_id = c.adoption_id'
+//         );
+//         res.status(200).json(rows);
+//     } catch (err) {
+//         console.error('Error fetching adopters:', err);
+//         res.status(500).json({ error: 'Failed to fetch adopters' });
+//     }
+// });
+
+
 AdminRoute.get('/adopters', async (req, res) => {
     const dbConnection = getDB();
     try {
         const [rows] = await dbConnection.query(
-            'SELECT a.adoption_id, a.adopter_id, a.cat_name, a.adopter, a.adoption_date, a.contactnumber, c.certificate_url AS certificate ' +
-            'FROM adoption a LEFT JOIN certificates c ON a.adoption_id = c.adoption_id'
+            'SELECT adoption_id, adoptedcat_id, adopter_id, cat_name, adopter, adoption_date, contactnumber, certificate FROM adoption'
         );
+        console.log('Adopters fetched:', rows); // Debug log
         res.status(200).json(rows);
     } catch (err) {
         console.error('Error fetching adopters:', err);
         res.status(500).json({ error: 'Failed to fetch adopters' });
+    } finally {
+        if (dbConnection && dbConnection.release) dbConnection.release();
     }
 });
-
 
 
 
