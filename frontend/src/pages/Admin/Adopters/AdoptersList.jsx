@@ -216,34 +216,88 @@ const AdoptersList = () => {
   //   }
   // };
 
+  // const handleUploadCertificate = async (e, adoptee) => {
+  //   const file = e.target.files?.[0];
+  //   if (!file || !file.name) {
+  //     console.warn('No file selected or invalid file object.');
+  //     return;
+  //   }
+
+  //   const extension = file.name.includes('.') ? file.name.slice(file.name.lastIndexOf('.')) : '';
+  //   const filename = `Certificate_${adoptee.adopter.replace(/\s+/g, '_')}_${adoptee.adoption_id}${extension}`;
+
+  //   const certificateForm = new FormData();
+  //   certificateForm.append('certificate', file, filename);
+  //   certificateForm.append('adopter_id', adoptee.adopter_id); // Use adopter_id if available
+
+  //   try {
+  //     const response = await axios.post(`${url}/admin/upload_certificate`, certificateForm, {
+  //       headers: { 'Content-Type': 'multipart/form-data' },
+  //     });
+  //     console.log('Upload response:', response.data); // Debug
+  //     const updatedAdopters = adopters.map((a) =>
+  //       a.adopter_id === adoptee.adopter_id ? { ...a, certificate: response.data.certificateUrl } : a
+  //     );
+  //     setAdopters(updatedAdopters);
+  //   } catch (error) {
+  //     console.error('Upload failed:', error.response?.data || error.message);
+  //     alert('Failed to upload certificate. Please try again.');
+  //   }
+  // };
+
+
   const handleUploadCertificate = async (e, adoptee) => {
     const file = e.target.files?.[0];
     if (!file || !file.name) {
-      console.warn('No file selected or invalid file object.');
-      return;
+        console.warn('No file selected or invalid file object.');
+        alert('Please select a valid file (jpg, png, or pdf).');
+        return;
     }
 
-    const extension = file.name.includes('.') ? file.name.slice(file.name.lastIndexOf('.')) : '';
-    const filename = `Certificate_${adoptee.adopter.replace(/\s+/g, '_')}_${adoptee.adoption_id}${extension}`;
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+    if (!validTypes.includes(file.type)) {
+        console.warn('Invalid file type:', file.type);
+        alert('Please select a jpg, png, or pdf file.');
+        return;
+    }
 
-    const certificateForm = new FormData();
-    certificateForm.append('certificate', file, filename);
-    certificateForm.append('adopter_id', adoptee.adopter_id); // Use adopter_id if available
+    if (!adoptee.adopter_id) {
+        console.error('Adopter ID is missing:', adoptee);
+        alert('Adopter ID is missing. Please try again.');
+        return;
+    }
+
+    const formData = new FormData();
+    const filename = `Certificate_${adoptee.adopter.replace(/\s+/g, '_')}_${adoptee.adopter_id}${file.name.slice(file.name.lastIndexOf('.'))}`;
+    formData.append('certificate', file, filename);
+    formData.append('adopter_id', adoptee.adopter_id);
 
     try {
-      const response = await axios.post(`${url}/admin/upload_certificate`, certificateForm, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      console.log('Upload response:', response.data); // Debug
-      const updatedAdopters = adopters.map((a) =>
-        a.adopter_id === adoptee.adopter_id ? { ...a, certificate: response.data.certificateUrl } : a
-      );
-      setAdopters(updatedAdopters);
+        console.log('Uploading certificate for:', { adopter_id: adoptee.adopter_id, filename });
+        const response = await axios.post(`${url}/admin/upload_certificate`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        console.log('Upload response:', response.data);
+
+        // Update adopters state
+        const updatedAdopters = adopters.map((a) =>
+            a.adopter_id === adoptee.adopter_id ? { ...a, certificate: response.data.certificateUrl } : a
+        );
+        setAdopters(updatedAdopters);
+
+        alert('Certificate uploaded successfully!');
+
+        // Optional: Refresh adopters list like fetchCatImage()
+        // await fetchAdopters(); // Uncomment if you have a fetchAdopters function
     } catch (error) {
-      console.error('Upload failed:', error.response?.data || error.message);
-      alert('Failed to upload certificate. Please try again.');
+        console.error('Upload failed:', error.response?.data || error.message);
+        alert(`Failed to upload certificate: ${error.response?.data?.error || 'Unknown error'}`);
     }
-  };
+};
+
+
+
 
   return (
     <div className='relative flex flex-col h-screen overflow-x-hidden'>
