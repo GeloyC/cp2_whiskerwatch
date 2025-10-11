@@ -68,7 +68,7 @@ const CatProfile = () => {
 
             try {
             const catId = catInfo[currentCatIndex].cat_id;
-            const response = await axios.get(`${url}/cat/image/${catId}`);
+            const response = await axios.get(`${url}/cat/images/${catId}`);
             const imageUrls = response.data.map(image => {
                 const file = image.image_filename;
                 return {
