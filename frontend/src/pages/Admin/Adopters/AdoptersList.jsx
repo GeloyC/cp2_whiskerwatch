@@ -10,7 +10,7 @@ const AdoptersList = () => {
   const { user, logout, loading: sessionLoading } = useSession();
   const [adopters, setAdopters] = useState([]);
 
-  useEffect(() => {
+  
     const fetchAdopter = async () => {
       try {
         const response = await axios.get(`${url}/admin/adopters`);
@@ -24,7 +24,6 @@ const AdoptersList = () => {
       }
     };
     fetchAdopter();
-  }, []);
 
   // const handleUploadCertificate = async (e, adoptee) => {
   //   const file = e.target.files[0];
@@ -188,6 +187,9 @@ const handleUploadCertificate = async (e, adoptee) => {
 };
 
 
+useEffect(() => {
+  fetchAdopter()
+}, []);
 
 
   return (
