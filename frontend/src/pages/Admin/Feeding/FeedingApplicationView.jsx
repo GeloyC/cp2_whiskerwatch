@@ -54,11 +54,13 @@ const FeedingApplicationView = () => {
         }
     }
 
-    const getInlinePdfUrl = (url) => {
+    const getInlineUrl = (url) => {
         if (!url) return '';
-        return url.includes('/upload/')
-        ? url.replace('/upload/', '/upload/fl_attachment:false/')
-        : url;
+        if (url.includes('/upload/')) {
+            // add inline display flag for PDFs
+            return url.replace('/upload/', '/upload/fl_attachment:false/');
+        }
+        return url;
     };
 
 
