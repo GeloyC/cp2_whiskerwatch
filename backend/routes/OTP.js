@@ -36,6 +36,8 @@ export const signupUser = async (req, res) => {
 
         // Send OTP via Resend
         const emailResponse = await resend.emails.send({
+        
+        
         // from: process.env.EMAIL_FROM || "WhiskerWatch <onboarding@resend.dev>",
         from:"WhiskerWatch <onboarding@resend.dev>",
         to: email,
@@ -50,6 +52,7 @@ export const signupUser = async (req, res) => {
         });
 
         console.log("This is Resend email response: ", emailResponse);
+        console.log("Received signup from:", email);
 
         res.json({ message: "OTP sent to your email!" });
 

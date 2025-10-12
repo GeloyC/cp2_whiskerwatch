@@ -31,9 +31,9 @@ app.use(
   cors({
     origin: [
       "https://whiskerwatch.site",
+      "https://www.whiskerwatch.site",
       "https://cp2-whiskerwatch.vercel.app",
       "https://whiskerwatch-cp2.vercel.app",
-      "http://localhost:5173",
       /\.vercel\.app$/,
     ],
     credentials: true,
