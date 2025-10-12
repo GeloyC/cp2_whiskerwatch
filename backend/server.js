@@ -8,8 +8,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import cookieParser from "cookie-parser";
 import mailgun from 'mailgun-js';
-import { randomBytes } from 'crypto';
-import rateLimit from 'express-rate-limit';
+
 
 import { connectDB } from "./database.js";
 import CatRoute from "./routes/Cat.js";
