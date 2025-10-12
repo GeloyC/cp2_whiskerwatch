@@ -509,38 +509,29 @@ const Login = () => {
   };
 
   // ------------------- FORGOT PASSWORD -------------------
-  // const handleForgotPassword = async (event) => {
-  //   event.preventDefault();
-  //   setError("");
-  //   setLoading(true);
-
-  //   if (!emailRegex.test(emailForgot)) {
-  //     setError("Please enter a valid email address");
-  //     setLoading(false);
-  //     return;
-  //   }
-
-  //   try {
-  //     const response = await axios.post(`${url}/user/forgot-password`, {
-  //       email: emailForgot,
-  //     });
-
-  //     if (response.status === 200) {
-  //       toast.success("An OTP has been sent to your email.");
-  //       setEmail(emailForgot);
-  //       setForgotPassForm(false);
-  //       setResetPassForm(true);
-  //     }
-  //   } catch (error) {
-  //     console.error("Forgot password error:", error);
-  //     const message =
-  //       error.response?.data?.message ||
-  //       "Failed to send OTP. Please try again later.";
-  //     setError(message);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+  const handleForgotPassword = async () => {
+    setError("");
+    setLoading(true);
+    try {
+      const response = await axios.post(`${url}/user/verify-reset-otp`, {  // <-- Change to /verify-reset-otp
+        email: emailForgot,
+        otp,
+      });
+      if (response.status === 200) {
+        toast.success("OTP verified successfully!");
+        setForgotPassForm(false);
+        setResetPassForm(true);
+      }
+    } catch (error) {
+      console.error("OTP verification error:", error);
+      setError(
+        error.response?.data?.message ||
+          "Invalid OTP. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // ------------------- RESET PASSWORD -------------------
   const handleResetPassword = async (event) => {
@@ -807,29 +798,7 @@ const Login = () => {
                 ) : (
                   <button
                     type="button"
-                    onClick={async () => {
-                      setError("");
-                      setLoading(true);
-                      try {
-                        const response = await axios.post(`${url}/user/verify-otp`, {
-                          email: emailForgot,
-                          otp,
-                        });
-                        if (response.status === 200) {
-                          toast.success("OTP verified successfully!");
-                          setForgotPassForm(false);
-                          setResetPassForm(true);
-                        }
-                      } catch (error) {
-                        console.error("OTP verification error:", error);
-                        setError(
-                          error.response?.data?.message ||
-                            "Invalid OTP. Please try again."
-                        );
-                      } finally {
-                        setLoading(false);
-                      }
-                    }}
+                    onClick={handleForgotPassword}
                     className="cursor-pointer bg-[#B5C04A] py-2 rounded-full text-[#FFF] hover:scale-105 active:scale-95 transition-all duration-100"
                     disabled={loading}
                   >
