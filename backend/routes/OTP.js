@@ -38,8 +38,8 @@ export const signupUser = async (req, res) => {
         const emailResponse = await resend.emails.send({
         
         
-        // from: process.env.EMAIL_FROM || "WhiskerWatch <onboarding@resend.dev>",
-        from:"WhiskerWatch <onboarding@resend.dev>",
+        from: process.env.EMAIL_FROM || "WhiskerWatch <onboarding@resend.dev>",
+        // from:"WhiskerWatch <noreply@whiskerwatch.site>",
         to: email,
         subject: "WhiskerWatch OTP Verification",
         html: `
@@ -118,8 +118,8 @@ export const resendOtp = async (req, res) => {
         // Send via Resend
         const { firstname } = stored.data;
         const response = await resend.emails.send({
-        // from: process.env.EMAIL_FROM || "WhiskerWatch <onboarding@resend.dev>",
-        from: "WhiskerWatch <onboarding@resend.dev>",
+        from: process.env.EMAIL_FROM || "WhiskerWatch <onboarding@resend.dev>",
+        // from: "WhiskerWatch <onboarding@resend.dev>",
         to: email,
         subject: "WhiskerWatch - Resent OTP Verification Code",
         html: `
