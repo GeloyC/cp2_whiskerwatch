@@ -286,11 +286,12 @@ export const signupUser = async (req, res) => {
     try {
         // check duplicates
         const [existing] = await db.query(
-        `SELECT * FROM users WHERE email = ? OR username = ?`,
-        [email, username]
+            `SELECT * FROM users WHERE email = ? OR username = ?`,
+            [email, username]
         );
+
         if (existing.length > 0) {
-        return res.status(409).json({ message: "Email or Username already exists" });
+            return res.status(409).json({ message: "Email or Username already exists" });
         }
 
         // hash password (we store only after OTP verified)
@@ -299,10 +300,10 @@ export const signupUser = async (req, res) => {
         // generate signup OTP and store signup-related data
         const otp = Math.floor(100000 + Math.random() * 900000);
         otpStore[email] = {
-        otp,
-        type: "signup",
-        data: { firstname, lastname, contactnumber, birthday, email, username, address, password: hashedPassword },
-        expires: Date.now() + 5 * 60 * 1000,
+            otp,
+            type: "signup",
+            data: { firstname, lastname, contactnumber, birthday, email, username, address, password: hashedPassword },
+            expires: Date.now() + 5 * 60 * 1000,
         };
 
         // send email (kept body as you asked)
@@ -337,23 +338,22 @@ export const verifyOtp = async (req, res) => {
         const stored = otpStore[email];
 
         if (!stored) {
-        return res.status(400).json({ error: "No OTP request found for this email." });
+            return res.status(400).json({ error: "No OTP request found for this email." });
         }
 
         if (stored.type !== "password_reset") {
-        return res.status(400).json({ error: "Invalid OTP type for this request." });
+            return res.status(400).json({ error: "Invalid OTP type for this request." });
         }
 
         if (Date.now() > stored.expires) {
-        delete otpStore[email];
-        return res.status(400).json({ error: "OTP expired. Please request a new one." });
+            delete otpStore[email];
+            return res.status(400).json({ error: "OTP expired. Please request a new one." });
         }
 
         if (String(stored.otp) !== String(otp)) {
-        return res.status(400).json({ error: "Invalid OTP. Please try again." });
+            return res.status(400).json({ error: "Invalid OTP. Please try again." });
         }
 
-        // ✅ OTP is valid — delete it and respond success
         delete otpStore[email];
         res.json({ message: "OTP verified successfully. You can now reset your password." });
     } catch (err) {
@@ -482,10 +482,14 @@ export const forgotPassword = async (req, res) => {
         to: email,
         subject: "WhiskerWatch Password Reset OTP",
         html: `
-            <h2>Password Reset Request</h2>
-            <p>Here is your One-Time Password (OTP) to reset your password:</p>
+            <h2>WhiskerWatch Password Reset</h2>
+            <p>Hi, you One-Time Password (OTP) is:</p>
             <h1>${generatedOtp}</h1>
+            <p>Here is your One-Time Password (OTP) to reset your password:</p>
             <p>This code will expire in 5 minutes.</p>
+            <p>If you didn't request this, please ignore this message and never share it with anyone to keep your WhiskerWatch account safe.</p>
+            <p>Thanks for helping keep our cat community secure!</p>
+            <p><strong>- WhiskerWatch Team</strong></p>
         `,
         });
 
@@ -507,8 +511,8 @@ export const resetPassword = async (req, res) => {
     try {
         // Fetch the latest OTP (used or unused) for the email, as long as it’s not expired
         const [stored] = await db.query(
-        `SELECT * FROM user_otps WHERE email = ? AND expires_at > NOW() ORDER BY created_at DESC LIMIT 1`,
-        [email]
+            `SELECT * FROM user_otps WHERE email = ? AND expires_at > NOW() ORDER BY created_at DESC LIMIT 1`,
+            [email]
         );
         if (stored.length === 0) {
         return res.status(400).json({ error: "No valid OTP found for this email." });

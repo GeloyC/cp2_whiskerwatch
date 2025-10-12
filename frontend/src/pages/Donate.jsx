@@ -270,7 +270,7 @@ const Donate = () => {
                               className='p-2 rounded-[10px] border-1 border-[#A3A3A3]'/>
                             </div>
                             <div className='flex flex-col gap-2'>
-                              <label className='text-[#595959] text-[14px]'>Upload image of transaction (screenshot of transaction)</label>
+                              <label className='text-[#595959] text-[14px] pt-2'>Please upload an image of transaction's receipt (Receipt Screenshot)</label>
                               <div className='flex flex-col items-center w-full p-2 gap-2 border-dashed border-2 border-[#DC8801] rounded-[12px]'>
                                 <label htmlFor="screenshot_image" className='cursor-pointer bg-[#DC8801] p-2 rounded-[10px] text-[#FFF] text-center active:bg-[#fea921] w-full'>
                                   Upload Image
@@ -282,7 +282,7 @@ const Donate = () => {
                             </div>
                           </div>
                           <div className='flex flex-col items-center w-full pb-2'>
-                            <label htmlFor="">Scan the QR code to complete the transaction</label>
+                            <label htmlFor="">Scan the QR code to proceed with the transaction</label>
                             <div className='w-[300px] h-[300px] object-fit rounded-[10px] overflow-hidden'>
                               <img src="/assets/QR_Code.jpg" alt="qr_code" className='w-full h-full object-cover'/>
                             </div>
