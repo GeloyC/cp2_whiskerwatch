@@ -13,7 +13,7 @@ import bcrypt from 'bcrypt';
 
 const otpRoute = express();
 otpRoute.use(express.json());
-dotenv.config();
+// dotenv.config();
 
 
 // export const sendMail = async (to, subject, html) => {
