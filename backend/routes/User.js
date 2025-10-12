@@ -221,7 +221,7 @@ UserRoute.post('/signup', otpLimiter, async (req, res) => {
 
     // Store OTP in user_otp table
     await db.query(
-      `INSERT INTO user_otp (email, otp, expires_at) 
+      `INSERT INTO user_otps (email, otp, expires_at) 
       VALUES (?, ?, ?)`,
       [email, hashedOtp, expiresAt]
     );
@@ -272,7 +272,7 @@ UserRoute.post('/verify-otp', async (req, res) => {
 
     // Fetch OTP record
     const [otpRecords] = await db.query(
-      `SELECT * FROM user_otp 
+      `SELECT * FROM user_otps 
       WHERE email = ? AND is_used = 0 AND expires_at > NOW() 
       ORDER BY created_at DESC LIMIT 1`,
       [email]
