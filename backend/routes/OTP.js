@@ -36,7 +36,7 @@ export const signupUser = async (req, res) => {
 
         // Send OTP via Resend
         const emailResponse = await resend.emails.send({
-        from: process.env.EMAIL_FROM,
+        from: process.env.EMAIL_FROM || "WhiskerWatch <onboarding@resend.dev>",
         to: email,
         subject: "WhiskerWatch OTP Verification",
         html: `
@@ -92,4 +92,48 @@ export const verifyOtp = async (req, res) => {
         res.status(500).json({ error: "Error verifying OTP" });
     }
 };
+
+
+//  RESEND OTP
+export const resendOtp = async (req, res) => {
+    const { email } = req.body;
+    const db = getDB();
+
+    try {
+        // Check if OTP exists for this email
+        const stored = otpStore[email];
+        if (!stored) {
+        return res.status(400).json({ error: "No existing signup session found. Please sign up again." });
+        }
+
+        // Generate a new OTP
+        const newOtp = Math.floor(100000 + Math.random() * 900000);
+        otpStore[email].otp = newOtp;
+        otpStore[email].expires = Date.now() + 5 * 60 * 1000; // Reset expiration time
+
+        // Send via Resend
+        const { firstname } = stored.data;
+        const response = await resend.emails.send({
+        from: process.env.EMAIL_FROM || "WhiskerWatch <onboarding@resend.dev>",
+        to: email,
+        subject: "WhiskerWatch - Resent OTP Verification Code",
+        html: `
+            <h2>New OTP Verification</h2>
+            <p>Hi ${firstname},</p>
+            <p>Your new One-Time Password (OTP) is:</p>
+            <h1>${newOtp}</h1>
+            <p>This code expires in 5 minutes.</p>
+        `,
+        });
+
+        console.log("Resend email response:", response);
+        res.json({ message: "New OTP sent to your email!" });
+
+    } catch (err) {
+        console.error("Resend OTP error:", err);
+        res.status(500).json({ error: "Failed to resend OTP" });
+    }
+};
+
+
 export default otpRoute;

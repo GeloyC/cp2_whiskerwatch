@@ -15,7 +15,7 @@ import { Resend } from "resend";
 import multer from 'multer';
 import fs from 'fs';
 // import { promises as fs } from 'node:fs';
-import { signupUser, verifyOtp } from "./OTP.js";
+import { signupUser, verifyOtp, resendOtp } from "./OTP.js";
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { error, log } from "console";
@@ -41,6 +41,7 @@ const transporter = nodemailer.createTransport({
 
 UserRoute.post("/signup", signupUser);
 UserRoute.post("/verify-otp", verifyOtp);
+UserRoute.post("/resend-otp", resendOtp);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
