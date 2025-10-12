@@ -94,25 +94,42 @@ const SignUp = () => {
         }
     };
 
+    // const handleVerifyOtp = async (e) => {
+    //     e.preventDefault();
+    //     setLoading(true);
+    //     setError('');
+
+    //     // Build the full user data object
+    //     const userData = {
+    //         firstname,
+    //         lastname,
+    //         contactnumber,
+    //         birthday,
+    //         email,
+    //         username,
+    //         address,
+    //         password,
+    //     };
+
+    //     try {
+    //         const res = await axios.post(`${url}/user/verify-otp`, { email, otp, userData });
+    //         toast.success(res.data.message);
+    //         navigate('/login');
+    //     } catch (err) {
+    //         console.error('OTP verification error:', err.response?.data || err.message);
+    //         setError(err.response?.data?.error || 'Failed to verify OTP');
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
+
     const handleVerifyOtp = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
 
-        // Build the full user data object
-        const userData = {
-            firstname,
-            lastname,
-            contactnumber,
-            birthday,
-            email,
-            username,
-            address,
-            password,
-        };
-
         try {
-            const res = await axios.post(`${url}/user/verify-otp`, { email, otp, userData });
+            const res = await axios.post(`${url}/user/verify-otp`, { email, otp });
             toast.success(res.data.message);
             navigate('/login');
         } catch (err) {
@@ -122,7 +139,6 @@ const SignUp = () => {
             setLoading(false);
         }
     };
-
 
     const handleCancelSignUp = () => {
         setFirstname('');
@@ -379,37 +395,31 @@ const SignUp = () => {
                         value={otp}
                         onChange={handleChange(setOtp)}
                         required
-                        className="border-b-2 border-b-[#A8784F] p-2 w-full max-w-[200px]"
+                        className="border-b-2 border-b-[#A8784F] p-2 w-full text-center max-w-[200px]"
                     />
+                    <div className='flex flex-col gap-2 items-center'>
+                        <label className="text-[#DC8801] text-[14px]">{error}</label>
 
-                    <label className="text-[#DC8801] text-[14px]">{error}</label>
+                        <button type="submit" disabled={loading}
+                            className="p-2 px-4 bg-[#B5C04A] min-w-[125px] text-[#FFF] rounded-[50px] hover:bg-[#889132] active:scale-97 cursor-pointer"
+                        > {loading ? 'Verifying...' : 'Verify OTP'}
+                        </button>
 
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="p-2 px-4 bg-[#B5C04A] min-w-[125px] text-[#FFF] rounded-[50px] hover:bg-[#889132] active:scale-97 cursor-pointer"
-                    >
-                        {loading ? 'Verifying...' : 'Verify OTP'}
-                    </button>
+                        <button type="button" onClick={handleResendOtp} disabled={!canResend}
+                            className={`text-[#DC8801] underline ${
+                            canResend ? 'hover:text-[#B67101]' : 'opacity-50 cursor-not-allowed'
+                            }`}
+                        >
+                            {canResend ? 'Resend OTP' : `Resend in ${resendTimer}s`}
+                        </button>
 
-                    <button
-                        type="button"
-                        onClick={handleResendOtp}
-                        disabled={!canResend}
-                        className={`text-[#DC8801] underline ${
-                        canResend ? 'hover:text-[#B67101]' : 'opacity-50 cursor-not-allowed'
-                        }`}
-                    >
-                        {canResend ? 'Resend OTP' : `Resend in ${resendTimer}s`}
-                    </button>
-
-                    <button
-                        type="button"
-                        onClick={handleCancelSignUp}
-                        className="text-[#DC8801] underline hover:text-[#B67101]"
-                    >
-                        Cancel
-                    </button>
+                        <button type="button"
+                            onClick={handleCancelSignUp}
+                            className="text-[#DC8801] underline hover:text-[#B67101]"
+                        >
+                            Cancel
+                        </button>
+                    </div>
                 </form>
             )}
         </div>

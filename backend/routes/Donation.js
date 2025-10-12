@@ -127,7 +127,7 @@ DonationRoute.post('/donation_data', upload_donationProof.single('proof_image'),
       let itemSummary = '';
       switch (donation_type) {
         case 'Money':
-          itemSummary = `${amount} PHP`;
+          itemSummary = `PHP${amount}`;
           break;
         case 'Food':
           itemSummary = `${quantity}x ${food_type} food`;
@@ -140,7 +140,7 @@ DonationRoute.post('/donation_data', upload_donationProof.single('proof_image'),
           itemSummary = 'an item';
       }
 
-      let message = `We received your donation of ${itemSummary} . We'd like to thank you for donating to WhiskerWatch! `;
+      let message = `We received your donation of ${itemSummary}. <strong>We'd like to thank you for donating to WhiskerWatch!</strong> `;
         
       await db.query(
           `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,

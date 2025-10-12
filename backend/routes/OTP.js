@@ -341,7 +341,7 @@ export const verifyOtp = async (req, res) => {
             return res.status(400).json({ error: "No OTP request found for this email." });
         }
 
-        if (stored.type !== "password_reset") {
+        if (stored.type !== "signup") {
             return res.status(400).json({ error: "Invalid OTP type for this request." });
         }
 
