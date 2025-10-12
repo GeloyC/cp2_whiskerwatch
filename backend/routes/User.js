@@ -325,7 +325,7 @@ UserRoute.get("/test-email", async (req, res) => {
   try {
     const result = await resend.emails.send({
       from: "WhiskerWatch <onboarding@resend.dev>",
-      to: "yourpersonalemail@gmail.com",
+      to: "whiskerwatch.site@gmail.com",
       subject: "Test Email from WhiskerWatch",
       html: "<h1>Hello 👋</h1><p>This is a test email from your Render app.</p>",
     });
