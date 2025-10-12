@@ -374,7 +374,7 @@ const CatProfileProperty = () => {
                                     {/* SAVE BUTTON */}
                                     <div className='hidden xl:flex lg:flex items-center justify-end gap-1 w-full'>
                                         <button type='button' onClick={() => handleUploadImages(cat_id)} className='flex items-center justify-center gap-2 bg-[#B5C04A] text-[#FFF]  font-bold p-2 pl-4 pr-4 min-w-[80px] rounded-[25px] cursor-pointer active:bg-[#595959]'>
-                                            {loading ? 'Saving...' : 'Save'}
+                                            {!loading ? 'Saving...' : 'Save'}
                                         </button>
                                         <button onClick={handleImageUploaderWindow} type='button' className='flex items-center gap-2 bg-[#2F2F2F] text-[#FFF] font-bold p-2 pl-4 pr-4 rounded-[25px] cursor-pointer active:bg-[#595959]'>
                                             Cancel
@@ -388,7 +388,7 @@ const CatProfileProperty = () => {
                             <div className='hidden xl:flex lg:flex justify-end'>
                                 <button type='submit' 
                                     className={isProfileModified() ? 'p-2 pl-4 pr-4 bg-[#DC8801] text-[#FFF] font-bold w-auto rounded-[15px] hover:bg-[#FFB235] active:bg-[#DC8801]' : 'hidden'}>
-                                    {loading ? `Saving...` : 'Save Changes'}
+                                    {!loading ? `Saving...` : 'Save Changes'}
                                 </button>
                             </div>
                         </form>
