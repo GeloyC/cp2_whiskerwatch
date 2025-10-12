@@ -319,6 +319,22 @@ const JWT_SECRET = process.env.JWT_SECRET || 'whisker_secret';
 //   }
 // });
 
+UserRoute.get("/test-email", async (req, res) => {
+  try {
+    const result = await resend.emails.send({
+      from: "WhiskerWatch <onboarding@resend.dev>",
+      to: "yourpersonalemail@gmail.com",
+      subject: "Test Email from WhiskerWatch",
+      html: "<h1>Hello 👋</h1><p>This is a test email from your Render app.</p>",
+    });
+    console.log(result);
+    res.json({ message: "Sent!", result });
+  } catch (err) {
+    console.error("Test email error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
 UserRoute.post('/check_email', async (req, res) => {
   const db = getDB();

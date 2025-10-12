@@ -49,6 +49,8 @@ export const signupUser = async (req, res) => {
         });
 
         res.json({ message: "OTP sent to your email!" });
+        console.log("Resend email response:", data);
+        
     } catch (err) {
         console.error("Signup error:", err);
         res.status(500).json({ message: "Error creating user or sending OTP" });
