@@ -187,7 +187,7 @@ const Donate = () => {
         }
       });
 
-      setSuccessMessage("Thank you for donating! Your support keeps our cats safe, healthy, and loved while they wait for their forever families. We couldn't do this without you!")
+      setSuccessMessage(`Thank you for donating! Your support keeps our cats safe, healthy, and loved while they wait for their forever families. We couldn't do this without you! \n\n Our head volunteers will reach out to the contact number you provided for the process of shipping the donated itemsfor SPR Cats.`)
       await fetchNotifications(user.user_id)
       triggerWhiskerUpdate();
 

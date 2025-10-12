@@ -58,15 +58,6 @@ const Donation = () => {
                 <form className='flex gap-2'>
                   <input type="search" placeholder='Search' className='bg-[#FFF] p-2 min-w-[400px] border-1 border-[#595959] rounded-[15px]' value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}/>
                 </form>
-
-                {/* Search by date */}
-                {/* <form className='flex flex-row items-center gap-2'>
-                  <div className='flex items-center gap-1'>
-                    <label className='leading-tight'>Date</label>
-                    <input type="date" name="" id="" className='bg-[#FFF] p-2 min-w-[250px] rounded-[15px] border-1 border-[#595959]'/>
-                  </div>
-                  <button className='bg-[#CFCFCF] p-2 pl-4 pr-4 rounded-[15px] cursor-pointer hover:bg-[#a3a3a3] active:bg-[#CFCFCF]'>Search</button>
-                </form> */}
               </div>
 
 

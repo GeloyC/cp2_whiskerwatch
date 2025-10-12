@@ -667,55 +667,55 @@ const SignUp = () => {
                     />
                 </div>
                 <input
-                type="text"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => {
-                    setEmail(e.target.value);
-                    if (emailError) setEmailError('');
-                }}
-                required
-                className={!emailError ? 'border-b-2 border-b-[#A8784F] p-2 text-[#2F2F2F]' : 'border-b-2 border-b-[#A8784F] p-2 text-[#DC8801] bg-[#F9F7DC]'}
+                    type="text"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => {
+                        setEmail(e.target.value);
+                        if (emailError) setEmailError('');
+                    }}
+                    required
+                    className={!emailError ? 'border-b-2 border-b-[#A8784F] p-2 text-[#2F2F2F]' : 'border-b-2 border-b-[#A8784F] p-2 text-[#DC8801] bg-[#F9F7DC]'}
                 />
                 <input
-                type="text"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => {
-                    setUsername(e.target.value);
-                    if (usernameError) setUsernameError('');
-                }}
-                required
-                className={!usernameError ? 'border-b-2 border-b-[#A8784F] p-2' : 'border-b-2 border-b-[#A8784F] p-2 text-[#DC8801] bg-[#F9F7DC]'}
+                    type="text"
+                    placeholder="Username"
+                    value={username}
+                    onChange={(e) => {
+                        setUsername(e.target.value);
+                        if (usernameError) setUsernameError('');
+                    }}
+                    required
+                    className={!usernameError ? 'border-b-2 border-b-[#A8784F] p-2' : 'border-b-2 border-b-[#A8784F] p-2 text-[#DC8801] bg-[#F9F7DC]'}
                 />
                 <input
-                type="text"
-                placeholder="Address"
-                value={address}
-                onChange={handleChange(setAddress)}
-                required
-                className="border-b-2 border-b-[#A8784F] p-2 col-span-2"
+                    type="text"
+                    placeholder="Address"
+                    value={address}
+                    onChange={handleChange(setAddress)}
+                    required
+                    className="border-b-2 border-b-[#A8784F] p-2 col-span-2"
                 />
                 <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={handleChange(setPassword)}
-                required
-                className={password === confirmPassword ? 'border-b-2 border-b-[#A8784F] p-2 grid-col placeholder-[#A3A3A3] text-[#B5C04A]' : 'border-b-2 border-b-[#A8784F] p-2 grid-col placeholder-[#A3A3A3] text-[#000000]'}
+                    type="password"
+                    placeholder="Password"
+                    value={password}
+                    onChange={handleChange(setPassword)}
+                    required
+                    className={password === confirmPassword ? 'border-b-2 border-b-[#A8784F] p-2 grid-col placeholder-[#A3A3A3] text-[#B5C04A]' : 'border-b-2 border-b-[#A8784F] p-2 grid-col placeholder-[#A3A3A3] text-[#000000]'}
                 />
                 <input
-                type="password"
-                placeholder="Confirm Password"
-                value={confirmPassword}
-                onChange={handleChange(setConfirmPassword)}
-                required
-                className={password === confirmPassword ? 'border-b-2 border-b-[#A8784F] p-2 grid-col placeholder-[#A3A3A3] text-[#B5C04A]' : 'border-b-2 border-b-[#A8784F] p-2 grid-col placeholder-[#A3A3A3] text-[#d23f07]'}
+                    type="password"
+                    placeholder="Confirm Password"
+                    value={confirmPassword}
+                    onChange={handleChange(setConfirmPassword)}
+                    required
+                    className={password === confirmPassword ? 'border-b-2 border-b-[#A8784F] p-2 grid-col placeholder-[#A3A3A3] text-[#B5C04A]' : 'border-b-2 border-b-[#A8784F] p-2 grid-col placeholder-[#A3A3A3] text-[#d23f07]'}
                 />
 
                 <div className="flex flex-col items-center gap-3 col-span-2">
                 <div className="flex flex-col">
-                    <span className='text-center'> 
+                    <span className='text-center text-[12px]'> 
                     By Continuing, you agree to our{' '}
                     <Link onClick={handleShowTerms} className="text-[#DC8801] underline hover:text-[#B67101] active:text-[#DC8801]">
                         Terms and Conditions

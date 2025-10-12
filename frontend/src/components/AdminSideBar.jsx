@@ -426,7 +426,7 @@ const AdminSideBar = ({ className }) => {
                   to="/adopterapplication"
                   className={sidebarShow ? (location.pathname === '/adopterapplication' || location.pathname === '/adopterapplication/adopterapplicationview' ? pageActive : pageInactive) : 'hidden'}
                 >
-                  Applications
+                  Adoption Applications List
                 </Link>
               </>
             )}
@@ -457,25 +457,25 @@ const AdminSideBar = ({ className }) => {
                   to="/feedingvolunteers"
                   className={sidebarShow ? (location.pathname === '/feedingvolunteers' ? pageActive : pageInactive) : 'hidden'}
                 >
-                  Feeding Volunteers
+                  Feeding Volunteers List
                 </Link>
                 <Link
                   to="/report"
                   className={sidebarShow ? (location.pathname === '/report' ? pageActive : pageInactive) : 'hidden'}
                 >
-                  Feeding Report
+                  Feeding Reports List
                 </Link>
                 <Link
                   to="/feedingapplications"
                   className={sidebarShow ? (location.pathname === '/feedingapplications' || location.pathname === '/feedingapplications/feedingapplicationview' ? pageActive : pageInactive) : 'hidden'}
                 >
-                  Applications
+                  Feeding Applications List
                 </Link>
                 <Link
                   to="/donationadmin"
                   className={sidebarShow ? (location.pathname === '/donationadmin' ? pageActive : pageInactive) : 'hidden'}
                 >
-                  Donations
+                  Donation History
                 </Link>
               </>
             )}
