@@ -534,6 +534,56 @@ const Login = () => {
   };
 
   // ------------------- RESET PASSWORD -------------------
+  // const handleResetPassword = async (event) => {
+  //   event.preventDefault();
+  //   setError("");
+  //   setLoading(true);
+
+  //   if (!otp) {
+  //     setError("Please enter the OTP sent to your email.");
+  //     setLoading(false);
+  //     return;
+  //   }
+
+  //   if (!password || !confirmPassword) {
+  //     setError("Please fill in both password fields.");
+  //     setLoading(false);
+  //     return;
+  //   }
+
+  //   if (password !== confirmPassword) {
+  //     setError("Passwords do not match.");
+  //     setLoading(false);
+  //     return;
+  //   }
+
+  //   try {
+  //     const response = await axios.post(`${url}/user/reset-password`, {
+  //       email,
+  //       otp,
+  //       password,
+  //     });
+
+  //     if (response.status === 200) {
+  //       toast.success("Your password has been reset successfully!");
+  //       setOtp("");
+  //       setPassword("");
+  //       setConfirmPassword("");
+  //       setResetPassForm(false);
+  //       setForgotPassForm(false);
+  //       navigate("/login");
+  //     }
+  //   } catch (error) {
+  //     console.error("Reset password error:", error);
+  //     const message =
+  //       error.response?.data?.message ||
+  //       "Password reset failed. Please try again.";
+  //     setError(message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleResetPassword = async (event) => {
     event.preventDefault();
     setError("");
@@ -559,8 +609,8 @@ const Login = () => {
 
     try {
       const response = await axios.post(`${url}/user/reset-password`, {
-        email,
-        otp,
+        email: emailForgot, // Use emailForgot from forgot password step
+        otp: otp.trim(), // Trim to remove accidental spaces
         password,
       });
 
@@ -571,11 +621,14 @@ const Login = () => {
         setConfirmPassword("");
         setResetPassForm(false);
         setForgotPassForm(false);
+        setEmailForgot("");
+        setOtpStep(false);
         navigate("/login");
       }
     } catch (error) {
       console.error("Reset password error:", error);
       const message =
+        error.response?.data?.error || // Match backend error field
         error.response?.data?.message ||
         "Password reset failed. Please try again.";
       setError(message);

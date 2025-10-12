@@ -465,33 +465,35 @@ export const forgotPassword = async (req, res) => {
         }
 
         // Generate OTP
-        const generatedOtp = Math.floor(100000 + Math.random() * 900000);
+        const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString(); // Store as string to match varchar(255)
 
-        // Store OTP in memory
-        otpStore[email] = {
-        otp: generatedOtp,
-        type: "password_reset",
-        expires: Date.now() + 5 * 60 * 1000, // 5 minutes
-        };
+        // Calculate expiration (5 minutes from now)
+        const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString().slice(0, 19).replace('T', ' ');
 
-        // Send OTP email — (your HTML body unchanged)
+        // Store OTP in user_otps table
+        await db.query(
+        `INSERT INTO user_otps (email, otp, expires_at, is_used) VALUES (?, ?, ?, ?)`,
+        [email, generatedOtp, expiresAt, 0]
+        );
+
+        // Send OTP email
         const response = await resend.emails.send({
         from: process.env.EMAIL_FROM || "WhiskerWatch <noreply@whiskerwatch.site>",
         to: email,
         subject: "WhiskerWatch Password Reset OTP",
         html: `
-                <h2>Password Reset Request</h2>
-                <p>Here is your One-Time Password (OTP) to reset your password:</p>
-                <h1>${generatedOtp}</h1>
-                <p>This code will expire in 5 minutes.</p>
-            `,
+            <h2>Password Reset Request</h2>
+            <p>Here is your One-Time Password (OTP) to reset your password:</p>
+            <h1>${generatedOtp}</h1>
+            <p>This code will expire in 5 minutes.</p>
+        `,
         });
 
         console.log("Forgot password email response:", response);
         res.json({ message: "OTP sent to your email for password reset." });
     } catch (err) {
         console.error("Forgot password error:", err);
-        res.status(500).json({ error: "Error sending OTP for password reset." });
+        return res.status(500).json({ error: "Error sending OTP for password reset." });
     }
 };
 
@@ -500,29 +502,29 @@ export const forgotPassword = async (req, res) => {
 // ----------------------
 export const resetPassword = async (req, res) => {
     const db = getDB();
-    // client should send newPassword (not 'password') to match your frontend naming if you use newPassword
-    const { email, otp, newPassword } = req.body;
+    const { email, otp, password } = req.body; // Match frontend payload (password, not newPassword)
 
     try {
-        const stored = otpStore[email];
-        if (!stored || stored.type !== "password_reset") {
+        // Fetch the latest non-used, non-expired OTP for the email
+        const [stored] = await db.query(
+        `SELECT * FROM user_otps WHERE email = ? AND is_used = 0 AND expires_at > NOW() ORDER BY created_at DESC LIMIT 1`,
+        [email]
+        );
+        if (stored.length === 0) {
         return res.status(400).json({ error: "No valid OTP found for this email." });
         }
 
-        if (Date.now() > stored.expires) {
-        delete otpStore[email];
-        return res.status(400).json({ error: "OTP expired. Please request a new one." });
-        }
-
-        if (parseInt(otp, 10) !== stored.otp) {
+        if (otp !== stored[0].otp) { // Compare as strings since otp is varchar(255)
         return res.status(400).json({ error: "Invalid OTP. Please try again." });
         }
 
-        // hash and update
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        // Hash and update password
+        const hashedPassword = await bcrypt.hash(password, 10);
         await db.query(`UPDATE users SET password = ? WHERE email = ?`, [hashedPassword, email]);
 
-        delete otpStore[email];
+        // Mark OTP as used and set used_at
+        await db.query(`UPDATE user_otps SET is_used = 1, used_at = NOW() WHERE otp_id = ?`, [stored[0].otp_id]);
+
         return res.json({ message: "Password has been reset successfully." });
     } catch (err) {
         console.error("Reset password error:", err);
@@ -535,20 +537,25 @@ export const resetPassword = async (req, res) => {
 // (used by frontend to check OTP before showing new-password UI)
 // ----------------------
 export const verifyResetOtp = async (req, res) => {
+    const db = getDB();
     const { email, otp } = req.body;
 
     try {
-        const stored = otpStore[email];
-        if (!stored) return res.status(400).json({ message: "No OTP found. Please request again." });
-
-        if (Date.now() > stored.expires) {
-        delete otpStore[email];
-        return res.status(400).json({ message: "OTP expired. Please request a new one." });
+        // Fetch the latest non-used, non-expired OTP for the email
+        const [stored] = await db.query(
+        `SELECT * FROM user_otps WHERE email = ? AND is_used = 0 AND expires_at > NOW() ORDER BY created_at DESC LIMIT 1`,
+        [email]
+        );
+        if (stored.length === 0) {
+        return res.status(400).json({ message: "No valid OTP found. Please request again." });
         }
 
-        if (parseInt(otp, 10) !== stored.otp) {
+        if (otp !== stored[0].otp) { // Compare as strings since otp is varchar(255)
         return res.status(400).json({ message: "Invalid OTP. Please try again." });
         }
+
+        // Optionally mark OTP as used to prevent reuse in verification step
+        await db.query(`UPDATE user_otps SET is_used = 1, used_at = NOW() WHERE otp_id = ?`, [stored[0].otp_id]);
 
         return res.status(200).json({ message: "OTP verified successfully!" });
     } catch (err) {
