@@ -445,7 +445,7 @@ const AdopterApplicationView = () => {
 
                     <div className="hidden xl:flex lg:flex w-full justify-between pb-2 border-b-1 border-b-[#2F2F2F]">
                         <label className="text-[24px] font-bold text-[#2F2F2F]">Adoption Application Form</label>
-                        <Link to="/adopterapplications" className="flex items-center bg-[#2F2F2F] p-1 pl-6 pr-6 text-[#FFF] font-bold rounded-[15px]">
+                        <Link to="/adopterapplication" className="flex items-center bg-[#2F2F2F] p-1 pl-6 pr-6 text-[#FFF] font-bold rounded-[15px]">
                             Go Back
                         </Link>
                     </div>
