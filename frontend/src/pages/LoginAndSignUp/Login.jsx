@@ -428,38 +428,32 @@
 
 
 
-import React, { useState } from "react";
+// import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie";
-import ReCAPTCHA from "react-google-recaptcha";
 import { useSession } from "../../context/SessionContext";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
   const url = `https://whiskerwatch-0j6g.onrender.com`;
-  const SITE_KEY = "6Lf1hOQrAAAAAGyLTMqscsPcUdIyX6H2wYnsbwQb";
 
   const navigate = useNavigate();
   const { setUser, login, refreshSession } = useSession();
 
   const [email, setEmail] = useState("");
+  const [emailForgot, setEmailForgot] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [captchaToken, setCaptchaToken] = useState(null);
 
   const [forgotPassForm, setForgotPassForm] = useState(false);
-  const [emailForgot, setEmailForgot] = useState("");
-
   const [resetPassForm, setResetPassForm] = useState(false);
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  // Handle ReCAPTCHA
-  const handleCaptcha = (token) => setCaptchaToken(token);
 
   // ------------------- USER LOGIN -------------------
   const handleLogin = async (event) => {
@@ -493,7 +487,6 @@ const Login = () => {
       const user = response.data.user;
       if (!user) throw new Error("User data not received");
 
-      // Update Session Context
       setUser(user);
       login(user);
       await refreshSession();
@@ -532,7 +525,7 @@ const Login = () => {
       });
 
       if (response.status === 200) {
-        toast.success("An OTP has been sent to your email. Please check your inbox.");
+        toast.success("An OTP has been sent to your email.");
         setEmail(emailForgot);
         setForgotPassForm(false);
         setResetPassForm(true);
@@ -554,8 +547,8 @@ const Login = () => {
     setError("");
     setLoading(true);
 
-    if (!captchaToken) {
-      setError("Please complete the CAPTCHA.");
+    if (!otp) {
+      setError("Please enter the OTP sent to your email.");
       setLoading(false);
       return;
     }
@@ -572,26 +565,18 @@ const Login = () => {
       return;
     }
 
-    const otp = prompt("Enter the 6-digit OTP sent to your email:");
-    if (!otp) {
-      setError("OTP is required to reset your password.");
-      setLoading(false);
-      return;
-    }
-
     try {
       const response = await axios.post(`${url}/user/reset-password`, {
         email,
         otp,
         password,
-        "g-recaptcha-response": captchaToken,
       });
 
       if (response.status === 200) {
         toast.success("Your password has been reset successfully!");
+        setOtp("");
         setPassword("");
         setConfirmPassword("");
-        setCaptchaToken(null);
         setResetPassForm(false);
         setForgotPassForm(false);
         navigate("/login");
@@ -734,9 +719,20 @@ const Login = () => {
         {resetPassForm && (
           <form onSubmit={handleResetPassword} className="flex flex-col items-center gap-8">
             <label className="text-[#2F2F2F] text-[24px] font-bold">Reset Password</label>
-            <p className="text-sm text-gray-600">
-              Enter a new password for <strong>{email}</strong>
+            <p className="text-sm text-gray-600 text-center">
+              Enter the OTP sent to <strong>{email}</strong> and your new password.
             </p>
+
+            {/* OTP Input */}
+            <input
+              type="text"
+              placeholder="Enter 6-digit OTP"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              maxLength={6}
+              className="border-b-2 border-b-[#977655] p-2 text-center tracking-widest"
+              required
+            />
 
             <input
               type="password"
@@ -754,7 +750,6 @@ const Login = () => {
               className="border-b-2 border-b-[#977655] p-2"
               required
             />
-            <ReCAPTCHA sitekey={SITE_KEY} onChange={handleCaptcha} />
 
             <div className="flex gap-3">
               <button
@@ -771,7 +766,7 @@ const Login = () => {
                   setError("");
                   setPassword("");
                   setConfirmPassword("");
-                  setCaptchaToken(null);
+                  setOtp("");
                 }}
                 className="border-2 border-[#DC8801] text-[#DC8801] p-2 px-4 rounded-[25px] hover:bg-[#DC8801] hover:text-white"
               >
