@@ -15,7 +15,7 @@ import { Resend } from "resend";
 import multer from 'multer';
 import fs from 'fs';
 // import { promises as fs } from 'node:fs';
-import { signupUser, verifyOtp, resendOtp, forgotPassword, resetPassword } from "./OTP.js";
+import { signupUser, verifyOtp, resendOtp, forgotPassword, resetPassword, verifyResetOtp } from "./OTP.js";
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { error, log } from "console";
@@ -46,6 +46,7 @@ UserRoute.post("/resend-otp", resendOtp);
 // NEW PASSWORD RECOVERY ROUTES
 UserRoute.post("/forgot-password", forgotPassword);
 UserRoute.post("/reset-password", resetPassword);
+UserRoute.post("/verify-reset-otp", verifyResetOtp);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
