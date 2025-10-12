@@ -515,17 +515,65 @@ AdminRoute.patch('/feeders/feeding_date', async (req, res) => {
 
 
 // Get the feeding_date per user
+// AdminRoute.get('/feeding_date/:feeder_id', async (req, res) => {
+//     const db = getDB();
+//     const feeder_id  = req.params.feeder_id;
+
+//     try {   
+//         // const [row] = await db.query(`
+//         //     SELECT 
+//         //         DATE_FORMAT(feeding_date, '%Y-%m-%d') AS feeding_date
+//         //     FROM volunteer WHERE feeder_id = ?
+//         // `, [feeder_id]);
+
+//         const [rows] = await db.query(`
+//             SELECT 
+//                 DATE_FORMAT(feeding_date, '%Y-%m-%d') AS feeding_date,
+//                 status
+//             FROM volunteer 
+//             WHERE feeder_id = ?
+//             ORDER BY feeding_date DESC
+//             LIMIT 1
+//         `, [feeder_id]);
+
+//         if (rows.length === 0 || !rows[0].feeding_date) {
+//             return res.status(404).json({ error: 'Feeding date not found for this feeder.' });
+//         }
+
+//         const feedingDate = rows[0].feeding_date;
+
+//         // Check if a report already exists for that date
+//         // const [reportRow] = await db.query(
+//         //     `SELECT * FROM feeding_report WHERE feeder_id = ? AND feeding_date = ?`,
+//         //     [feeder_id, feedingDate]
+//         // );
+
+//         const [reportRows] = await db.query(`
+//             SELECT report_id 
+//             FROM feeding_report 
+//             WHERE user_id = ? 
+//             AND DATE(created_at) = ?
+//         `, [feeder_id, feedingDate]);
+
+//         const hasReport = reportRows.length > 0;
+
+//         return res.json({
+//             feeding_date: feedingDate,
+//             has_report: hasReport,
+//         });
+
+
+//     } catch (err) { 
+//         console.error('Failed to fetch feeder data: ', err);
+//         res.status(500).json({error: 'Internal Server failed!'})
+//     }
+    
+// });
 AdminRoute.get('/feeding_date/:feeder_id', async (req, res) => {
     const db = getDB();
-    const feeder_id  = req.params.feeder_id;
+    const feeder_id = req.params.feeder_id;
 
-    try {   
-        // const [row] = await db.query(`
-        //     SELECT 
-        //         DATE_FORMAT(feeding_date, '%Y-%m-%d') AS feeding_date
-        //     FROM volunteer WHERE feeder_id = ?
-        // `, [feeder_id]);
-
+    try {
         const [rows] = await db.query(`
             SELECT 
                 DATE_FORMAT(feeding_date, '%Y-%m-%d') AS feeding_date,
@@ -536,18 +584,32 @@ AdminRoute.get('/feeding_date/:feeder_id', async (req, res) => {
             LIMIT 1
         `, [feeder_id]);
 
-        if (rows.length === 0 || !rows[0].feeding_date) {
-            return res.status(404).json({ error: 'Feeding date not found for this feeder.' });
+        if (rows.length === 0) {
+            // Check volunteer_application table for pending applications
+            const [appRows] = await db.query(`
+                SELECT 
+                    status
+                FROM volunteer_application 
+                WHERE user_id = ?
+                ORDER BY application_date DESC
+                LIMIT 1
+            `, [feeder_id]);
+
+            if (appRows.length === 0) {
+                return res.json({ status: 'None' }); // No application or volunteer record
+            }
+
+            return res.json({
+                status: appRows[0].status,
+                feeding_date: null,
+                has_report: false
+            });
         }
 
         const feedingDate = rows[0].feeding_date;
+        const status = rows[0].status;
 
-        // Check if a report already exists for that date
-        // const [reportRow] = await db.query(
-        //     `SELECT * FROM feeding_report WHERE feeder_id = ? AND feeding_date = ?`,
-        //     [feeder_id, feedingDate]
-        // );
-
+        // Check if a report exists for the feeding date
         const [reportRows] = await db.query(`
             SELECT report_id 
             FROM feeding_report 
@@ -559,15 +621,13 @@ AdminRoute.get('/feeding_date/:feeder_id', async (req, res) => {
 
         return res.json({
             feeding_date: feedingDate,
-            has_report: hasReport,
+            status: status,
+            has_report: hasReport
         });
-
-
-    } catch (err) { 
+    } catch (err) {
         console.error('Failed to fetch feeder data: ', err);
-        res.status(500).json({error: 'Internal Server failed!'})
+        res.status(500).json({ error: 'Internal Server failed!' });
     }
-    
 });
 
 
