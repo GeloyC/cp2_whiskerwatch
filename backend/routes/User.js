@@ -175,7 +175,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'whisker_secret';
 
 
 UserRoute.post('/signup', async (req, res) => {
-  let db = await getDB();
+  let db = getDB();
   try {
     const { firstname, lastname, contactnumber, birthday, email, username, address, password } = req.body;
 
@@ -246,7 +246,7 @@ UserRoute.post('/signup', async (req, res) => {
 
 // Verify OTP endpoint
 UserRoute.post('/verify-otp', async (req, res) => {
-  let db = await getDB();
+  const db = getDB();
   try {
     const { email, otp } = req.body;
     if (!email || !otp) return res.status(400).json({ error: 'Email and OTP required' });
@@ -296,7 +296,7 @@ UserRoute.post('/verify-otp', async (req, res) => {
 
 
 UserRoute.post('/check_email', async (req, res) => {
-  let db = await getDB();
+  const db = getDB();
   try {
     const { email } = req.body;
     const [existingUsers] = await db.query('SELECT email FROM users WHERE email = ?', [email]);
