@@ -186,7 +186,7 @@ const SignUp = () => {
     };
 
     return (
-        <div className={`relative flex items-center justify-start ${termShow ? 'inset-0 bg-black/50 bg-opacity-75' : 'bg-opacity-100'} xl:grid lg:grid md:flex xl:grid-cols-[60%_40%] lg:grid-cols-[60%_40%] xl:place-items-center md:items-center md:justify-center h-screen w-full overflow-x-hidden`}>
+        <div className={`relative flex items-center justify-center ${termShow ? 'inset-0 bg-black/50 bg-opacity-75' : 'bg-opacity-100'} xl:grid lg:grid md:flex xl:grid-cols-[60%_40%] lg:grid-cols-[60%_40%] xl:place-items-center md:items-center md:justify-center h-screen w-full overflow-x-hidden`}>
         {termShow && (
             <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[700px] rounded-[10px] flex flex-col bg-[#FFF] overflow-y-scroll scrollbar-thin'>
             <button onClick={handleShowTerms} className='absolute left-3 top-3 size-8 bg-[#C2CB6A] rounded-[10px] flex gap-2 item-center hover:scale-104 active:scale-95 transition-all duration-100'>
