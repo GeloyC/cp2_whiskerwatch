@@ -389,6 +389,9 @@ const SignUp = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
+    const [resendTimer, setResendTimer] = useState(0);
+    const [canResend, setCanResend] = useState(true);   
+
     const handleChange = (setter) => (e) => setter(e.target.value);
 
     const handleSubmit = async (e) => {
@@ -487,6 +490,34 @@ const SignUp = () => {
 
     const handleShowTerms = () => {
         setTermShow((prev) => !prev);
+    };
+
+    const handleResendOtp = async () => {
+        if (!canResend) return;
+
+        try {
+            setCanResend(false);
+            setResendTimer(60);
+
+            const res = await axios.post(`${url}/user/resend-otp`, { email });
+            toast.success(res.data.message);
+
+            // Countdown
+            const interval = setInterval(() => {
+            setResendTimer((prev) => {
+                if (prev <= 1) {
+                clearInterval(interval);
+                setCanResend(true);
+                return 0;
+                }
+                return prev - 1;
+            });
+            }, 1000);
+        } catch (err) {
+            console.error("Resend OTP error:", err.response?.data || err.message);
+            toast.error(err.response?.data?.error || "Failed to resend OTP");
+            setCanResend(true);
+        }
     };
 
     return (
@@ -688,32 +719,49 @@ const SignUp = () => {
                 </div>
             </form>
             ) : (
-            <form onSubmit={handleVerifyOtp} className="flex flex-col gap-5 items-center">
-                <p className="text-[#2F2F2F]">Enter the OTP sent to {email}</p>
-                <input
-                type="text"
-                placeholder="Enter OTP"
-                value={otp}
-                onChange={handleChange(setOtp)}
-                required
-                className="border-b-2 border-b-[#A8784F] p-2 w-full max-w-[200px]"
-                />
-                <label className="text-[#DC8801] text-[14px]">{error}</label>
-                <button
-                type="submit"
-                disabled={loading}
-                className="p-2 px-4 bg-[#B5C04A] min-w-[125px] text-[#FFF] rounded-[50px] hover:bg-[#889132] active:scale-97 cursor-pointer"
-                >
-                {loading ? 'Verifying...' : 'Verify OTP'}
-                </button>
-                <button
-                type="button"
-                onClick={handleCancelSignUp}
-                className="text-[#DC8801] underline hover:text-[#B67101]"
-                >
-                Cancel
-                </button>
-            </form>
+                <form onSubmit={handleVerifyOtp} className="flex flex-col gap-5 items-center">
+                    <p className="text-[#2F2F2F] text-center">
+                        Enter the OTP sent to <b>{email}</b>
+                    </p>
+
+                    <input
+                        type="text"
+                        placeholder="Enter OTP"
+                        value={otp}
+                        onChange={handleChange(setOtp)}
+                        required
+                        className="border-b-2 border-b-[#A8784F] p-2 w-full max-w-[200px]"
+                    />
+
+                    <label className="text-[#DC8801] text-[14px]">{error}</label>
+
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="p-2 px-4 bg-[#B5C04A] min-w-[125px] text-[#FFF] rounded-[50px] hover:bg-[#889132] active:scale-97 cursor-pointer"
+                    >
+                        {loading ? 'Verifying...' : 'Verify OTP'}
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={handleResendOtp}
+                        disabled={!canResend}
+                        className={`text-[#DC8801] underline ${
+                        canResend ? 'hover:text-[#B67101]' : 'opacity-50 cursor-not-allowed'
+                        }`}
+                    >
+                        {canResend ? 'Resend OTP' : `Resend in ${resendTimer}s`}
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={handleCancelSignUp}
+                        className="text-[#DC8801] underline hover:text-[#B67101]"
+                    >
+                        Cancel
+                    </button>
+                </form>
             )}
         </div>
         <ToastContainer />
