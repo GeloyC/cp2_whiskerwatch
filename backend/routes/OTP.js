@@ -35,7 +35,7 @@ export const signupUser = async (req, res) => {
         otpStore[email] = { otp, data: { firstname, lastname, contactnumber, birthday, email, username, address, password: hashedPassword }, expires: Date.now() + 5 * 60 * 1000 };
 
         // Send OTP via Resend
-        await resend.emails.send({
+        const emailResponse = await resend.emails.send({
         from: process.env.EMAIL_FROM,
         to: email,
         subject: "WhiskerWatch OTP Verification",
@@ -48,9 +48,10 @@ export const signupUser = async (req, res) => {
         `,
         });
 
+        console.log("This is Resend email response: ", emailResponse);
+
         res.json({ message: "OTP sent to your email!" });
-        console.log("Resend email response:", data);
-        
+
     } catch (err) {
         console.error("Signup error:", err);
         res.status(500).json({ message: "Error creating user or sending OTP" });
