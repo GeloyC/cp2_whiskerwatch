@@ -906,6 +906,11 @@ UserRoute.post('/adoption/form', uploadAdoptionForm.single('file'), async (req, 
       [user_id, cat_id, file_url]
     );
 
+    await db.query(
+      `UPDATE cat SET adoption_status = 'Pending' WHERE cat_id = ?`,
+      [cat_id]
+    );
+
 
     const message = 'Your adoption application has been submitted and is now pending review.';
     await db.query(
