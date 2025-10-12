@@ -36,11 +36,12 @@ const CatProfileProperty = () => {
         if (!cat_id) return;
 
         const fetchProfile = async () => {
-            setLoading(true)
+            
             try {
                 const response = await axios.get(`${url}/cat/catprofile/${cat_id}`);
                 setCatprofile(response.data)
                 setOriginalCatprofile(response.data)
+                setLoading(true)
 
             } catch(err) {
                 console.error('Error fetching cat:', err);
@@ -69,14 +70,12 @@ const CatProfileProperty = () => {
 
     // CHECKS FOR CHANGES ON THE DATA
     const isProfileModified = () => {
-        setLoading(true)
         return JSON.stringify(catprofile) !== JSON.stringify(originalCatprofile);
     };
 
     // HANDLES THE UPDATE OF DATA ONCE SAVE BUTTON CLICKED 
     const handleCatProfileUpdate = async (e) => {
         e.preventDefault();
-        setLoading(true);
 
         try {
             const response = await axios.patch(`${url}/cat/update/${cat_id}`, {
@@ -88,7 +87,7 @@ const CatProfileProperty = () => {
                 description: catprofile.description
             });
 
-
+            setLoading(true)
             window.location.reload();
         } catch(err) {
             console.error('Update failed:', err.response?.data || err.message);
@@ -122,7 +121,6 @@ const CatProfileProperty = () => {
 
 
     const handleUploadImages = async (cat_id) => {
-        setLoading(true);
         try {
             const formData = new FormData();
             catImagePreview.forEach(({ file }) => formData.append('images', file));
@@ -134,6 +132,7 @@ const CatProfileProperty = () => {
             if (response.status === 200) {
             setCatImagePreview([]);
             setUploaderVisible(false);
+            setLoading(true)
             await fetchCatImage(); // Refresh images after upload
             }
         } catch (err) {

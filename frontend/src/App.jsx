@@ -91,7 +91,6 @@ const App = () => {
         <Route path="signup" element={<SignUp />} >
           <Route path="termscondition" element={<TermsCondition/>} />
         </Route>
-       
 
 
         {/* Admin Routes */}
