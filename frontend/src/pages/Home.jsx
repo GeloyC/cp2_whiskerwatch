@@ -29,7 +29,7 @@ const Home = () => {
         const formattedCats = response.data.map(cat => ({
           ...cat,
           thumbnail: cat.thumbnail
-            ? `${url}/FileUploads/cats/${cat.thumbnail}`
+            ? `${cat.thumbnail}`
             : null
         }));
 
