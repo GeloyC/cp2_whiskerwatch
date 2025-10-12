@@ -669,7 +669,7 @@ const SignUp = () => {
                         Terms and Conditions
                     </Link>
                     </span>
-                    <label className="text-[#DC8801] text-[14px]">{error || emailError || usernameError}</label>
+                    <label className="text-[#DC8801] text-[14px] text-center">{error || emailError || usernameError}</label>
                     <button
                     type="submit"
                     disabled={loading}

@@ -174,19 +174,23 @@ const JWT_SECRET = process.env.JWT_SECRET || 'whisker_secret';
 // });
 
 
-UserRoute.post('/signup', async (req, res) => {
-  let db = getDB();
+UserRoute.post('/signup', otpLimiter, async (req, res) => {
   try {
     const { firstname, lastname, contactnumber, birthday, email, username, address, password } = req.body;
 
+    // Validate required fields
+    if (!firstname || !lastname || !contactnumber || !email || !username || !address || !password) {
+      return res.status(400).json({ message: 'All fields are required.' });
+    }
+
     // Check for existing email
-    const [existingUsers] = await db.query('SELECT email FROM users WHERE email = ?', [email]);
+    const [existingUsers] = await req.db.query('SELECT email FROM users WHERE email = ?', [email]);
     if (existingUsers.length > 0) {
       return res.status(400).json({ message: 'Email already registered.' });
     }
 
     // Check for existing username
-    const [existingUsernames] = await db.query('SELECT username FROM users WHERE username = ?', [username]);
+    const [existingUsernames] = await req.db.query('SELECT username FROM users WHERE username = ?', [username]);
     if (existingUsernames.length > 0) {
       return res.status(400).json({ message: 'Username already taken.' });
     }
@@ -196,7 +200,7 @@ UserRoute.post('/signup', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // Insert user with pending status
-    const [result] = await db.query(
+    const [result] = await req.db.query(
       `INSERT INTO users 
       (firstname, lastname, contactnumber, birthday, email, username, address, password, role, badge, status) 
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'regular', 'Toe Bean Trainee', 'pending')`,
@@ -209,7 +213,7 @@ UserRoute.post('/signup', async (req, res) => {
     const expiresAt = new Date(Date.now() + (process.env.OTP_EXPIRATION_MINUTES * 60 * 1000));
 
     // Store OTP in user_otp table
-    await db.query(
+    await req.db.query(
       `INSERT INTO user_otp (email, otp, expires_at) 
       VALUES (?, ?, ?)`,
       [email, hashedOtp, expiresAt]
@@ -230,27 +234,36 @@ UserRoute.post('/signup', async (req, res) => {
       `
     };
 
-    await mg.messages().send(data);
+    try {
+      await mg.messages().send(data);
+      console.log(`OTP ${otp} sent to ${email}`);
+    } catch (mailError) {
+      console.error('Mailgun error:', mailError);
+      return res.status(500).json({ error: 'Failed to send OTP email' });
+    }
 
-    res.status(200).json({
+    return res.status(200).json({
       message: 'Account created! Please check your email for the OTP.',
       userId: result.insertId
     });
   } catch (err) {
     console.error('Sign up error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 // Verify OTP endpoint
 UserRoute.post('/verify-otp', async (req, res) => {
-  const db = getDB();
   try {
     const { email, otp } = req.body;
-    if (!email || !otp) return res.status(400).json({ error: 'Email and OTP required' });
+    if (!email || !otp) {
+      return res.status(400).json({ error: 'Email and OTP required' });
+    }
+
+    console.log(`Verifying OTP for email: ${email}, OTP: ${otp}`);
 
     // Fetch OTP record
-    const [otpRecords] = await db.query(
+    const [otpRecords] = await req.db.query(
       `SELECT * FROM user_otp 
       WHERE email = ? AND is_used = 0 AND expires_at > NOW() 
       ORDER BY created_at DESC LIMIT 1`,
@@ -258,35 +271,44 @@ UserRoute.post('/verify-otp', async (req, res) => {
     );
 
     if (otpRecords.length === 0) {
+      console.log(`No valid OTP found for ${email}`);
       return res.status(400).json({ error: 'No valid OTP found or expired' });
     }
 
     const otpRecord = otpRecords[0];
+    console.log(`Found OTP record: ${JSON.stringify(otpRecord)}`);
 
     // Verify OTP
     const isValid = await bcrypt.compare(otp, otpRecord.otp);
     if (!isValid) {
+      console.log(`Invalid OTP for ${email}. Input: ${otp}, Stored: ${otpRecord.otp}`);
       return res.status(400).json({ error: 'Invalid OTP' });
     }
 
     // Mark OTP as used
-    await db.query(
+    await req.db.query(
       `UPDATE user_otp SET is_used = 1, used_at = NOW() 
       WHERE otp_id = ?`,
       [otpRecord.otp_id]
     );
 
     // Activate user account
-    await db.query(
+    const [updateResult] = await req.db.query(
       `UPDATE users SET status = 'active' 
       WHERE email = ? AND status = 'pending'`,
       [email]
     );
 
-    res.status(200).json({ message: 'Account verified successfully' });
+    if (updateResult.affectedRows === 0) {
+      console.log(`No pending user found for ${email}`);
+      return res.status(400).json({ error: 'No pending account found' });
+    }
+
+    console.log(`Account verified for ${email}`);
+    return res.status(200).json({ message: 'Account verified successfully' });
   } catch (err) {
     console.error('OTP verification error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
