@@ -96,11 +96,11 @@ const Login = () => {
     setError("");
     setLoading(true);
 
-    if (!emailRegex.test(email)) {
-      setError("Please enter a valid email address");
-      setLoading(false);
-      return;
-    }
+    // if (!emailRegex.test(email)) {
+    //   setError("Please enter a valid email address");
+    //   setLoading(false);
+    //   return;
+    // }
 
     try {
       const response = await axios.post(`${url}/user/forgot-password`, { email: emailForgot });
