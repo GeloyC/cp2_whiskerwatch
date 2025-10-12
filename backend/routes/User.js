@@ -862,7 +862,7 @@ UserRoute.post('/adoption/form', uploadAdoptionForm.single('file'), async (req, 
   const file_url = req.file.path;
 
   try {
-    if (!file || !user_id || !cat_id) {
+    if (!req.file || !user_id || !cat_id) {
       return res.status(400).json({ message: 'Missing required fields or file.' });
     }
 
@@ -921,7 +921,7 @@ UserRoute.post('/adoption/form', uploadAdoptionForm.single('file'), async (req, 
     return res.status(200).json({
       message: 'Application submitted successfully.',
       application_id: result.insertId,
-      file_url: file_url,
+      file_url,
     });
   } catch (err) {
     console.error('Adoption form upload error:', err);
