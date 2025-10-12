@@ -436,25 +436,25 @@ const SignUp = () => {
         }
 
         try {
-        const res = await axios.post(`${url}/user/signup`, {
-            firstname,
-            lastname,
-            contactnumber,
-            birthday,
-            email,
-            username,
-            address,
-            password
-        });
+            const res = await axios.post(`${url}/user/signup`, {
+                firstname,
+                lastname,
+                contactnumber,
+                birthday,
+                email,
+                username,
+                address,
+                password
+            });
 
-        console.log('Signup response:', res.data);
-        toast.success('OTP sent to your email!');
-        setStep('verify');
+            console.log('Signup response:', res.data);
+            toast.success('OTP sent to your email!');
+            setStep('verify');
         } catch (err) {
-        console.error('Signup error:', err.response?.data || err.message);
-        setError(err.response?.data?.message || 'An error occurred during signup');
+            console.error('Signup error:', err.response?.data || err.message);
+            setError(err.response?.data?.message || 'An error occurred during signup');
         } finally {
-        setLoading(false);
+            setLoading(false);
         }
     };
 
@@ -463,17 +463,30 @@ const SignUp = () => {
         setLoading(true);
         setError('');
 
+        // Build the full user data object
+        const userData = {
+            firstname,
+            lastname,
+            contactnumber,
+            birthday,
+            email,
+            username,
+            address,
+            password,
+        };
+
         try {
-        const res = await axios.post(`${url}/user/verify-otp`, { email, otp });
-        toast.success(res.data.message);
-        navigate('/login');
+            const res = await axios.post(`${url}/user/verify-otp`, { email, otp, userData });
+            toast.success(res.data.message);
+            navigate('/login');
         } catch (err) {
-        console.error('OTP verification error:', err.response?.data || err.message);
-        setError(err.response?.data?.error || 'Failed to verify OTP');
+            console.error('OTP verification error:', err.response?.data || err.message);
+            setError(err.response?.data?.error || 'Failed to verify OTP');
         } finally {
-        setLoading(false);
+            setLoading(false);
         }
     };
+
 
     const handleCancelSignUp = () => {
         setFirstname('');

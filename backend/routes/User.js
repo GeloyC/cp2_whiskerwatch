@@ -186,107 +186,100 @@ const JWT_SECRET = process.env.JWT_SECRET || 'whisker_secret';
 
 UserRoute.post("/signup", async (req, res) => {
   const db = getDB();
-  const { firstname, lastname, contactnumber, birthday, email, username, address, password } = req.body;
+  const { firstname, lastname, profile_image, contactnumber, birthday, email, username, role, badge, address, password } = req.body;
 
   try {
-    // Check if email exists
-    const [existingEmail] = await db.query(`SELECT email FROM users WHERE email = ?`, [email]);
-    if (existingEmail.length > 0) {
-      return res.status(400).json({ message: "Email already registered." });
-    }
-
-    // Check if username exists
-    const [existingUsername] = await db.query(`SELECT username FROM users WHERE username = ?`, [username]);
-    if (existingUsername.length > 0) {
-      return res.status(400).json({ message: "Username already taken." });
-    }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Insert user with status pending
-    const [result] = await db.query(
-      `INSERT INTO users (firstname, lastname, contactnumber, birthday, email, username, address, password, role, badge, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'regular', 'Toe bean trainee', 'pending')`,
-      [firstname, lastname, contactnumber, birthday, email, username, address, hashedPassword]
-    );
+    // Check if email or username exists
+    const [existingUser] = await db.query("SELECT * FROM users WHERE email = ? OR username = ?", [email, username]);
+    if (existingUser.length > 0)
+      return res.status(400).json({ error: "Email or username already exists." });
 
     // Generate OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // valid for 10 minutes
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-    // Save OTP to user_otps table
+    // Save OTP
     await db.query(
-      `INSERT INTO user_otps (email, otp, expires_at, is_used) VALUES (?, ?, ?, 0)`,
+      `INSERT INTO user_otps (email, otp, expires_at, is_used)
+      VALUES (?, ?, ?, 0)`,
       [email, otp, expiresAt]
     );
 
     // Send OTP via email
-    const mailOptions = {
+    await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: email,
-      subject: "WhiskerWatch - Verify Your Email",
-      html: `
-        <div style="font-family: Arial, sans-serif; color: #333;">
-          <h2>Verify your WhiskerWatch account 🐾</h2>
-          <p>Hi ${firstname},</p>
-          <p>Thank you for signing up! Please use the OTP code below to verify your email:</p>
-          <h1 style="color: #DC8801; letter-spacing: 4px;">${otp}</h1>
-          <p>This code will expire in 10 minutes.</p>
-          <p>See you in WhiskerWatch!<br><strong>- The WhiskerWatch Team</strong></p>
-        </div>
-      `,
-    };
+      subject: "WhiskerWatch Email Verification",
+      html: `<p>Hello ${firstname},</p><p>Your OTP is <b>${otp}</b>. It expires in 10 minutes.</p>`,
+    });
 
-    await transporter.sendMail(mailOptions);
-
+    // Temporarily send back user data (excluding password)
     res.status(200).json({
-      message: "OTP sent to your email. Please verify to activate your account.",
-      user_id: result.insertId,
+      message: "OTP sent! Please verify to complete registration.",
+      tempUser: {
+        firstname,
+        lastname,
+        profile_image,
+        contactnumber,
+        birthday,
+        email,
+        username,
+        role,
+        badge,
+        address,
+        password // store hashed later
+      }
     });
   } catch (err) {
     console.error("Signup error:", err);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ error: "Signup failed." });
   }
 });
 
+
 UserRoute.post("/verify-otp", async (req, res) => {
   const db = getDB();
-  const { email, otp } = req.body;
+  const { email, otp, userData } = req.body; // userData from frontend
 
   try {
-    // Get the latest OTP for this email
-    const [records] = await db.query(
-      `SELECT * FROM user_otps WHERE email = ? AND is_used = 0 ORDER BY created_at DESC LIMIT 1`,
-      [email]
+    // Check OTP validity
+    const [rows] = await db.query(
+      "SELECT * FROM user_otps WHERE email = ? AND otp = ? AND is_used = 0 AND expires_at > NOW()",
+      [email, otp]
     );
-
-    if (records.length === 0) {
-      return res.status(400).json({ error: "No OTP found or already used." });
-    }
-
-    const record = records[0];
-
-    // Check if OTP matches
-    if (record.otp !== otp) {
-      return res.status(400).json({ error: "Incorrect OTP." });
-    }
-
-    // Check expiration
-    if (new Date(record.expires_at) < new Date()) {
-      return res.status(400).json({ error: "OTP expired. Please request a new one." });
-    }
+    if (rows.length === 0)
+      return res.status(400).json({ error: "Invalid or expired OTP." });
 
     // Mark OTP as used
-    await db.query(`UPDATE user_otps SET is_used = 1, used_at = NOW() WHERE otp_id = ?`, [record.otp_id]);
+    await db.query("UPDATE user_otps SET is_used = 1 WHERE email = ?", [email]);
 
-    // Activate the user
-    await db.query(`UPDATE users SET status = 'active' WHERE email = ?`, [email]);
+    // Hash password before storing
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
 
-    res.status(200).json({ message: "Your email has been verified! You can now log in." });
+    // Insert verified user
+    await db.query(`
+      INSERT INTO users 
+      (firstname, lastname, profile_image, contactnumber, birthday, email, username, role, badge, address, password) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        userData.firstname,
+        userData.lastname,
+        userData.profile_image,
+        userData.contactnumber,
+        userData.birthday,
+        email,
+        userData.username,
+        userData.role || "regular",
+        userData.badge || "Toe bean trainee",
+        userData.address,
+        hashedPassword
+      ]
+    );
+
+    res.status(200).json({ message: "Email verified! Account created successfully." });
   } catch (err) {
-    console.error("OTP verification error:", err);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Verify OTP error:", err);
+    res.status(500).json({ error: "OTP verification failed." });
   }
 });
 
