@@ -7,6 +7,7 @@ import Footer from '../components/Footer';
 import CatBot from '../components/CatBot'
 import Whisker from '../components/Whisker';
 
+
 import { useSession } from '../context/SessionContext';
 import axios from 'axios';
 
