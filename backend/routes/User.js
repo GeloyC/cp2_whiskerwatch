@@ -207,12 +207,12 @@ UserRoute.post("/signup", async (req, res) => {
     // Insert user with status pending
     const [result] = await db.query(
       `INSERT INTO users (firstname, lastname, contactnumber, birthday, email, username, address, password, role, badge, status)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'regular', 'Toe bean trainee', 'pending')`,
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'regular', 'Toe bean trainee', 'pending')`,
       [firstname, lastname, contactnumber, birthday, email, username, address, hashedPassword]
     );
 
     // Generate OTP
-    const otp = crypto.randomInt(100000, 999999).toString();
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // valid for 10 minutes
 
     // Save OTP to user_otps table
