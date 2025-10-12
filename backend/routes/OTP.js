@@ -331,8 +331,49 @@ export const signupUser = async (req, res) => {
 // ----------------------
 // VERIFY OTP (signup)
 // ----------------------
+// export const verifyOtp = async (req, res) => {
+//     const { email, otp } = req.body;
+
+//     try {
+//         const stored = otpStore[email];
+
+//         if (!stored) {
+//             return res.status(400).json({ error: "No OTP request found for this email." });
+//         }
+
+//         if (stored.type !== "signup") {
+//             return res.status(400).json({ error: "Invalid OTP type for this request." });
+//         }
+
+//         if (Date.now() > stored.expires) {
+//             delete otpStore[email];
+//             return res.status(400).json({ error: "OTP expired. Please request a new one." });
+//         }
+
+//         if (String(stored.otp) !== String(otp)) {
+//             return res.status(400).json({ error: "Invalid OTP. Please try again." });
+//         }
+
+//         const { firstname, lastname, contactnumber, birthday, email: storedEmail, username, address, password } = stored.data;
+
+//         // Insert user into the database
+//         await db.query(
+//             `INSERT INTO users (firstname, lastname, contactnumber, birthday, email, username, address, password) 
+//             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+//             [firstname, lastname, contactnumber, birthday, storedEmail, username, address, password]
+//         );
+
+//         delete otpStore[email];
+//         res.json({ message: "OTP verified successfully. You can now reset your password." });
+//     } catch (err) {
+//         console.error("Verify OTP error:", err);
+//         res.status(500).json({ error: "Error verifying OTP." });
+//     }
+// };
+
 export const verifyOtp = async (req, res) => {
     const { email, otp } = req.body;
+    const db = getDB();
 
     try {
         const stored = otpStore[email];
@@ -354,6 +395,7 @@ export const verifyOtp = async (req, res) => {
             return res.status(400).json({ error: "Invalid OTP. Please try again." });
         }
 
+        // Extract user data from otpStore
         const { firstname, lastname, contactnumber, birthday, email: storedEmail, username, address, password } = stored.data;
 
         // Insert user into the database
@@ -363,11 +405,14 @@ export const verifyOtp = async (req, res) => {
             [firstname, lastname, contactnumber, birthday, storedEmail, username, address, password]
         );
 
+        // Clear OTP from store
         delete otpStore[email];
-        res.json({ message: "OTP verified successfully. You can now reset your password." });
+
+        // Return success message
+        res.json({ message: "OTP verified successfully. Account created!" });
     } catch (err) {
         console.error("Verify OTP error:", err);
-        res.status(500).json({ error: "Error verifying OTP." });
+        res.status(500).json({ error: "Error verifying OTP or creating account." });
     }
 };
 
