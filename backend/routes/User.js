@@ -101,32 +101,83 @@ const uploadAdoptionForm = multer({
 const JWT_SECRET = process.env.JWT_SECRET || 'whisker_secret'; 
 
 
+// This is working for reCaptcha
+// UserRoute.post('/signup', async (req, res) => {
+//   let db = getDB();
+//   try {
+//     const { firstname, lastname, contactnumber, birthday, email, username, address, password, 'g-recaptcha-response': captchaToken } = req.body;
+
+//     console.log('Received Request Body:', req.body);
+//     console.log('RECAPTCHA_SECRET_KEY:', process.env.RECAPTCHA_SECRET_KEY);
+//     console.log('Received captchaToken:', captchaToken);
+
+//     // Verify reCAPTCHA
+//     let captchaResponse = await axios.post(
+//       `https://www.google.com/recaptcha/api/siteverify`,
+//       null,
+//       {
+//         params: {
+//           secret: process.env.RECAPTCHA_SECRET_KEY, // Your Secret Key from Google reCAPTCHA
+//           response: captchaToken, // Token from frontend
+//           remoteip: req.ip, // Optional: Client IP for added security
+//         },
+//       }
+//     );
+
+//     console.log('Google reCAPTCHA Response:', captchaResponse.data);
+//     if (!captchaResponse.data.success || captchaResponse.data.score < 0.3) {
+//       return res.status(400).json({ message: 'CAPTCHA verification failed. Are you a bot?' });
+//     }
+
+//     // Check for existing email
+//     const [existingUsers] = await db.query('SELECT email FROM users WHERE email = ?', [email]);
+//     if (existingUsers.length > 0) {
+//       return res.status(400).json({ message: 'Email already registered.' });
+//     }
+
+//     // Hash password
+//     const saltRounds = 10;
+//     const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+//     // Insert user
+//     const [result] = await db.query(
+//       `INSERT INTO users 
+//       (firstname, lastname, contactnumber, birthday, email, username, address, password, role, badge) 
+//       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'regular', 'Toe Bean Trainee')`,
+//       [firstname, lastname, contactnumber, birthday, email, username, address, hashedPassword]
+//     );
+
+//     // Send welcome email (optional)
+//     // await sendMail(
+//     //   email,
+//     //   'Welcome to Whisker Watch',
+//     //   `
+//     //     <h3>Welcome to Whisker Watch!</h3>
+//     //     <p>Thank you for joining, ${firstname} ${lastname}! Your account is now active.</p>
+//     //     <p>Start exploring and supporting our feline friends!</p>
+//     //     <p><strong>Whisker Watch Team</strong></p>
+//     //   `
+//     // );
+
+//     res.status(200).json({
+//       message: 'Account created!',
+//       newUser: {
+//         user_id: result.insertId,
+//         role: 'regular',
+//         badge: 'Toe Bean Trainee',
+//       },
+//     });
+//   } catch (err) {
+//     console.error('Sign up error:', err);
+//     res.status(500).json({ error: 'Internal server error' });
+//   }
+// });
+
+
 UserRoute.post('/signup', async (req, res) => {
-  let db = getDB();
+  let db = await getDB();
   try {
-    const { firstname, lastname, contactnumber, birthday, email, username, address, password, 'g-recaptcha-response': captchaToken } = req.body;
-
-    console.log('Received Request Body:', req.body);
-    console.log('RECAPTCHA_SECRET_KEY:', process.env.RECAPTCHA_SECRET_KEY);
-    console.log('Received captchaToken:', captchaToken);
-
-    // Verify reCAPTCHA
-    let captchaResponse = await axios.post(
-      `https://www.google.com/recaptcha/api/siteverify`,
-      null,
-      {
-        params: {
-          secret: process.env.RECAPTCHA_SECRET_KEY, // Your Secret Key from Google reCAPTCHA
-          response: captchaToken, // Token from frontend
-          remoteip: req.ip, // Optional: Client IP for added security
-        },
-      }
-    );
-
-    console.log('Google reCAPTCHA Response:', captchaResponse.data);
-    if (!captchaResponse.data.success || captchaResponse.data.score < 0.3) {
-      return res.status(400).json({ message: 'CAPTCHA verification failed. Are you a bot?' });
-    }
+    const { firstname, lastname, contactnumber, birthday, email, username, address, password } = req.body;
 
     // Check for existing email
     const [existingUsers] = await db.query('SELECT email FROM users WHERE email = ?', [email]);
@@ -134,62 +185,130 @@ UserRoute.post('/signup', async (req, res) => {
       return res.status(400).json({ message: 'Email already registered.' });
     }
 
+    // Check for existing username
+    const [existingUsernames] = await db.query('SELECT username FROM users WHERE username = ?', [username]);
+    if (existingUsernames.length > 0) {
+      return res.status(400).json({ message: 'Username already taken.' });
+    }
+
     // Hash password
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // Insert user
+    // Insert user with pending status
     const [result] = await db.query(
       `INSERT INTO users 
-      (firstname, lastname, contactnumber, birthday, email, username, address, password, role, badge) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'regular', 'Toe Bean Trainee')`,
+      (firstname, lastname, contactnumber, birthday, email, username, address, password, role, badge, status) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'regular', 'Toe Bean Trainee', 'pending')`,
       [firstname, lastname, contactnumber, birthday, email, username, address, hashedPassword]
     );
 
-    // Send welcome email (optional)
-    // await sendMail(
-    //   email,
-    //   'Welcome to Whisker Watch',
-    //   `
-    //     <h3>Welcome to Whisker Watch!</h3>
-    //     <p>Thank you for joining, ${firstname} ${lastname}! Your account is now active.</p>
-    //     <p>Start exploring and supporting our feline friends!</p>
-    //     <p><strong>Whisker Watch Team</strong></p>
-    //   `
-    // );
+    // Generate OTP
+    const otp = randomBytes(3).toString('hex').toUpperCase(); // e.g., 'A1B2C3'
+    const hashedOtp = await bcrypt.hash(otp, 10);
+    const expiresAt = new Date(Date.now() + (process.env.OTP_EXPIRATION_MINUTES * 60 * 1000));
+
+    // Store OTP in user_otp table
+    await db.query(
+      `INSERT INTO user_otp (email, otp, expires_at) 
+      VALUES (?, ?, ?)`,
+      [email, hashedOtp, expiresAt]
+    );
+
+    // Send OTP email
+    const data = {
+      from: 'WhiskerWatch <noreply@whiskerwatch.site@gmail.com>',
+      to: email,
+      subject: 'Verify Your WhiskerWatch Account',
+      text: `Your one-time password is: ${otp}. It expires in ${process.env.OTP_EXPIRATION_MINUTES} minutes.`,
+      html: `
+        <h3>Welcome to WhiskerWatch, ${firstname} ${lastname}!</h3>
+        <p>Your one-time password is: <strong>${otp}</strong></p>
+        <p>It expires in ${process.env.OTP_EXPIRATION_MINUTES} minutes.</p>
+        <p>Enter this code to verify your account.</p>
+        <p><strong>WhiskerWatch Team</strong></p>
+      `
+    };
+
+    await mg.messages().send(data);
 
     res.status(200).json({
-      message: 'Account created!',
-      newUser: {
-        user_id: result.insertId,
-        role: 'regular',
-        badge: 'Toe Bean Trainee',
-      },
+      message: 'Account created! Please check your email for the OTP.',
+      userId: result.insertId
     });
   } catch (err) {
     console.error('Sign up error:', err);
     res.status(500).json({ error: 'Internal server error' });
+  } finally {
+    await db.end();
+  }
+});
+
+// Verify OTP endpoint
+UserRoute.post('/verify-otp', async (req, res) => {
+  let db = await getDB();
+  try {
+    const { email, otp } = req.body;
+    if (!email || !otp) return res.status(400).json({ error: 'Email and OTP required' });
+
+    // Fetch OTP record
+    const [otpRecords] = await db.query(
+      `SELECT * FROM user_otp 
+      WHERE email = ? AND is_used = 0 AND expires_at > NOW() 
+      ORDER BY created_at DESC LIMIT 1`,
+      [email]
+    );
+
+    if (otpRecords.length === 0) {
+      return res.status(400).json({ error: 'No valid OTP found or expired' });
+    }
+
+    const otpRecord = otpRecords[0];
+
+    // Verify OTP
+    const isValid = await bcrypt.compare(otp, otpRecord.otp);
+    if (!isValid) {
+      return res.status(400).json({ error: 'Invalid OTP' });
+    }
+
+    // Mark OTP as used
+    await db.query(
+      `UPDATE user_otp SET is_used = 1, used_at = NOW() 
+      WHERE otp_id = ?`,
+      [otpRecord.otp_id]
+    );
+
+    // Activate user account
+    await db.query(
+      `UPDATE users SET status = 'active' 
+      WHERE email = ? AND status = 'pending'`,
+      [email]
+    );
+
+    res.status(200).json({ message: 'Account verified successfully' });
+  } catch (err) {
+    console.error('OTP verification error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  } finally {
+    await db.end();
   }
 });
 
 
 UserRoute.post('/check_email', async (req, res) => {
-  const db = getDB();
-  const { email } = req.body;
-
+  let db = await getDB();
   try {
-    const [rows] = await db.query( `
-      SELECT user_id FROM users WHERE email = ?
-    `, [email]);
-
-    if (rows.length > 0) {
-        return res.status(409).json({ success: false, message: 'An account with this email address already exist.' });
+    const { email } = req.body;
+    const [existingUsers] = await db.query('SELECT email FROM users WHERE email = ?', [email]);
+    if (existingUsers.length > 0) {
+      return res.status(409).json({ message: 'Email already registered.' });
     }
-
-    res.status(200).json({ success: true, message: 'Email is available' });
+    res.status(200).json({ message: 'Email available' });
   } catch (err) {
-      console.error('Email already exist: ', err);
-      res.status(500).json({ success: false, message: 'Server error.' })
+    console.error('Check email error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  } finally {
+    await db.end();
   }
 });
 
@@ -212,6 +331,21 @@ UserRoute.post('/check_username', async (req, res) => {
       res.status(500).json({ success: false, message: 'Server error.' })
   }
 });
+
+// Cleanup expired OTPs (run every 5 minutes)
+setInterval(async () => {
+  let db = await getDB();
+  try {
+    await db.query(
+      `DELETE FROM user_otp 
+      WHERE expires_at < NOW() AND is_used = 0`
+    );
+  } catch (err) {
+    console.error('Cleanup error:', err);
+  } finally {
+    await db.end();
+  }
+}, 5 * 60 * 1000);
 
 
 UserRoute.post("/login", async (req, res) => {
