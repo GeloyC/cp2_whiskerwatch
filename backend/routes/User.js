@@ -295,57 +295,57 @@ UserRoute.post('/verify-otp', async (req, res) => {
 });
 
 
-UserRoute.post('/check_email', async (req, res) => {
-  const db = getDB();
-  try {
-    const { email } = req.body;
-    const [existingUsers] = await db.query('SELECT email FROM users WHERE email = ?', [email]);
-    if (existingUsers.length > 0) {
-      return res.status(409).json({ message: 'Email already registered.' });
-    }
-    res.status(200).json({ message: 'Email available' });
-  } catch (err) {
-    console.error('Check email error:', err);
-    res.status(500).json({ error: 'Internal server error' });
-  } finally {
-    await db.end();
-  }
-});
+// UserRoute.post('/check_email', async (req, res) => {
+//   const db = getDB();
+//   try {
+//     const { email } = req.body;
+//     const [existingUsers] = await db.query('SELECT email FROM users WHERE email = ?', [email]);
+//     if (existingUsers.length > 0) {
+//       return res.status(409).json({ message: 'Email already registered.' });
+//     }
+//     res.status(200).json({ message: 'Email available' });
+//   } catch (err) {
+//     console.error('Check email error:', err);
+//     res.status(500).json({ error: 'Internal server error' });
+//   } finally {
+//     await db.end();
+//   }
+// });
 
-UserRoute.post('/check_username', async (req, res) => {
-  const db = getDB();
-  const { username } = req.body;
+// UserRoute.post('/check_username', async (req, res) => {
+//   const db = getDB();
+//   const { username } = req.body;
 
-  try {
-    const [rows] = await db.query( `
-      SELECT user_id FROM users WHERE username = ?
-    `, [username]);
+//   try {
+//     const [rows] = await db.query( `
+//       SELECT user_id FROM users WHERE username = ?
+//     `, [username]);
 
-    if (rows.length > 0) {
-        return res.status(409).json({ success: false, message: 'An account with this username address already exist.' });
-    }
+//     if (rows.length > 0) {
+//         return res.status(409).json({ success: false, message: 'An account with this username address already exist.' });
+//     }
 
-    res.status(200).json({ success: true, message: 'Username is available' });
-  } catch (err) {
-      console.error('Username already exist: ', err);
-      res.status(500).json({ success: false, message: 'Server error.' })
-  }
-});
+//     res.status(200).json({ success: true, message: 'Username is available' });
+//   } catch (err) {
+//       console.error('Username already exist: ', err);
+//       res.status(500).json({ success: false, message: 'Server error.' })
+//   }
+// });
 
 // Cleanup expired OTPs (run every 5 minutes)
-setInterval(async () => {
-  let db = await getDB();
-  try {
-    await db.query(
-      `DELETE FROM user_otp 
-      WHERE expires_at < NOW() AND is_used = 0`
-    );
-  } catch (err) {
-    console.error('Cleanup error:', err);
-  } finally {
-    await db.end();
-  }
-}, 5 * 60 * 1000);
+// setInterval(async () => {
+//   let db = await getDB();
+//   try {
+//     await db.query(
+//       `DELETE FROM user_otp 
+//       WHERE expires_at < NOW() AND is_used = 0`
+//     );
+//   } catch (err) {
+//     console.error('Cleanup error:', err);
+//   } finally {
+//     await db.end();
+//   }
+// }, 5 * 60 * 1000);
 
 
 UserRoute.post("/login", async (req, res) => {
