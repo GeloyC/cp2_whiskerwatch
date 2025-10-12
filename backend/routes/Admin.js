@@ -741,6 +741,11 @@ AdminRoute.patch('/adoption_form/status_update/:application_id', verifyUser, asy
             }
 
         } else if (status === 'Rejected') {
+            await db.query(
+                `UPDATE cat SET adoption_status = 'Available' WHERE cat_id = ?`,
+                [application.cat_id]
+            );
+
             const rejectedMessage = `Your adoption application is now ${status}. You can always apply again!`;
             await db.query(
                 `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
