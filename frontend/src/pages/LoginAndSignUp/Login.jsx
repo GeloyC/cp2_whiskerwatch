@@ -254,6 +254,11 @@ const Login = () => {
               </Link>
               <button
                 type="button"
+                onClick={() => {
+                  setForgotPassForm(true);
+                  setError("");
+                }}
+                
                 className={ "cursor-pointer text-[14px] hover:underline hover:text-[#DC8801]"}
               >
                 Forgot Password?
