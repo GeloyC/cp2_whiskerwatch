@@ -332,15 +332,16 @@ export const signupUser = async (req, res) => {
 // ----------------------
 export const verifyOtp = async (req, res) => {
     const { email, otp } = req.body;
-    const db = getDB();
 
     try {
         const stored = otpStore[email];
-        if (!stored) return res.status(400).json({ error: "No OTP found. Please sign up again." });
 
-        // ensure this OTP was created for signup flow
-        if (stored.type !== "signup") {
-        return res.status(400).json({ error: "OTP type mismatch. This OTP is not for account signup." });
+        if (!stored) {
+        return res.status(400).json({ error: "No OTP request found for this email." });
+        }
+
+        if (stored.type !== "password_reset") {
+        return res.status(400).json({ error: "Invalid OTP type for this request." });
         }
 
         if (Date.now() > stored.expires) {
@@ -348,23 +349,16 @@ export const verifyOtp = async (req, res) => {
         return res.status(400).json({ error: "OTP expired. Please request a new one." });
         }
 
-        if (parseInt(otp, 10) !== stored.otp) {
+        if (String(stored.otp) !== String(otp)) {
         return res.status(400).json({ error: "Invalid OTP. Please try again." });
         }
 
-        // OTP correct — save user to database
-        const { firstname, lastname, contactnumber, birthday, username, address, password } = stored.data;
-        await db.query(
-        `INSERT INTO users (firstname, lastname, contactnumber, birthday, email, username, address, password)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [firstname, lastname, contactnumber, birthday, email, username, address, password]
-        );
-
-        delete otpStore[email]; // cleanup
-        return res.json({ message: "Email verified and account created successfully!" });
+        // ✅ OTP is valid — delete it and respond success
+        delete otpStore[email];
+        res.json({ message: "OTP verified successfully. You can now reset your password." });
     } catch (err) {
         console.error("Verify OTP error:", err);
-        return res.status(500).json({ error: "Error verifying OTP" });
+        res.status(500).json({ error: "Error verifying OTP." });
     }
 };
 
@@ -415,48 +409,89 @@ export const resendOtp = async (req, res) => {
 // ----------------------
 // FORGOT PASSWORD
 // ----------------------
+// export const forgotPassword = async (req, res) => {
+//     const db = getDB();
+//     const { email } = req.body;
+
+//     try {
+//         const [userRows] = await db.query(`SELECT * FROM users WHERE email = ?`, [email]);
+//         if (userRows.length === 0) {
+//         return res.status(404).json({ error: "No account found with this email." });
+//         }
+
+//         const generatedOtp = Math.floor(100000 + Math.random() * 900000);
+//         otpStore[email] = {
+//         otp: generatedOtp,
+//         type: "password_reset",
+//         expires: Date.now() + 5 * 60 * 1000,
+//         };
+
+//         // safe destructure from the row
+//         const { firstname = "", lastname = "" } = userRows[0];
+
+//         const response = await resend.emails.send({
+//         from: process.env.EMAIL_FROM || "WhiskerWatch <noreply@whiskerwatch.site>",
+//         to: email,
+//         subject: "WhiskerWatch Password Reset",
+//         html: `
+//             <h2>Password Reset Request</h2>
+//             <p>Hi ${firstname} ${lastname}</p>
+//             <p>Your One-Time Password (OTP) is:</p>
+//             <h1>${generatedOtp}</h1>
+//             <p>Please enter this code to continue your password reset request.</p>
+//             <p>This code will expire in 5 minutes.</p>
+//             <p>If you didn't request this, please ignore this message and never share it with anyone to keep your WhiskerWatch account safe.</p>
+//             <p>Thanks for helping keep our cat community secure!</p>
+//             <strong>- WhiskerWatch Team</strong>
+//         `,
+//         });
+
+//         console.log("Forgot password email sent:", response);
+//         return res.json({ message: "OTP sent to your email for password reset." });
+//     } catch (err) {
+//         console.error("Forgot password error:", err);
+//         return res.status(500).json({ error: "Error sending OTP for password reset." });
+//     }
+// };
 export const forgotPassword = async (req, res) => {
     const db = getDB();
     const { email } = req.body;
 
     try {
-        const [userRows] = await db.query(`SELECT * FROM users WHERE email = ?`, [email]);
-        if (userRows.length === 0) {
+        // Check if user exists
+        const [user] = await db.query(`SELECT * FROM users WHERE email = ?`, [email]);
+        if (user.length === 0) {
         return res.status(404).json({ error: "No account found with this email." });
         }
 
+        // Generate OTP
         const generatedOtp = Math.floor(100000 + Math.random() * 900000);
+
+        // Store OTP in memory
         otpStore[email] = {
         otp: generatedOtp,
         type: "password_reset",
-        expires: Date.now() + 5 * 60 * 1000,
+        expires: Date.now() + 5 * 60 * 1000, // 5 minutes
         };
 
-        // safe destructure from the row
-        const { firstname = "", lastname = "" } = userRows[0];
-
+        // Send OTP email — (your HTML body unchanged)
         const response = await resend.emails.send({
         from: process.env.EMAIL_FROM || "WhiskerWatch <noreply@whiskerwatch.site>",
         to: email,
-        subject: "WhiskerWatch Password Reset",
+        subject: "WhiskerWatch Password Reset OTP",
         html: `
-            <h2>Password Reset Request</h2>
-            <p>Hi ${firstname} ${lastname}</p>
-            <p>Your One-Time Password (OTP) is:</p>
-            <h1>${generatedOtp}</h1>
-            <p>Please enter this code to continue your password reset request.</p>
-            <p>This code will expire in 5 minutes.</p>
-            <p>If you didn't request this, please ignore this message and never share it with anyone to keep your WhiskerWatch account safe.</p>
-            <p>Thanks for helping keep our cat community secure!</p>
-            <strong>- WhiskerWatch Team</strong>
-        `,
+                <h2>Password Reset Request</h2>
+                <p>Here is your One-Time Password (OTP) to reset your password:</p>
+                <h1>${generatedOtp}</h1>
+                <p>This code will expire in 5 minutes.</p>
+            `,
         });
 
-        console.log("Forgot password email sent:", response);
-        return res.json({ message: "OTP sent to your email for password reset." });
+        console.log("Forgot password email response:", response);
+        res.json({ message: "OTP sent to your email for password reset." });
     } catch (err) {
         console.error("Forgot password error:", err);
-        return res.status(500).json({ error: "Error sending OTP for password reset." });
+        res.status(500).json({ error: "Error sending OTP for password reset." });
     }
 };
 
