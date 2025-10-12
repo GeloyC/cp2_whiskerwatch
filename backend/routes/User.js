@@ -15,7 +15,7 @@ import { Resend } from "resend";
 import multer from 'multer';
 import fs from 'fs';
 // import { promises as fs } from 'node:fs';
-import { signupUser, verifyOtp, resendOtp } from "./OTP.js";
+import { signupUser, verifyOtp, resendOtp, forgotPassword, resetPassword } from "./OTP.js";
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { error, log } from "console";
@@ -42,6 +42,10 @@ const transporter = nodemailer.createTransport({
 UserRoute.post("/signup", signupUser);
 UserRoute.post("/verify-otp", verifyOtp);
 UserRoute.post("/resend-otp", resendOtp);
+
+// NEW PASSWORD RECOVERY ROUTES
+UserRoute.post("/forgot-password", forgotPassword);
+UserRoute.post("/reset-password", resetPassword);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -440,6 +444,23 @@ UserRoute.post("/login", async (req, res) => {
 
 
 
+UserRoute.post('/forgot_password', async (req, res) => {
+  const db = getDB();
+  const { email } = req.body;
+
+  try {
+    const [email_exist] = await db.query(`
+      SELECT * FROM users WHERE email = ?,
+    `, [email]);
+
+  } catch(err) {
+
+
+  }
+
+});
+
+
 
 UserRoute.post('/reset_password', async (req, res) => {
   const db = getDB();
@@ -490,6 +511,7 @@ UserRoute.post('/reset_password', async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
+
 
 
 

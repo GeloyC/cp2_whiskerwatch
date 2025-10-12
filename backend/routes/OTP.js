@@ -24,7 +24,7 @@ export const signupUser = async (req, res) => {
         // Check if email or username exists
         const [existing] = await db.query(`SELECT * FROM users WHERE email = ? OR username = ?`, [email, username]);
         if (existing.length > 0) {
-        return res.status(409).json({ message: "Email or Username already exists" });
+            return res.status(409).json({ message: "Email or Username already exists" });
         }
 
         // Hash password but don't save yet
@@ -139,6 +139,79 @@ export const resendOtp = async (req, res) => {
         res.status(500).json({ error: "Failed to resend OTP" });
     }
 };
+
+
+
+// FORGOT PASSWORD
+export const forgotPassword = async (req, res) => {
+    const db = getDB();
+    const { email } = req.body;
+
+    try {
+        // Check if user exists
+        const [user] = await db.query(`SELECT * FROM users WHERE email = ?`, [email]);
+        if (user.length === 0) {
+        return res.status(404).json({ error: "No account found with this email." });
+        }
+
+        // Generate OTP
+        const otp = Math.floor(100000 + Math.random() * 900000);
+        otpStore[email] = { otp, type: "password_reset", expires: Date.now() + 5 * 60 * 1000 };
+
+        // Send OTP via Resend
+        const response = await resend.emails.send({
+        from: process.env.EMAIL_FROM || "WhiskerWatch <noreply@whiskerwatch.site>",
+        to: email,
+        subject: "WhiskerWatch Password Reset OTP",
+        html: `
+            <h2>Password Reset Request</h2>
+            <p>Here is your One-Time Password (OTP) to reset your password:</p>
+            <h1>${otp}</h1>
+            <p>This code will expire in 5 minutes.</p>
+        `,
+        });
+
+        console.log("Forgot password email response:", response);
+        res.json({ message: "OTP sent to your email for password reset." });
+    } catch (err) {
+        console.error("Forgot password error:", err);
+        res.status(500).json({ error: "Error sending OTP for password reset." });
+    }
+};
+
+
+// RESET PASSWORD
+export const resetPassword = async (req, res) => {
+    const db = getDB();
+    const { email, otp, newPassword } = req.body;
+
+    try {
+        const stored = otpStore[email];
+        if (!stored || stored.type !== "password_reset") {
+        return res.status(400).json({ error: "No valid OTP found for this email." });
+        }
+
+        if (Date.now() > stored.expires) {
+        delete otpStore[email];
+        return res.status(400).json({ error: "OTP expired. Please request a new one." });
+        }
+
+        if (parseInt(otp) !== stored.otp) {
+        return res.status(400).json({ error: "Invalid OTP. Please try again." });
+        }
+
+        // OTP verified → hash and update password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await db.query(`UPDATE users SET password = ? WHERE email = ?`, [hashedPassword, email]);
+
+        delete otpStore[email]; // clean up
+        res.json({ message: "Password has been reset successfully." });
+    } catch (err) {
+        console.error("Reset password error:", err);
+        res.status(500).json({ error: "Error resetting password." });
+    }
+};
+
 
 
 export default otpRoute;
