@@ -14,11 +14,12 @@ import dotenv from "dotenv";
 import multer from 'multer';
 import fs from 'fs';
 // import { promises as fs } from 'node:fs';
+import { signupUser, verifyOtp } from "./OTP.js";
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { error, log } from "console";
 
-// import { sendMail } from "./OTP.js";
+
 
 const UserRoute = Router();
 UserRoute.use(express.json());
@@ -35,6 +36,10 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+
+
+UserRoute.post("/signup", signupUser);
+UserRoute.post("/verify-otp", verifyOtp);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -184,133 +189,135 @@ const JWT_SECRET = process.env.JWT_SECRET || 'whisker_secret';
 // });
 
 
-UserRoute.post("/signup", async (req, res) => {
-  const db = getDB();
-  const { firstname, lastname, profile_image, contactnumber, birthday, email, username, role, badge, address, password } = req.body;
 
-  try {
-    // Check if email or username exists
-    const [existingUser] = await db.query("SELECT * FROM users WHERE email = ? OR username = ?", [email, username]);
-    if (existingUser.length > 0)
-      return res.status(400).json({ error: "Email or username already exists." });
+// FOR EMAIL (NOT WORKING DUE TO CONNECTION TIMEOUT)
+// UserRoute.post("/signup", async (req, res) => {
+//   const db = getDB();
+//   const { firstname, lastname, profile_image, contactnumber, birthday, email, username, role, badge, address, password } = req.body;
 
-    // Generate OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+//   try {
+//     // Check if email or username exists
+//     const [existingUser] = await db.query("SELECT * FROM users WHERE email = ? OR username = ?", [email, username]);
+//     if (existingUser.length > 0)
+//       return res.status(400).json({ error: "Email or username already exists." });
 
-    // Save OTP
-    await db.query(
-      `INSERT INTO user_otps (email, otp, expires_at, is_used)
-      VALUES (?, ?, ?, 0)`,
-      [email, otp, expiresAt]
-    );
+//     // Generate OTP
+//     const otp = Math.floor(100000 + Math.random() * 900000).toString();
+//     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-    // Send OTP via email
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "WhiskerWatch Email Verification",
-      html: `<p>Hello ${firstname},</p><p>Your OTP is <b>${otp}</b>. It expires in 10 minutes.</p>`,
-    });
+//     // Save OTP
+//     await db.query(
+//       `INSERT INTO user_otps (email, otp, expires_at, is_used)
+//       VALUES (?, ?, ?, 0)`,
+//       [email, otp, expiresAt]
+//     );
 
-    // Temporarily send back user data (excluding password)
-    res.status(200).json({
-      message: "OTP sent! Please verify to complete registration.",
-      tempUser: {
-        firstname,
-        lastname,
-        profile_image,
-        contactnumber,
-        birthday,
-        email,
-        username,
-        role,
-        badge,
-        address,
-        password // store hashed later
-      }
-    });
-  } catch (err) {
-    console.error("Signup error:", err);
-    res.status(500).json({ error: "Signup failed." });
-  }
-});
+//     // Send OTP via email
+//     await transporter.sendMail({
+//       from: process.env.EMAIL_USER,
+//       to: email,
+//       subject: "WhiskerWatch Email Verification",
+//       html: `<p>Hello ${firstname},</p><p>Your OTP is <b>${otp}</b>. It expires in 10 minutes.</p>`,
+//     });
 
-
-UserRoute.post("/verify-otp", async (req, res) => {
-  const db = getDB();
-  const { email, otp, userData } = req.body; // userData from frontend
-
-  try {
-    // Check OTP validity
-    const [rows] = await db.query(
-      "SELECT * FROM user_otps WHERE email = ? AND otp = ? AND is_used = 0 AND expires_at > NOW()",
-      [email, otp]
-    );
-    if (rows.length === 0)
-      return res.status(400).json({ error: "Invalid or expired OTP." });
-
-    // Mark OTP as used
-    await db.query("UPDATE user_otps SET is_used = 1 WHERE email = ?", [email]);
-
-    // Hash password before storing
-    const hashedPassword = await bcrypt.hash(userData.password, 10);
-
-    // Insert verified user
-    await db.query(`
-      INSERT INTO users 
-      (firstname, lastname, profile_image, contactnumber, birthday, email, username, role, badge, address, password) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        userData.firstname,
-        userData.lastname,
-        userData.profile_image,
-        userData.contactnumber,
-        userData.birthday,
-        email,
-        userData.username,
-        userData.role || "regular",
-        userData.badge || "Toe bean trainee",
-        userData.address,
-        hashedPassword
-      ]
-    );
-
-    res.status(200).json({ message: "Email verified! Account created successfully." });
-  } catch (err) {
-    console.error("Verify OTP error:", err);
-    res.status(500).json({ error: "OTP verification failed." });
-  }
-});
+//     // Temporarily send back user data (excluding password)
+//     res.status(200).json({
+//       message: "OTP sent! Please verify to complete registration.",
+//       tempUser: {
+//         firstname,
+//         lastname,
+//         profile_image,
+//         contactnumber,
+//         birthday,
+//         email,
+//         username,
+//         role,
+//         badge,
+//         address,
+//         password // store hashed later
+//       }
+//     });
+//   } catch (err) {
+//     console.error("Signup error:", err);
+//     res.status(500).json({ error: "Signup failed." });
+//   }
+// });
 
 
-UserRoute.post("/resend-otp", async (req, res) => {
-  const db = getDB();
-  const { email } = req.body;
+// UserRoute.post("/verify-otp", async (req, res) => {
+//   const db = getDB();
+//   const { email, otp, userData } = req.body; // userData from frontend
 
-  try {
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 min
+//   try {
+//     // Check OTP validity
+//     const [rows] = await db.query(
+//       "SELECT * FROM user_otps WHERE email = ? AND otp = ? AND is_used = 0 AND expires_at > NOW()",
+//       [email, otp]
+//     );
+//     if (rows.length === 0)
+//       return res.status(400).json({ error: "Invalid or expired OTP." });
 
-    await db.query(
-      `INSERT INTO user_otps (email, otp, expires_at, is_used)
-      VALUES (?, ?, ?, 0)`,
-      [email, otp, expiresAt]
-    );
+//     // Mark OTP as used
+//     await db.query("UPDATE user_otps SET is_used = 1 WHERE email = ?", [email]);
 
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "Your new WhiskerWatch OTP",
-      html: `<p>Your new OTP is: <b>${otp}</b></p><p>This code expires in 10 minutes.</p>`,
-    });
+//     // Hash password before storing
+//     const hashedPassword = await bcrypt.hash(userData.password, 10);
 
-    res.status(200).json({ message: "A new OTP has been sent to your email." });
-  } catch (err) {
-    console.error("Resend OTP error:", err);
-    res.status(500).json({ error: "Failed to resend OTP." });
-  }
-});
+//     // Insert verified user
+//     await db.query(`
+//       INSERT INTO users 
+//       (firstname, lastname, profile_image, contactnumber, birthday, email, username, role, badge, address, password) 
+//       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+//       [
+//         userData.firstname,
+//         userData.lastname,
+//         userData.profile_image,
+//         userData.contactnumber,
+//         userData.birthday,
+//         email,
+//         userData.username,
+//         userData.role || "regular",
+//         userData.badge || "Toe bean trainee",
+//         userData.address,
+//         hashedPassword
+//       ]
+//     );
+
+//     res.status(200).json({ message: "Email verified! Account created successfully." });
+//   } catch (err) {
+//     console.error("Verify OTP error:", err);
+//     res.status(500).json({ error: "OTP verification failed." });
+//   }
+// });
+
+
+// UserRoute.post("/resend-otp", async (req, res) => {
+//   const db = getDB();
+//   const { email } = req.body;
+
+//   try {
+//     const otp = Math.floor(100000 + Math.random() * 900000).toString();
+//     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 min
+
+//     await db.query(
+//       `INSERT INTO user_otps (email, otp, expires_at, is_used)
+//       VALUES (?, ?, ?, 0)`,
+//       [email, otp, expiresAt]
+//     );
+
+//     await transporter.sendMail({
+//       from: process.env.EMAIL_USER,
+//       to: email,
+//       subject: "Your new WhiskerWatch OTP",
+//       html: `<p>Your new OTP is: <b>${otp}</b></p><p>This code expires in 10 minutes.</p>`,
+//     });
+
+//     res.status(200).json({ message: "A new OTP has been sent to your email." });
+//   } catch (err) {
+//     console.error("Resend OTP error:", err);
+//     res.status(500).json({ error: "Failed to resend OTP." });
+//   }
+// });
 
 
 UserRoute.post('/check_email', async (req, res) => {

@@ -4,10 +4,8 @@ import { Router } from "express";
 import {getDB} from "../database.js"
 import cookieParser from 'cookie-parser';
 import session from "express-session";
-import nodemailer from 'nodemailer';
-
-import { hash, randomBytes } from 'crypto';
-import rateLimit from 'express-rate-limit';
+import { Resend } from "resend";
+import jwt from "jsonwebtoken";
 import bcrypt from 'bcrypt';
 
 
@@ -15,64 +13,78 @@ const otpRoute = express();
 otpRoute.use(express.json());
 // dotenv.config();
 
+const resend = new Resend(process.env.RESEND_API_KEY);
+let otpStore = {};
 
-// export const sendMail = async (to, subject, html) => {
-//     const transporter = nodemailer.createTransport({
-//         service: 'gmail', // or your email service
-//         auth: {
-//         user: process.env.EMAIL_USER, // Set in Render environment
-//         pass: process.env.EMAIL_PASS, // Set in Render environment
-//         },
-//     });
+export const signupUser = async (req, res) => {
+    const { firstname, lastname, contactnumber, birthday, email, username, address, password } = req.body;
 
-//     await transporter.sendMail({
-//         from: process.env.EMAIL_USER,
-//         to,
-//         subject,
-//         html,
-//     });
-// };
+    try {
+        // Check if email or username exists
+        const [existing] = await db.query(`SELECT * FROM users WHERE email = ? OR username = ?`, [email, username]);
+        if (existing.length > 0) {
+        return res.status(409).json({ message: "Email or Username already exists" });
+        }
 
-// const mg = mailgun({
-//     apiKey: process.env.MAILGUN_API_KEY,
-//     domain: process.env.MAILGUN_DOMAIN
-// });
+        // Hash password but don't save yet
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-// const otpStore = new Map();
+        // Generate OTP
+        const otp = Math.floor(100000 + Math.random() * 900000);
+        otpStore[email] = { otp, data: { firstname, lastname, contactnumber, birthday, email, username, address, password: hashedPassword }, expires: Date.now() + 5 * 60 * 1000 };
 
-// const otpLimiter = rateLimit({
-//     windowMs: 15 * 60 * 1000,
-//     max: 5,
-//     message: 'Too many OTP requests, please try again later.'
-// });
+        // Send OTP via Resend
+        await resend.emails.send({
+        from: process.env.EMAIL_FROM,
+        to: email,
+        subject: "WhiskerWatch OTP Verification",
+        html: `
+            <h2>Verify Your Email</h2>
+            <p>Hi ${firstname},</p>
+            <p>Your One-Time Password (OTP) is:</p>
+            <h1>${otp}</h1>
+            <p>This code expires in 5 minutes.</p>
+        `,
+        });
+
+        res.json({ message: "OTP sent to your email!" });
+    } catch (err) {
+        console.error("Signup error:", err);
+        res.status(500).json({ message: "Error creating user or sending OTP" });
+    }
+};
 
 
-// otpRoute.post('/generate_otp', otpLimiter, async (req, res) => {
-//     const { email } = req.body;
-//     if (!email) return res.status(400).json({ error: 'Email is required!' });
 
-//     const otp = randomBytes(3).toString('hex').toUpperCase();
+export const verifyOtp = async (req, res) => {
+    const { email, otp } = req.body;
 
-//     const hashedOtp = await bcrypt.hash(otp, 10);
+    try {
+        const stored = otpStore[email];
+        if (!stored) return res.status(400).json({ error: "No OTP found. Please sign up again." });
 
-//     const expiresAt = Date.now() + (process.env.OTP_EXPIRATION_MINUTES * 60 * 1000);
-//     otpStore.set( email, { hashedOtp, expiresAt });
+        if (Date.now() > stored.expires) {
+            delete otpStore[email];
+            return res.status(400).json({ error: "OTP expired. Please request a new one." });
+        }
 
-//     const data = {
-//         from: 'WhiskerWatch OTP <noreply@whiskerwatch.site>',
-//         to: email,
-//         subject: 'Your OTP code',
-//         text: `This is your One-time password: ${otp}. It expires in ${process.env.OTP_EXPIRATION_MINUTES} minutes.`,
-//         html: `<h1>Your OTP Code</h1><p><strong>${otp}</strong> (expires in ${process.env.OTP_EXPIRATION_MINUTES} minutes).</p>`
-//     };
+        if (parseInt(otp) !== stored.otp) {
+            return res.status(400).json({ error: "Invalid OTP. Please try again." });
+        }
 
-//     try {
-//         await mg.messages().send(data);
-//         res.status(200).json({ message: `OTP sent to your email.` });
-//     } catch (error) {
-//         console.error('Error sending OTP: ', error);
-//         res.status(500).json({ error: `Failed to send OTP` });
-//     }
-// });
+        // OTP correct — save user to database
+        const { firstname, lastname, contactnumber, birthday, username, address, password } = stored.data;
 
+        await db.query(
+            `INSERT INTO users (firstname, lastname, contactnumber, birthday, email, username, address, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            [firstname, lastname, contactnumber, birthday, email, username, address, password]
+        );
+
+        delete otpStore[email]; // cleanup
+        res.json({ message: "Email verified and account created successfully!" });
+    } catch (err) {
+        console.error("Verify OTP error:", err);
+        res.status(500).json({ error: "Error verifying OTP" });
+    }
+};
 export default otpRoute;
