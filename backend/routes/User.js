@@ -173,6 +173,11 @@ const JWT_SECRET = process.env.JWT_SECRET || 'whisker_secret';
 //   }
 // });
 
+const otpLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5,
+  message: 'Too many OTP requests, please try again later.'
+});
 
 UserRoute.post('/signup', otpLimiter, async (req, res) => {
   try {
