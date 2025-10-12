@@ -446,12 +446,13 @@ const Login = () => {
   const [emailForgot, setEmailForgot] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const [forgotPassForm, setForgotPassForm] = useState(false);
   const [resetPassForm, setResetPassForm] = useState(false);
+  const [otpStep, setOtpStep] = useState(false);
+  const [otp, setOtp] = useState("");
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -508,38 +509,38 @@ const Login = () => {
   };
 
   // ------------------- FORGOT PASSWORD -------------------
-  const handleForgotPassword = async (event) => {
-    event.preventDefault();
-    setError("");
-    setLoading(true);
+  // const handleForgotPassword = async (event) => {
+  //   event.preventDefault();
+  //   setError("");
+  //   setLoading(true);
 
-    if (!emailRegex.test(emailForgot)) {
-      setError("Please enter a valid email address");
-      setLoading(false);
-      return;
-    }
+  //   if (!emailRegex.test(emailForgot)) {
+  //     setError("Please enter a valid email address");
+  //     setLoading(false);
+  //     return;
+  //   }
 
-    try {
-      const response = await axios.post(`${url}/user/forgot-password`, {
-        email: emailForgot,
-      });
+  //   try {
+  //     const response = await axios.post(`${url}/user/forgot-password`, {
+  //       email: emailForgot,
+  //     });
 
-      if (response.status === 200) {
-        toast.success("An OTP has been sent to your email.");
-        setEmail(emailForgot);
-        setForgotPassForm(false);
-        setResetPassForm(true);
-      }
-    } catch (error) {
-      console.error("Forgot password error:", error);
-      const message =
-        error.response?.data?.message ||
-        "Failed to send OTP. Please try again later.";
-      setError(message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     if (response.status === 200) {
+  //       toast.success("An OTP has been sent to your email.");
+  //       setEmail(emailForgot);
+  //       setForgotPassForm(false);
+  //       setResetPassForm(true);
+  //     }
+  //   } catch (error) {
+  //     console.error("Forgot password error:", error);
+  //     const message =
+  //       error.response?.data?.message ||
+  //       "Failed to send OTP. Please try again later.";
+  //     setError(message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   // ------------------- RESET PASSWORD -------------------
   const handleResetPassword = async (event) => {
@@ -673,7 +674,7 @@ const Login = () => {
         )}
 
         {/* FORGOT PASSWORD FORM */}
-        {forgotPassForm && (
+        {/* {forgotPassForm && (
           <form onSubmit={handleForgotPassword} className="flex flex-col items-center justify-center gap-5">
             <label className="font-bold text-[#2F2F2F] text-2xl">Forgot your Password?</label>
             <span className="text-center text-sm w-[300px]">
@@ -681,24 +682,169 @@ const Login = () => {
             </span>
 
             <div className="flex flex-col gap-4">
+              <input type="text"
+                placeholder="Email" value={emailForgot}
+                onChange={(e) => setEmailForgot(e.target.value)}
+                className="border-b-2 border-b-[#DC8801] text-center w-full p-2"
+              />
+
+              <div className="flex flex-col gap-2 items-center">
+                <p className="text-sm text-gray-600 text-center">
+                  Enter the OTP sent to <strong>{email}</strong> and your new password.
+                </p>
+
+                <input
+                  type="text"
+                  placeholder="Enter OTP"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  maxLength={6}
+                  className="border-b-2 border-b-[#DC8801] p-2 text-center w-full"
+                  required
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <button type="submit"
+                  className="cursor-pointer bg-[#B5C04A] py-2 rounded-full text-[#FFF] hover:scale-105 active:scale-95 transition-all duration-100"
+                >
+                  {loading ? "Sending OTP..." : "Send OTP"}
+                </button>
+                <button type="submit"
+                  className="cursor-pointer bg-[#B5C04A] py-2 rounded-full text-[#FFF] hover:scale-105 active:scale-95 transition-all duration-100"
+                >
+                  {loading ? "Sending..." : "Continue"}
+                </button>
+              </div>
+
+              <button type="button"
+                onClick={() => {
+                  setForgotPassForm(false);
+                  setEmailForgot("");
+                  setError("");
+                }}
+                className="text-sm underline cursor-pointer active:text-[#DC8801]"
+              >
+                Back to Login
+              </button>
+            </div>
+
+            {error && (
+              <div className="mt-2 p-3 text-[#DC8801] bg-[#FDF5D8] rounded-lg text-[14px]">
+                {error}
+              </div>
+            )}
+          </form>
+        )} */}
+
+        {forgotPassForm && (
+          <form onSubmit={(e) => e.preventDefault()} className="flex flex-col items-center justify-center gap-5">
+            <label className="font-bold text-[#2F2F2F] text-2xl">Forgot your Password?</label>
+            <span className="text-center text-sm w-[300px]">
+              Enter your email address and we’ll send you a verification code to confirm your email.
+            </span>
+
+            <div className="flex flex-col gap-4 w-full items-center">
+              {/* Email Input */}
               <input
                 type="text"
                 placeholder="Email"
                 value={emailForgot}
                 onChange={(e) => setEmailForgot(e.target.value)}
-                className="border-b-2 border-b-[#DC8801] w-full p-2"
+                className="border-b-2 border-b-[#DC8801] text-center w-full p-2"
+                required
+                disabled={loading}
               />
-              <button
-                type="submit"
-                className="cursor-pointer bg-[#B5C04A] py-2 rounded-full text-[#FFF] hover:scale-105 active:scale-95 transition-all duration-100"
-              >
-                {loading ? "Sending..." : "Continue"}
-              </button>
+
+              {/* OTP Input (only show after Send OTP is pressed) */}
+              {otpStep && (
+                <div className="flex flex-col gap-2 items-center w-full">
+                  <p className="text-sm text-gray-600 text-center">
+                    Enter the OTP sent to <strong>{emailForgot}</strong>
+                  </p>
+                  <input
+                    type="text"
+                    placeholder="Enter 6-digit OTP"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    maxLength={6}
+                    className="border-b-2 border-b-[#DC8801] p-2 text-center w-full"
+                    required
+                  />
+                </div>
+              )}
+
+              {/* Buttons */}
+              <div className="flex flex-col gap-2 w-full">
+                {!otpStep ? (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      setError("");
+                      setLoading(true);
+                      try {
+                        const response = await axios.post(`${url}/user/forgot-password`, {
+                          email: emailForgot,
+                        });
+                        if (response.status === 200) {
+                          toast.success("OTP sent! Please check your email.");
+                          setOtpStep(true);
+                        }
+                      } catch (error) {
+                        console.error("Send OTP error:", error);
+                        setError(
+                          error.response?.data?.message || "Failed to send OTP. Please try again."
+                        );
+                      } finally {
+                        setLoading(false);
+                      }
+                    }}
+                    className="cursor-pointer bg-[#B5C04A] py-2 rounded-full text-[#FFF] hover:scale-105 active:scale-95 transition-all duration-100"
+                    disabled={loading}
+                  >
+                    {loading ? "Sending OTP..." : "Send OTP"}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      setError("");
+                      setLoading(true);
+                      try {
+                        const response = await axios.post(`${url}/user/verify-otp`, {
+                          email: emailForgot,
+                          otp,
+                        });
+                        if (response.status === 200) {
+                          toast.success("OTP verified successfully!");
+                          setForgotPassForm(false);
+                          setResetPassForm(true);
+                        }
+                      } catch (error) {
+                        console.error("OTP verification error:", error);
+                        setError(
+                          error.response?.data?.message ||
+                            "Invalid OTP. Please try again."
+                        );
+                      } finally {
+                        setLoading(false);
+                      }
+                    }}
+                    className="cursor-pointer bg-[#B5C04A] py-2 rounded-full text-[#FFF] hover:scale-105 active:scale-95 transition-all duration-100"
+                    disabled={loading}
+                  >
+                    {loading ? "Verifying..." : "Continue"}
+                  </button>
+                )}
+              </div>
+
               <button
                 type="button"
                 onClick={() => {
                   setForgotPassForm(false);
                   setEmailForgot("");
+                  setOtp("");
+                  setOtpStep(false);
                   setError("");
                 }}
                 className="text-sm underline cursor-pointer active:text-[#DC8801]"
@@ -719,21 +865,6 @@ const Login = () => {
         {resetPassForm && (
           <form onSubmit={handleResetPassword} className="flex flex-col items-center gap-8">
             <label className="text-[#2F2F2F] text-[24px] font-bold">Reset Password</label>
-            <p className="text-sm text-gray-600 text-center">
-              Enter the OTP sent to <strong>{email}</strong> and your new password.
-            </p>
-
-            {/* OTP Input */}
-            <input
-              type="text"
-              placeholder="Enter 6-digit OTP"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              maxLength={6}
-              className="border-b-2 border-b-[#977655] p-2 text-center tracking-widest"
-              required
-            />
-
             <input
               type="password"
               placeholder="New Password"
