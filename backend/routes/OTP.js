@@ -17,6 +17,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 let otpStore = {};
 
 export const signupUser = async (req, res) => {
+    const db = getDB();
     const { firstname, lastname, contactnumber, birthday, email, username, address, password } = req.body;
 
     try {
@@ -58,6 +59,7 @@ export const signupUser = async (req, res) => {
 
 export const verifyOtp = async (req, res) => {
     const { email, otp } = req.body;
+    const db = getDB();
 
     try {
         const stored = otpStore[email];
