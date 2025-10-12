@@ -375,17 +375,17 @@ UserRoute.post('/check_username', async (req, res) => {
 });
 
 // Cleanup expired OTPs (run every 5 minutes)
-setInterval(async () => {
-  const db = getDB();
-  try {
-    await db.query(
-      `DELETE FROM user_otp 
-      WHERE expires_at < NOW() AND is_used = 0`
-    );
-  } catch (err) {
-    console.error('Cleanup error:', err);
-  } 
-}, 5 * 60 * 1000);
+// setInterval(async () => {
+//   const db = getDB();
+//   try {
+//     await db.query(
+//       `DELETE FROM user_otp 
+//       WHERE expires_at < NOW() AND is_used = 0`
+//     );
+//   } catch (err) {
+//     console.error('Cleanup error:', err);
+//   } 
+// }, 5 * 60 * 1000);
 
 
 UserRoute.post("/login", async (req, res) => {

@@ -52,7 +52,7 @@ const NavigationBar = () => {
         setProfileImage(response.data.profile_image || '/assets/icons/account.png');
       } catch (err) {
         console.error("Failed to fetch profile image:", err);
-        setProfileImage(null);
+        setProfileImage('/assets/icons/account.png');
       }
     }
 
@@ -160,9 +160,7 @@ const NavigationBar = () => {
                         profileImage
                           ? profileImage.startsWith("http")
                             ? profileImage
-                            : profileImage.includes("FileUploads/")
-                            ? `${url}/${profileImage}`
-                            : `${url}/FileUploads/${profileImage}`
+                            : `${profileImage}`
                           : "/assets/icons/account.png"
                       }
                     alt="profile" />
