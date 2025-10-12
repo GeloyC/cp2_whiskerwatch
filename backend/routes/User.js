@@ -862,11 +862,6 @@ UserRoute.post('/adoption/form', uploadAdoptionForm.single('file'), async (req, 
   const file_url = req.file.path;
 
   try {
-    if (!req.file || !user_id || !cat_id) {
-      return res.status(400).json({ message: 'Missing required fields or file.' });
-    }
-
-
     const [catRows] = await db.query(
       `SELECT adoption_status FROM cat WHERE cat_id = ?`,
       [cat_id]
