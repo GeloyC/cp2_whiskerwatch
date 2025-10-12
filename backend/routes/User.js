@@ -18,7 +18,6 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { error, log } from "console";
 
-import nodemailer from 'nodemailer';
 // import { sendMail } from "./OTP.js";
 
 const UserRoute = Router();

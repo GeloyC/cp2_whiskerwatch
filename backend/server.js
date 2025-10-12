@@ -7,7 +7,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import cookieParser from "cookie-parser";
-import mailgun from 'mailgun-js';
+
 
 
 import { connectDB } from "./database.js";
@@ -105,32 +105,6 @@ app.post("/upload/file", upload.single("document"), async (req, res) => {
 });
 
 
-const mg = mailgun({
-  apiKey: process.env.MAILGUN_API_KEY,
-  domain: process.env.MAILGUN_DOMAIN
-});
-
-
-app.post('/send_email', async (req, res) => {
-  const { to, subject, text, html } = req.body; 
-
-  const data = {
-    from: 'Your App <noreply@yourdomain.com>', 
-    to: [to], // Array for multiple recipients
-    subject: subject || 'Hello from Your App',
-    text: text || 'Plain text version',
-    html: html || '<h1>Hello!</h1><p>This is an HTML email.</p>' 
-  };
-
-  try {
-    const body = await mg.messages().send(data);
-    console.log('Email sent:', body);
-    res.status(200).json({ message: 'Email sent successfully', id: body.id });
-  } catch (error) {
-    console.error('Error sending email:', error);
-    res.status(500).json({ error: 'Failed to send email' });
-  }
-});
 
 
 // ---------------- ERROR HANDLER ---------------- //
