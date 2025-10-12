@@ -354,6 +354,15 @@ export const verifyOtp = async (req, res) => {
             return res.status(400).json({ error: "Invalid OTP. Please try again." });
         }
 
+        const { firstname, lastname, contactnumber, birthday, email: storedEmail, username, address, password } = stored.data;
+
+        // Insert user into the database
+        await db.query(
+            `INSERT INTO users (firstname, lastname, contactnumber, birthday, email, username, address, password) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            [firstname, lastname, contactnumber, birthday, storedEmail, username, address, password]
+        );
+
         delete otpStore[email];
         res.json({ message: "OTP verified successfully. You can now reset your password." });
     } catch (err) {
