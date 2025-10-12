@@ -220,7 +220,7 @@ UserRoute.post('/signup', otpLimiter, async (req, res) => {
     const expiresAt = new Date(Date.now() + (process.env.OTP_EXPIRATION_MINUTES * 60 * 1000));
 
     // Store OTP in user_otp table
-    await req.db.query(
+    await db.query(
       `INSERT INTO user_otp (email, otp, expires_at) 
       VALUES (?, ?, ?)`,
       [email, hashedOtp, expiresAt]
@@ -294,14 +294,14 @@ UserRoute.post('/verify-otp', async (req, res) => {
     }
 
     // Mark OTP as used
-    await req.db.query(
+    await db.query(
       `UPDATE user_otp SET is_used = 1, used_at = NOW() 
       WHERE otp_id = ?`,
       [otpRecord.otp_id]
     );
 
     // Activate user account
-    const [updateResult] = await req.db.query(
+    const [updateResult] = await db.query(
       `UPDATE users SET status = 'active' 
       WHERE email = ? AND status = 'pending'`,
       [email]
