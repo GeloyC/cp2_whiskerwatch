@@ -435,9 +435,9 @@ export const forgotPassword = async (req, res) => {
             subject: "WhiskerWatch Password Reset",
             html: `
                 <h2>Password Reset Request</h2>
-                <p>Hi ${user.firstname} ${user.lastname}</p>
+                <p>Hi ${firstname} ${lastname}</p>
                 <p>Your One-Time Password (OTP) is:</p>
-                <h1>${otp}</h1>
+                <h1>${generatedOtp}</h1>
                 <p>Please enter this code to continue your password reset request.</p>
                 <p>This code will expire in 5 minutes.</p>
                 <p>If you didn't request this, please ignore this message and never share it with anyone to keep your WhiskerWatch account safe.</p>
