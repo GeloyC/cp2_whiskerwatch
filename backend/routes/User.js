@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 import cookieParser from "cookie-parser";
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import cloudinary from "../config/cloudinary.js";
-
+import { randomBytes } from 'crypto';
 import axios from 'axios';
 
 import multer from 'multer';
