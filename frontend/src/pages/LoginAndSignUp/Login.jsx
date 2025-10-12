@@ -92,7 +92,7 @@ const Login = () => {
   };
 
   const handleForgotPassword = async (event) => {
-    event,preventDefault();
+    event.preventDefault();
     setError("");
     setLoading(true);
 
@@ -258,7 +258,7 @@ const Login = () => {
                   setForgotPassForm(true);
                   setError("");
                 }}
-                
+
                 className={ "cursor-pointer text-[14px] hover:underline hover:text-[#DC8801]"}
               >
                 Forgot Password?
