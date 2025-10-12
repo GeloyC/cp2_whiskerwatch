@@ -505,9 +505,9 @@ export const resetPassword = async (req, res) => {
     const { email, otp, password } = req.body; // Match frontend payload (password, not newPassword)
 
     try {
-        // Fetch the latest non-used, non-expired OTP for the email
+        // Fetch the latest OTP (used or unused) for the email, as long as it’s not expired
         const [stored] = await db.query(
-        `SELECT * FROM user_otps WHERE email = ? AND is_used = 0 AND expires_at > NOW() ORDER BY created_at DESC LIMIT 1`,
+        `SELECT * FROM user_otps WHERE email = ? AND expires_at > NOW() ORDER BY created_at DESC LIMIT 1`,
         [email]
         );
         if (stored.length === 0) {
@@ -518,12 +518,17 @@ export const resetPassword = async (req, res) => {
         return res.status(400).json({ error: "Invalid OTP. Please try again." });
         }
 
+        // Ensure OTP was verified (is_used = 1) to maintain security
+        if (stored[0].is_used !== 1) {
+        return res.status(400).json({ error: "OTP has not been verified. Please verify the OTP first." });
+        }
+
         // Hash and update password
         const hashedPassword = await bcrypt.hash(password, 10);
         await db.query(`UPDATE users SET password = ? WHERE email = ?`, [hashedPassword, email]);
 
-        // Mark OTP as used and set used_at
-        await db.query(`UPDATE user_otps SET is_used = 1, used_at = NOW() WHERE otp_id = ?`, [stored[0].otp_id]);
+        // Clean up OTP (optional: you could keep it for logging, but this prevents reuse)
+        await db.query(`DELETE FROM user_otps WHERE otp_id = ?`, [stored[0].otp_id]);
 
         return res.json({ message: "Password has been reset successfully." });
     } catch (err) {
