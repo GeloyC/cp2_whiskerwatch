@@ -181,6 +181,7 @@ const otpLimiter = rateLimit({
 });
 
 UserRoute.post('/signup', otpLimiter, async (req, res) => {
+  const db = getDB();
   try {
     const { firstname, lastname, contactnumber, birthday, email, username, address, password } = req.body;
 
@@ -190,13 +191,13 @@ UserRoute.post('/signup', otpLimiter, async (req, res) => {
     }
 
     // Check for existing email
-    const [existingUsers] = await req.db.query('SELECT email FROM users WHERE email = ?', [email]);
+    const [existingUsers] = await db.query('SELECT email FROM users WHERE email = ?', [email]);
     if (existingUsers.length > 0) {
       return res.status(400).json({ message: 'Email already registered.' });
     }
 
     // Check for existing username
-    const [existingUsernames] = await req.db.query('SELECT username FROM users WHERE username = ?', [username]);
+    const [existingUsernames] = await db.query('SELECT username FROM users WHERE username = ?', [username]);
     if (existingUsernames.length > 0) {
       return res.status(400).json({ message: 'Username already taken.' });
     }
@@ -206,7 +207,7 @@ UserRoute.post('/signup', otpLimiter, async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     // Insert user with pending status
-    const [result] = await req.db.query(
+    const [result] = await db.query(
       `INSERT INTO users 
       (firstname, lastname, contactnumber, birthday, email, username, address, password, role, badge, status) 
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'regular', 'Toe Bean Trainee', 'pending')`,
@@ -260,6 +261,7 @@ UserRoute.post('/signup', otpLimiter, async (req, res) => {
 
 // Verify OTP endpoint
 UserRoute.post('/verify-otp', async (req, res) => {
+  const db = getDB();
   try {
     const { email, otp } = req.body;
     if (!email || !otp) {
@@ -269,7 +271,7 @@ UserRoute.post('/verify-otp', async (req, res) => {
     console.log(`Verifying OTP for email: ${email}, OTP: ${otp}`);
 
     // Fetch OTP record
-    const [otpRecords] = await req.db.query(
+    const [otpRecords] = await db.query(
       `SELECT * FROM user_otp 
       WHERE email = ? AND is_used = 0 AND expires_at > NOW() 
       ORDER BY created_at DESC LIMIT 1`,
