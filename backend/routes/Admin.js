@@ -210,6 +210,13 @@ AdminRoute.patch('/manage/update/:user_id', async (req, res) => {
                 return res.status(404).json({ message: 'User not found' });
         }
 
+        let message = `Your role at WhiskerWatch is now updated to ${role}. Congratulations`;
+        
+        await db.query(
+            `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
+            [user_id, message]
+        );
+
         res.status(200).json({ message: 'User role updated successfully!' });
 
         console.log(update)
