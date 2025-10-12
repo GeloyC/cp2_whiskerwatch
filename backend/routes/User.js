@@ -10,6 +10,7 @@ import cloudinary from "../config/cloudinary.js";
 import nodemailer from "nodemailer";
 import axios from 'axios';
 import dotenv from "dotenv";
+import { Resend } from "resend";
 
 import multer from 'multer';
 import fs from 'fs';
