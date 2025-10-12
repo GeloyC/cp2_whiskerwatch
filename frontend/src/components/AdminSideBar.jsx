@@ -525,7 +525,7 @@ const AdminSideBar = ({ className }) => {
               <img
                 src={
                   profileImage
-                    ? `${url}/FileUploads/${profileImage}`
+                    ? `${profileImage}`
                     : '/assets/icons/account.png'
                 }
                 alt="account"
