@@ -320,6 +320,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'whisker_secret';
 //   }
 // });
 
+const resend = new Resend(process.env.RESEND_API_KEY);
 UserRoute.get("/test-email", async (req, res) => {
   try {
     const result = await resend.emails.send({
