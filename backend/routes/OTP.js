@@ -264,7 +264,7 @@
 
 
 // export default otpRoute;
-
+// backend/routes/OTP.js
 import express from "express";
 import { getDB } from "../database.js";
 import { Resend } from "resend";
@@ -274,7 +274,7 @@ const otpRoute = express();
 otpRoute.use(express.json());
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-let otpStore = {};
+let otpStore = {}; // In-memory: { [email]: { otp, type, data?, expires } }
 
 // ----------------------
 // SIGNUP + OTP
@@ -284,7 +284,7 @@ export const signupUser = async (req, res) => {
     const { firstname, lastname, contactnumber, birthday, email, username, address, password } = req.body;
 
     try {
-        // Check if email or username exists
+        // check duplicates
         const [existing] = await db.query(
         `SELECT * FROM users WHERE email = ? OR username = ?`,
         [email, username]
@@ -293,18 +293,19 @@ export const signupUser = async (req, res) => {
         return res.status(409).json({ message: "Email or Username already exists" });
         }
 
-        // Hash password
+        // hash password (we store only after OTP verified)
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Generate OTP
+        // generate signup OTP and store signup-related data
         const otp = Math.floor(100000 + Math.random() * 900000);
         otpStore[email] = {
         otp,
+        type: "signup",
         data: { firstname, lastname, contactnumber, birthday, email, username, address, password: hashedPassword },
         expires: Date.now() + 5 * 60 * 1000,
         };
 
-        // Send OTP email
+        // send email (kept body as you asked)
         const emailResponse = await resend.emails.send({
         from: process.env.EMAIL_FROM || "WhiskerWatch <onboarding@resend.dev>",
         to: email,
@@ -315,17 +316,14 @@ export const signupUser = async (req, res) => {
             <p>Your One-Time Password (OTP) is:</p>
             <h1>${otp}</h1>
             <p>This code expires in 5 minutes.</p>
-            <p>If you didn't request this, please ignore this message and never share it with anyone to keep your WhiskerWatch account safe.</p>
-            <p>Thanks for helping keep our cat community secure!</p>
-            <strong>- WhiskerWatch Team</strong>
         `,
         });
 
         console.log("Signup email sent:", emailResponse);
-        res.json({ message: "OTP sent to your email!" });
+        return res.json({ message: "OTP sent to your email!" });
     } catch (err) {
         console.error("Signup error:", err);
-        res.status(500).json({ message: "Error creating user or sending OTP" });
+        return res.status(500).json({ message: "Error creating user or sending OTP" });
     }
 };
 
@@ -340,12 +338,17 @@ export const verifyOtp = async (req, res) => {
         const stored = otpStore[email];
         if (!stored) return res.status(400).json({ error: "No OTP found. Please sign up again." });
 
+        // ensure this OTP was created for signup flow
+        if (stored.type !== "signup") {
+        return res.status(400).json({ error: "OTP type mismatch. This OTP is not for account signup." });
+        }
+
         if (Date.now() > stored.expires) {
         delete otpStore[email];
         return res.status(400).json({ error: "OTP expired. Please request a new one." });
         }
 
-        if (parseInt(otp) !== stored.otp) {
+        if (parseInt(otp, 10) !== stored.otp) {
         return res.status(400).json({ error: "Invalid OTP. Please try again." });
         }
 
@@ -353,15 +356,15 @@ export const verifyOtp = async (req, res) => {
         const { firstname, lastname, contactnumber, birthday, username, address, password } = stored.data;
         await db.query(
         `INSERT INTO users (firstname, lastname, contactnumber, birthday, email, username, address, password)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         [firstname, lastname, contactnumber, birthday, email, username, address, password]
         );
 
-        delete otpStore[email];
-        res.json({ message: "Email verified and account created successfully!" });
+        delete otpStore[email]; // cleanup
+        return res.json({ message: "Email verified and account created successfully!" });
     } catch (err) {
         console.error("Verify OTP error:", err);
-        res.status(500).json({ error: "Error verifying OTP" });
+        return res.status(500).json({ error: "Error verifying OTP" });
     }
 };
 
@@ -377,39 +380,35 @@ export const resendOtp = async (req, res) => {
         return res.status(400).json({ error: "No existing signup session found. Please sign up again." });
         }
 
+        // only allow resending for the same type
         const newOtp = Math.floor(100000 + Math.random() * 900000);
-        otpStore[email].otp = newOtp;
-        otpStore[email].expires = Date.now() + 5 * 60 * 1000;
+        stored.otp = newOtp;
+        stored.expires = Date.now() + 5 * 60 * 1000;
 
-        const { firstname } = stored.data;
+        // greet name safely if present
+        const firstname = stored.data?.firstname || "";
+
         const response = await resend.emails.send({
         from: process.env.EMAIL_FROM || "WhiskerWatch <onboarding@resend.dev>",
         to: email,
         subject: "WhiskerWatch - Resent OTP Verification Code",
         html: `
-            <h2>Password Reset Request</h2>
             <p>Hi ${firstname}</p>
-            <p>Your One-Time Password (OTP) is:</p>
+            <p>Your new One-Time Password (OTP) is:</p>
             <h1>${newOtp}</h1>
             <p>Please enter this code to complete your account verification process.</p>
-            <br>
-            <br>
             <p>This code will expire in 5 minutes.</p>
-            <br>
-            <br>
             <p>If you didn't request this, please ignore this message and never share it with anyone to keep your WhiskerWatch account safe.</p>
-            <br>
-            <br>
             <p>Thanks for helping keep our cat community secure!</p>
             <strong>- WhiskerWatch Team</strong>
         `,
         });
 
         console.log("Resent OTP email:", response);
-        res.json({ message: "New OTP sent to your email!" });
+        return res.json({ message: "New OTP sent to your email!" });
     } catch (err) {
         console.error("Resend OTP error:", err);
-        res.status(500).json({ error: "Failed to resend OTP" });
+        return res.status(500).json({ error: "Failed to resend OTP" });
     }
 };
 
@@ -421,8 +420,8 @@ export const forgotPassword = async (req, res) => {
     const { email } = req.body;
 
     try {
-        const [user] = await db.query(`SELECT * FROM users WHERE email = ?`, [email]);
-        if (user.length === 0) {
+        const [userRows] = await db.query(`SELECT * FROM users WHERE email = ?`, [email]);
+        if (userRows.length === 0) {
         return res.status(404).json({ error: "No account found with this email." });
         }
 
@@ -433,7 +432,9 @@ export const forgotPassword = async (req, res) => {
         expires: Date.now() + 5 * 60 * 1000,
         };
 
-        const { firstname, lastname } = user[0];
+        // safe destructure from the row
+        const { firstname = "", lastname = "" } = userRows[0];
+
         const response = await resend.emails.send({
         from: process.env.EMAIL_FROM || "WhiskerWatch <noreply@whiskerwatch.site>",
         to: email,
@@ -452,10 +453,10 @@ export const forgotPassword = async (req, res) => {
         });
 
         console.log("Forgot password email sent:", response);
-        res.json({ message: "OTP sent to your email for password reset." });
+        return res.json({ message: "OTP sent to your email for password reset." });
     } catch (err) {
         console.error("Forgot password error:", err);
-        res.status(500).json({ error: "Error sending OTP for password reset." });
+        return res.status(500).json({ error: "Error sending OTP for password reset." });
     }
 };
 
@@ -464,6 +465,7 @@ export const forgotPassword = async (req, res) => {
 // ----------------------
 export const resetPassword = async (req, res) => {
     const db = getDB();
+    // client should send newPassword (not 'password') to match your frontend naming if you use newPassword
     const { email, otp, newPassword } = req.body;
 
     try {
@@ -477,23 +479,25 @@ export const resetPassword = async (req, res) => {
         return res.status(400).json({ error: "OTP expired. Please request a new one." });
         }
 
-        if (parseInt(otp) !== stored.otp) {
+        if (parseInt(otp, 10) !== stored.otp) {
         return res.status(400).json({ error: "Invalid OTP. Please try again." });
         }
 
+        // hash and update
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         await db.query(`UPDATE users SET password = ? WHERE email = ?`, [hashedPassword, email]);
 
         delete otpStore[email];
-        res.json({ message: "Password has been reset successfully." });
+        return res.json({ message: "Password has been reset successfully." });
     } catch (err) {
         console.error("Reset password error:", err);
-        res.status(500).json({ error: "Error resetting password." });
+        return res.status(500).json({ error: "Error resetting password." });
     }
 };
 
 // ----------------------
 // VERIFY RESET OTP
+// (used by frontend to check OTP before showing new-password UI)
 // ----------------------
 export const verifyResetOtp = async (req, res) => {
     const { email, otp } = req.body;
@@ -507,14 +511,14 @@ export const verifyResetOtp = async (req, res) => {
         return res.status(400).json({ message: "OTP expired. Please request a new one." });
         }
 
-        if (parseInt(otp) !== stored.otp) {
+        if (parseInt(otp, 10) !== stored.otp) {
         return res.status(400).json({ message: "Invalid OTP. Please try again." });
         }
 
-        res.status(200).json({ message: "OTP verified successfully!" });
+        return res.status(200).json({ message: "OTP verified successfully!" });
     } catch (err) {
         console.error("Reset OTP verification error:", err);
-        res.status(500).json({ message: "Error verifying OTP" });
+        return res.status(500).json({ message: "Error verifying OTP" });
     }
 };
 
