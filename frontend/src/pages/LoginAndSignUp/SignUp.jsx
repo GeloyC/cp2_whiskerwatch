@@ -655,16 +655,16 @@ const SignUp = () => {
                 required
                 className="border-b-2 border-b-[#A8784F] p-2"
                 />
-                <div className="flex gap-2 items-center">
-                <label className="text-[#737373] whitespace-nowrap">Date of Birth</label>
-                <input
-                    type="date"
-                    placeholder="Date of Birth"
-                    value={birthday}
-                    onChange={handleChange(setBirthday)}
-                    required
-                    className="border-b-2 border-b-[#A8784F] p-2 w-full"
-                />
+                <div className="flex gap-2 items-center border-b-2 border-b-[#A8784F]">
+                    <label className="text-[#737373] whitespace-nowrap p-2">Date of Birth</label>
+                    <input
+                        type="date"
+                        placeholder="Date of Birth"
+                        value={birthday}
+                        onChange={handleChange(setBirthday)}
+                        required
+                        className="p-2 w-full"
+                    />
                 </div>
                 <input
                 type="text"
