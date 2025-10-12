@@ -36,6 +36,7 @@ const CatProfileProperty = () => {
         if (!cat_id) return;
 
         const fetchProfile = async () => {
+            setLoading(true)
             try {
                 const response = await axios.get(`${url}/cat/catprofile/${cat_id}`);
                 setCatprofile(response.data)
@@ -68,6 +69,7 @@ const CatProfileProperty = () => {
 
     // CHECKS FOR CHANGES ON THE DATA
     const isProfileModified = () => {
+        setLoading(true)
         return JSON.stringify(catprofile) !== JSON.stringify(originalCatprofile);
     };
 
