@@ -239,8 +239,6 @@ UserRoute.post('/signup', async (req, res) => {
   } catch (err) {
     console.error('Sign up error:', err);
     res.status(500).json({ error: 'Internal server error' });
-  } finally {
-    await db.end();
   }
 });
 
@@ -289,8 +287,6 @@ UserRoute.post('/verify-otp', async (req, res) => {
   } catch (err) {
     console.error('OTP verification error:', err);
     res.status(500).json({ error: 'Internal server error' });
-  } finally {
-    await db.end();
   }
 });
 
@@ -307,8 +303,6 @@ UserRoute.post('/check_email', async (req, res) => {
   } catch (err) {
     console.error('Check email error:', err);
     res.status(500).json({ error: 'Internal server error' });
-  } finally {
-    await db.end();
   }
 });
 
