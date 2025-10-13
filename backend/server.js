@@ -30,7 +30,6 @@ const __dirname = path.dirname(__filename);
 app.use(
   cors({
     origin: [
-      "https://whiskerwatch.site",
       "https://www.whiskerwatch.site",
       "https://cp2-whiskerwatch.vercel.app",
       "https://whiskerwatch-cp2.vercel.app",

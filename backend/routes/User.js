@@ -429,7 +429,8 @@ UserRoute.post("/login", async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      sameSite: "Strict",
+      secure: true,
+      sameSite: "None",
     });
     
 
