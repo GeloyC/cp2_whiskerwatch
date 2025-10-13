@@ -99,7 +99,7 @@ const AdminSideBar = ({ className }) => {
         <div className={sidebarShow ? 'flex justify-center items-center w-[120px] h-auto p-1' : 'hidden'}>
           <img onClick={() => navigate('/dashboard')} src="/assets/whiskerwatchlogo-no textmarks.png" alt="account" />
         </div>
-        <div className={sidebarShow ? 'leading-tight' : 'hidden'}>
+        <div className={sidebarShow ? 'leading-tight gap-2' : 'hidden'}>
           <label className="font-bold text-[18px]">ADMIN</label>
           <label className="font-bold text-[18px]">DASHBOARD</label>
         </div>

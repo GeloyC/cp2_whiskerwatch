@@ -25,25 +25,35 @@ const ContactUs = () => {
           <div className='relative flex flex-col items-center bg-[#FFF] xl:w-[1000px] overflow-hidden p-10 gap-5 rounded-[25px] shadow-md'>
             <label className='font-bold text-2xl text-center'>Pet Shops and Veterinary Clinics Near Us</label>
 
-            <div className='flex flex-col w-full xl:grid xl:grid-cols-3 gap-7'>
+            <div className='flex flex-col w-full xl:grid xl:grid-cols-2  gap-7'>
               <div className='flex flex-col bg-[#FDF5D8] p-3 drop-shadow-[0px_-12px_0px_rgba(181,192,74,1)] w-full rounded-[25px] gap-3'>
                 <div className='flex flex-row items-center justify-between border-b-2 border-b-[#B5C04A] pb-2'>
-                  <label className='font-bold text-[18px]'>Delivery Option</label>
+                  <label className='font-bold text-[18px]'>Official Facebook Page</label>
                   <div className='flex items-center justify-center h-auto w-[50px] p-2 bg-[#CFDA34] rounded-[25px]'>
-                    <img src="/assets/icons/delivery.png" alt="box" className='w-full h-full object-contain'/>
+                    <img src="/assets/icons/facebook-logo.png" alt="box" className='w-full h-full object-contain'/>
                   </div>
                 </div>
                 <div className='flex flex-col'>
-                  <label className='font-bold text-[#DC8801]'>Barkbol Pet Supplies and Trading</label>
-                  <label>Las Pinas City</label>
+                  <label className='font-bold text-[#DC8801]'>Spr Community Cats</label>
+                  <label>facebook.com/sprcats</label>
+                </div>
+                <div className='flex justify-center items-center gap-3'>
+                  <div className='size-25 object-cover'>
+                    <img src="/assets/image/461549842_949262367232270_5987487478548968122_n.jpg" alt="Sienna Park Residence Logo" className='w-full h-full object-cover'/>
+                  </div>
+                  <div className='size-5 object-cover'>
+                    <img src="/assets/icons/plus_black.png" alt="plus" />
+                  </div>
+                  <div className='size-25 object-cover'>
+                    <img src="/assets/image/1.png" alt="WhiskerWatch Logo" className='w-full h-full object-cover'/>
+                  </div>
                 </div>
                 <div className='flex flex-col gap-2'>
-                  <label className='leading-tight'>Free delivery with minimum purchase!</label>
-                  <label className='underline'>0960 604 1885</label>
+                  <label className='leading-tight italic text-sm'>WhiskerWatch is in partnership with Sienna Park Residences Community Cats.</label>
                 </div>
               </div>
 
-              <div className='flex flex-col bg-[#FDF5D8] p-3 drop-shadow-[0px_-12px_0px_rgba(181,192,74,1)] w-full rounded-[25px] gap-3'>
+              {/* <div className='flex flex-col bg-[#FDF5D8] p-3 drop-shadow-[0px_-12px_0px_rgba(181,192,74,1)] w-full rounded-[25px] gap-3'>
                 <div className='flex flex-row items-center justify-between border-b-2 border-b-[#B5C04A] pb-2'>
                   <label className='font-bold text-[18px]'>Veterinary Clinics</label>
                   <div className='flex items-center justify-center h-auto w-[50px] p-2 bg-[#CFDA34] rounded-[25px]'>
@@ -62,7 +72,7 @@ const ContactUs = () => {
                     <label className='underline'>0915 615 7776</label>
                   </label>
                 </div>
-              </div>
+              </div> */}
 
               <div className='flex flex-col bg-[#FDF5D8] p-3 drop-shadow-[0px_-12px_0px_rgba(181,192,74,1)] w-full rounded-[25px] gap-3'>
                 <div className='flex flex-row items-center justify-between border-b-2 border-b-[#B5C04A] pb-2'>
@@ -73,20 +83,31 @@ const ContactUs = () => {
                 </div>
                 <div className='flex flex-row justify-between items-center'>
                   <div className='flex flex-col'>
-                    <label className='font-bold leading-tight'>Jeal's Petshop</label>
+                    <label className='font-bold leading-tight text-[#DC8801]'>Jeal's Petshop</label>
                     <label>Paranaque City</label>
                   </div>
                   <div>
                     <label className='underline'>0960 354 4354</label>
                   </div>
                 </div>
+
                 <div className='flex flex-row justify-between  items-center'>
                   <div className='flex flex-col w-fit'>
-                    <label className='font-bold leading-tight'>Grinsy Petshop</label>
+                    <label className='font-bold leading-tight text-[#DC8801]'>Grinsy Petshop</label>
                     <label className='leading-tight'>Dona Soledad, Paranaque City</label>
                   </div>
                   <div>
                     <label className='underline whitespace-norwap'>0927 335 7878</label>
+                  </div>
+                </div>
+
+                <div className='flex flex-row justify-between  items-center'>
+                  <div className='flex flex-col w-fit'>
+                    <label className='font-bold leading-tight text-[#DC8801]'>BarBoi Pet Supplies and Trading</label>
+                    <label className='leading-tight'>Las Pinas City</label>
+                  </div>
+                  <div>
+                    <label className='underline whitespace-norwap'>0960 604 1885</label>
                   </div>
                 </div>
               </div>
