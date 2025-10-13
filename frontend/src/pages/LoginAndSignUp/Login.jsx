@@ -998,13 +998,16 @@ const Login = () => {
       // Store user in localStorage with error handling
       try {
         localStorage.setItem("user", JSON.stringify(user));
+        console.log("LocalStorage set in Login.jsx:", JSON.parse(localStorage.getItem("user")));
       } catch (e) {
         console.error("Failed to save user to localStorage:", e);
       }
 
       setUser(user);
+      await new Promise((resolve) => setTimeout(resolve, 200));
       login(user);
       await refreshSession();
+      console.log("Post-refreshSession user state:", user, "LocalStorage:", localStorage.getItem("user"));
 
       if (["regular", "head_volunteer", "admin"].includes(user.role)) {
         navigate("/home");
