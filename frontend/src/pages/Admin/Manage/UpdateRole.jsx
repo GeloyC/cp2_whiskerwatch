@@ -48,7 +48,7 @@ const UpdateRole = () => {
             });
 
 
-            setUser(prev => ({ ...prev, role }));
+            // setUser(prev => ({ ...prev, role }));
             setRoleOriginal(role);
             setUpdateMessage(response.data.message)
             
