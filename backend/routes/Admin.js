@@ -185,44 +185,111 @@ AdminRoute.get('/manage/role/:user_id', async (req, res) => {
 });
 
 // PATCH REQUEST: UPDATE THE ROLE OF A USER INTO ADMIN/HEAD VOLUNTEER/REGULAR
+// AdminRoute.patch('/manage/update/:user_id', async (req, res) => {
+//     const db = getDB();
+//     const user_id = req.params.user_id;
+//     const {
+//         firstname = '',
+//         lastname = '',
+//         role = ''
+//     } = req.body
+
+//     try {
+//         const [update] = await db.query(`
+//             UPDATE users SET
+//                 firstname = ?, 
+//                 lastname = ?,
+//                 role = ?,
+//                 updated_at = CURRENT_TIMESTAMP
+//             WHERE user_id = ?`,
+//             [firstname, lastname, role, user_id]);
+
+//             if (update.affectedRows === 0) {
+//                 return res.status(404).json({ message: 'User not found' });
+//         }
+
+//         let message = `Your role at WhiskerWatch is now updated to ${role}. Congratulations`;
+        
+//         await db.query(
+//             `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
+//             [user_id, message]
+//         );
+
+//         res.status(200).json({ message: 'User role updated successfully!' });
+
+//         console.log(update)
+//     } catch (err) {
+//         console.error('Error updating user role: ', err);
+//         return res.status(500).json({err: 'Failed to update role.'})
+//     }
+// });
+
+
 AdminRoute.patch('/manage/update/:user_id', async (req, res) => {
     const db = getDB();
-    const user_id = req.params.user_id;
-    const {
-        firstname = '',
-        lastname = '',
-        role = ''
-    } = req.body
+    const targetUserId = req.params.user_id;
+    const { firstname = '', lastname = '', role = '' } = req.body;
+
+    // Get token from Authorization header
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ message: 'Access denied. No token provided.' });
+    }
 
     try {
-        const [update] = await db.query(`
-            UPDATE users SET
-                firstname = ?, 
-                lastname = ?,
-                role = ?,
-                updated_at = CURRENT_TIMESTAMP
-            WHERE user_id = ?`,
-            [firstname, lastname, role, user_id]);
+        // Verify and decode token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-            if (update.affectedRows === 0) {
-                return res.status(404).json({ message: 'User not found' });
+        //  Prevent a user from editing their own role
+        if (Number(decoded.user_id) === Number(targetUserId)) {
+        return res.status(403).json({ message: "You can't update your own role." });
         }
 
-        let message = `Your role at WhiskerWatch is now updated to ${role}. Congratulations`;
-        
-        await db.query(
-            `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
-            [user_id, message]
+        // Only admins can update roles
+        if (decoded.role !== 'admin') {
+        return res.status(403).json({ message: 'Unauthorized: Admin access required.' });
+        }
+
+        // Update user role in database
+        const [update] = await db.query(
+        `
+            UPDATE users 
+            SET firstname = ?, lastname = ?, role = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE user_id = ?
+        `,
+        [firstname, lastname, role, targetUserId]
         );
 
-        res.status(200).json({ message: 'User role updated successfully!' });
+        if (update.affectedRows === 0) {
+        return res.status(404).json({ message: 'User not found.' });
+        }
 
-        console.log(update)
+        // Create notification for updated user
+        const message = `Your role at WhiskerWatch is now updated to ${role}. Congratulations!`;
+        await db.query(
+        `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
+        [targetUserId, message]
+        );
+
+        console.log(`✅ User ${targetUserId} updated to role: ${role}`);
+        res.status(200).json({ message: 'User role updated successfully!' });
     } catch (err) {
-        console.error('Error updating user role: ', err);
-        return res.status(500).json({err: 'Failed to update role.'})
+        console.error('Error updating user role:', err);
+
+        // Handle token expiration or verification error
+        if (err.name === 'TokenExpiredError') {
+        return res.status(401).json({ message: 'Session expired. Please log in again.' });
+        }
+
+        if (err.name === 'JsonWebTokenError') {
+        return res.status(401).json({ message: 'Invalid token.' });
+        }
+
+        res.status(500).json({ message: 'Internal server error while updating role.' });
     }
 });
+
+
 
 AdminRoute.patch('/manage/update_admin', async (req, res) => {
     const db = getDB();
@@ -827,35 +894,6 @@ AdminRoute.patch('/adoption_form/status_update/:application_id', verifyUser, asy
 });
 
 
-// AdminRoute.get('/adopters', async (req, res) => {
-//     const db = getDB();
-//     try {
-//         const [adopters] = await db.query(`
-//             SELECT adoption_id, cat_name, adopter, adopter_id,
-//                 DATE_FORMAT(adoption_date, '%Y-%m-%d') AS adoption_date,
-//                 certificate, contactnumber
-//             FROM adoption;
-//         `);
-
-//         return res.json(adopters);
-//     } catch (err) {
-//         return res.status(500).json({err: 'Failed to retrieve adopters!'})
-//     }
-// })
-
-// AdminRoute.get('/adopters', async (req, res) => {
-//     const dbConnection = getDB();
-//     try {
-//         const [rows] = await dbConnection.query(
-//             'SELECT a.adoption_id, a.adopter_id, a.cat_name, a.adopter, a.adoption_date, a.contactnumber, c.certificate_url AS certificate ' +
-//             'FROM adoption a LEFT JOIN certificates c ON a.adoption_id = c.adoption_id'
-//         );
-//         res.status(200).json(rows);
-//     } catch (err) {
-//         console.error('Error fetching adopters:', err);
-//         res.status(500).json({ error: 'Failed to fetch adopters' });
-//     }
-// });
 
 
 AdminRoute.get('/adopters', async (req, res) => {
@@ -914,223 +952,6 @@ AdminRoute.get('/adopters_certificate/:user_id', async (req, res) => {
     }
 });
 
-
-
-// AdminRoute.post('/upload_certificate', uploadCertificate.single('certificate'), async (req, res) => {
-//     const db = getDB();
-//     const { adoption_id } = req.body;
-//     const filename = req.file.filename;
-
-//     try {
-//         await db.query(
-//             'UPDATE adoption SET certificate = ? WHERE adoption_id = ?',
-//             [filename, adoption_id]
-//         );
-
-//         const [userResult] = await db.query(
-//             `SELECT adopter_id FROM adoption WHERE adoption_id = ?`,
-//             [adoption_id]
-//         );
-
-//         if (!userResult || userResult.length === 0) {
-//             return res.status(404).json({ error: 'Adoption record not found' });
-//         }
-
-//         const user_id = userResult[0].adopter_id;
-
-//         const message = 'Your adoption certificate is now available. Visit your profile to view it. Congratulations!';
-//         await db.query(
-//             `INSERT INTO notifications (user_id, message, is_read, created_at)
-//             VALUES (?, ?, 0, NOW())`,
-//             [user_id, message]
-//         );
-
-//         res.json({ message: 'Certificate uploaded and notification sent' });
-
-//     } catch (err) {
-//         console.error(err);
-//         res.status(500).json({ error: 'Failed to upload certificate and notify user' });
-//     }
-// });
-
-// AdminRoute.post('/upload_certificate', uploadCertificate.single('certificate'), async (req, res) => {
-//     const dbConnection = getDB();
-//     const { adoption_id } = req.body;
-
-//     try {
-//         if (!adoption_id) {
-//             return res.status(400).json({ error: 'Adoption ID is required' });
-//         }
-
-//         if (!req.file || !req.file.path) {
-//             return res.status(400).json({ 
-//                 error: 'No file uploaded or invalid file format', 
-//                 details: req.err || 'Unknown file upload issue' 
-//             });
-//         }
-
-//         const certificateUrl = req.file.path;
-
-//         await dbConnection.beginTransaction();
-
-//         console.log('Executing UPDATE query with:', { certificateUrl, adoption_id });
-
-//         const [updateResult] = await dbConnection.query(
-//             'UPDATE adoption SET certificate = ? WHERE adoption_id = ?',
-//             [certificateUrl, adoption_id]
-//         );
-
-//         if (updateResult.affectedRows === 0) {
-//             await dbConnection.rollback();
-//             return res.status(404).json({ error: 'No adoption record found for the provided adoption_id' });
-//         }
-
-//         const message = 'Your adoption certificate is now available. Visit your profile to view it. Congratulations!';
-//         await dbConnection.query(
-//             'INSERT INTO notifications (user_id, message, is_read, created_at) VALUES (?, ?, 0, NOW())',
-//             [adoption_id, message] // Adjust if notifications uses adopter_id
-//         );
-
-//         await dbConnection.commit();
-
-//         res.status(200).json({
-//             message: 'Certificate uploaded successfully to Cloudinary and notification sent.',
-//             certificateUrl: certificateUrl,
-//         });
-//     } catch (err) {
-//         if (dbConnection) await dbConnection.rollback();
-//         console.error('Error uploading certificate:', {
-//             error: err.message || 'No error message provided',
-//             stack: err.stack,
-//             sqlError: err.sqlMessage || 'No SQL error message',
-//             sqlState: err.sqlState || 'No SQL state',
-//             code: err.code || 'No error code',
-//             requestBody: req.body,
-//             file: req.file ? { filename: req.file.originalname, path: req.file.path } : null,
-//         });
-//         res.status(500).json({
-//             error: 'Failed to upload certificate to Cloudinary',
-//             details: err.message || 'Unknown server error',
-//             sqlError: err.sqlMessage || null,
-//         });
-//     } finally {
-//         if (dbConnection && dbConnection.release) dbConnection.release();
-//     }
-// });
-
-
-// AdminRoute.post('/upload_certificate', uploadCertificate.single('certificate'), async (req, res) => {
-//     const db = getDB(); // Ensure getDB is imported and functional
-//     const { adopter_id } = req.body; // Changed from adoption_id to adopter_id
-
-//     try {
-//         // Validate adopter_id
-//         if (!adopter_id) {
-//             return res.status(400).json({ error: 'Adopter ID is required' });
-//         }
-
-//         // Check if file was uploaded
-//         if (!req.file || !req.file.path) {
-//             return res.status(400).json({ error: 'No file uploaded' });
-//         }
-
-//         const certificateUrl = req.file.path; // Cloudinary URL
-
-//         // Begin transaction to ensure atomicity
-//         await db.beginTransaction();
-//         console.log('Executing UPDATE query with:', { certificateUrl, adopter_id });
-
-//         // Update user/adopter record with Cloudinary URL (assuming a users table)
-//         const [updateResult] = await db.query(
-//             'UPDATE adoption SET certificate = ? WHERE adopter_id = ?', // Adjust table name if different
-//             [certificateUrl, adopter_id]
-//         );
-
-//         if (updateResult.affectedRows === 0) {
-//             await db.rollback();
-//             return res.status(404).json({ error: 'No adopter record found or no changes made' });
-//         }
-
-//         // Send notification to adopter
-//         const message = 'Your adoption certificate is now available. Visit your profile to view it. Congratulations!';
-//         await db.query(
-//             'INSERT INTO notifications (user_id, message, is_read, created_at) VALUES (?, ?, 0, NOW())',
-//             [adopter_id, message] // Use adopter_id as user_id
-//         );
-
-//         // Commit transaction
-//         await db.commit();
-
-//         res.status(200).json({
-//             message: 'Certificate uploaded successfully to Cloudinary and notification sent.',
-//             certificateUrl: certificateUrl,
-//         });
-//     } catch (err) {
-//         // Rollback transaction on error
-//         if (db) await db.rollback();
-//         console.error('Error uploading certificate:', {
-//             error: err.message,
-//             stack: err.stack,
-//             requestBody: req.body,
-//             file: req.file ? { filename: req.file.originalname, path: req.file.path } : null,
-//         });
-//         res.status(500).json({ error: 'Failed to upload certificate to Cloudinary', details: err.message });
-//     }
-// });
-
-
-// AdminRoute.post('/upload_certificate', uploadCertificate.single('certificate'), async (req, res) => {
-//     const dbConnection = getDB();
-//     const { adoption_id } = req.body;
-
-//     try {
-//         if (!adoption_id) {
-//             return res.status(400).json({ error: 'Adoption ID is required' });
-//         }
-
-//         if (!req.file || !req.file.path) {
-//             return res.status(400).json({ 
-//                 error: 'No file uploaded or invalid file format', 
-//                 details: req.err || 'Unknown file upload issue' 
-//             });
-//         }
-
-//         const certificateUrl = req.file.path;
-
-//         console.log('Executing UPDATE query with:', { certificateUrl, adoption_id });
-
-//         const [updateResult] = await dbConnection.query(
-//             'UPDATE adoption SET certificate = ? WHERE adoption_id = ?',
-//             [certificateUrl, adoption_id]
-//         );
-
-//         if (updateResult.affectedRows === 0) {
-//             return res.status(404).json({ error: 'No adoption record found for the provided adoption_id' });
-//         }
-
-//         res.status(200).json({
-//             message: 'Certificate uploaded successfully to Cloudinary.',
-//             certificateUrl: certificateUrl,
-//         });
-//     } catch (err) {
-//         console.error('Error uploading certificate:', {
-//             error: err.message || 'No error message provided',
-//             stack: err.stack,
-//             sqlError: err.sqlMessage || 'No SQL error message',
-//             sqlState: err.sqlState || 'No SQL state',
-//             code: err.code || 'No error code',
-//             requestBody: req.body,
-//             file: req.file ? { filename: req.file.originalname, path: req.file.path } : null,
-//         });
-//         res.status(500).json({
-//             error: 'Failed to upload certificate to Cloudinary',
-//             details: err.message || 'Unknown server error',
-//             sqlError: err.sqlMessage || null,
-//         });
-//     } finally {
-//         if (dbConnection && dbConnection.release) dbConnection.release();
-//     }
-// });
 
 
 AdminRoute.post("/upload_certificate", (req, res, next) => {
