@@ -133,41 +133,41 @@ export function SessionProvider({ children }) {
     axios.defaults.withCredentials = true;
     const triggerWhiskerUpdate = () => setWhiskerUpdateTrigger(Date.now());
 
-    // const refreshSession = async () => {
-    //     try {
-    //         const storedUser = localStorage.getItem("user");
-    //         const response = await axios.get(`${url}/user/api/session`, {
-    //             withCredentials: true,
-    //         });
-    //         // setUser(response.data.loggedIn ? response.data.user : storedUser);
-    //         // localStorage.setItem("user", JSON.stringify(response.data.user));
+    const refreshSession = async () => {
+        try {
+            const storedUser = localStorage.getItem("user");
+            const response = await axios.get(`${url}/user/api/session`, {
+                withCredentials: true,
+            });
+            // setUser(response.data.loggedIn ? response.data.user : storedUser);
+            // localStorage.setItem("user", JSON.stringify(response.data.user));
 
-    //         if (response.data.loggedIn) {
-    //             setUser(response.data.user);
-    //             localStorage.setItem("user", JSON.stringify(response.data.user));
-    //         } else {
-    //             setUser(null);
-    //             localStorage.removeItem("user"); // Clear stale data
-    //         }
+            if (response.data.loggedIn) {
+                setUser(response.data.user);
+                localStorage.setItem("user", JSON.stringify(response.data.user));
+            } else {
+                setUser(null);
+                localStorage.removeItem("user"); // Clear stale data
+            }
 
-    //     } catch (err) {
-    //         console.error("Session refresh error:", err);
-    //         const storedUser = localStorage.getItem("user");
-    //         if (storedUser) {
-    //             setUser(JSON.parse(storedUser));
-    //             console.warn("Falling back to localStorage user:", storedUser);
-    //         } else {
-    //             setUser(null);
-    //         }
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
-
-
+        } catch (err) {
+            console.error("Session refresh error:", err);
+            const storedUser = localStorage.getItem("user");
+            if (storedUser) {
+                setUser(JSON.parse(storedUser));
+                console.warn("Falling back to localStorage user:", storedUser);
+            } else {
+                setUser(null);
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
 
 
-    // const login = (userData) => setUser(userData);
+
+
+    const login = (userData) => setUser(userData);
     
   
 
@@ -211,63 +211,63 @@ export function SessionProvider({ children }) {
     // };
 
 
-    const refreshSession = async () => {
-        setLoading(true);
-        // let isCookieAvailable = true;
-        try {
-            const storedToken = localStorage.getItem("token");
-            if (storedToken) {
-            const response = await axios.get(`${url}/user/api/session`, {
-                headers: { Authorization: `Bearer ${storedToken}` }, // Send token in header
-            });
-            console.log("Session refresh response:", response.data, "Token used:", storedToken);
+    // const refreshSession = async () => {
+    //     setLoading(true);
+    //     // let isCookieAvailable = true;
+    //     try {
+    //         const storedToken = localStorage.getItem("token");
+    //         if (storedToken) {
+    //         const response = await axios.get(`${url}/user/api/session`, {
+    //             headers: { Authorization: `Bearer ${storedToken}` }, // Send token in header
+    //         });
+    //         console.log("Session refresh response:", response.data, "Token used:", storedToken);
 
-            if (response.data.loggedIn) {
-                setUser(response.data.user);
-                try {
-                    localStorage.setItem("user", JSON.stringify(response.data.user));
-                    console.log("LocalStorage updated in refreshSession:", JSON.parse(localStorage.getItem("user")));
-                } catch (e) {
-                    console.error("Failed to update localStorage in refreshSession:", e);
-                }
-            } else {
-                console.warn("Session not logged in, preserving localStorage");
-                // isCookieAvailable = false;
-                const storedUser = localStorage.getItem("user");
-                if (storedUser) {
-                    setUser(JSON.parse(storedUser));
-                    console.log("Falling back to localStorage:", storedUser);
-                } else {
-                    setUser(null);
-                }
-            }
-            } else {
-            console.warn("No stored token, session invalid");
-            // isCookieAvailable = false;
-            setUser(null);
-            }
-        } catch (err) {
-            console.error("Session refresh error:", err.message);
-            // isCookieAvailable = false;
-            const storedUser = localStorage.getItem("token") ? localStorage.getItem("user") : null;
-            if (storedUser) {
-                setUser(JSON.parse(storedUser));
-                console.log("Error fallback to localStorage:", storedUser);
-            } else {
-                setUser(null);
-            }
-        } finally {
-            setLoading(false);
-            // setUser((prev) => ({ ...prev, isCookieAvailable }));
-        }
-    };
+    //         if (response.data.loggedIn) {
+    //             setUser(response.data.user);
+    //             try {
+    //                 localStorage.setItem("user", JSON.stringify(response.data.user));
+    //                 console.log("LocalStorage updated in refreshSession:", JSON.parse(localStorage.getItem("user")));
+    //             } catch (e) {
+    //                 console.error("Failed to update localStorage in refreshSession:", e);
+    //             }
+    //         } else {
+    //             console.warn("Session not logged in, preserving localStorage");
+    //             // isCookieAvailable = false;
+    //             const storedUser = localStorage.getItem("user");
+    //             if (storedUser) {
+    //                 setUser(JSON.parse(storedUser));
+    //                 console.log("Falling back to localStorage:", storedUser);
+    //             } else {
+    //                 setUser(null);
+    //             }
+    //         }
+    //         } else {
+    //         console.warn("No stored token, session invalid");
+    //         // isCookieAvailable = false;
+    //         setUser(null);
+    //         }
+    //     } catch (err) {
+    //         console.error("Session refresh error:", err.message);
+    //         // isCookieAvailable = false;
+    //         const storedUser = localStorage.getItem("token") ? localStorage.getItem("user") : null;
+    //         if (storedUser) {
+    //             setUser(JSON.parse(storedUser));
+    //             console.log("Error fallback to localStorage:", storedUser);
+    //         } else {
+    //             setUser(null);
+    //         }
+    //     } finally {
+    //         setLoading(false);
+    //         // setUser((prev) => ({ ...prev, isCookieAvailable }));
+    //     }
+    // };
 
 
     
-    const login = (userData) => {
-        setUser(userData);
-        localStorage.setItem("user", JSON.stringify(userData)); // Sync with backup
-    };
+    // const login = (userData) => {
+    //     setUser(userData);
+    //     localStorage.setItem("user", JSON.stringify(userData)); // Sync with backup
+    // };
 
     const logout = async () => {
         try {

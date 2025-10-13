@@ -1,5 +1,8 @@
 {
     "rewrites": [
-        { "source": "/(.*)", "destination": "/" }
+        { 
+            "source": "/(.*)", 
+            "destination": "https://whiskerwatch-0j6g.onrender.com/$1"
+        }
     ]
 }

@@ -974,59 +974,6 @@ const Login = () => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   // ------------------- USER LOGIN -------------------
-  // const handleLogin = async (event) => {
-  //   event.preventDefault();
-  //   setError("");
-  //   setLoading(true);
-
-  //   if (!emailRegex.test(email)) {
-  //     setError("Please enter a valid email address");
-  //     setLoading(false);
-  //     return;
-  //   }
-
-  //   try {
-  //     const response = await axios.post(
-  //       `${url}/user/login`,
-  //       { email, password },
-  //       { withCredentials: true }
-  //     );
-
-  //     const user = response.data.user;
-  //     if (!user) throw new Error("User data not received");
-
-  //     // Store user in localStorage with error handling
-  //     try {
-  //       localStorage.setItem("user", JSON.stringify(user));
-  //       console.log("LocalStorage set in Login.jsx:", JSON.parse(localStorage.getItem("user")));
-  //     } catch (e) {
-  //       console.error("Failed to save user to localStorage:", e);
-  //     }
-
-  //     setUser(user);
-  //     await new Promise((resolve) => setTimeout(resolve, 200));
-  //     login(user);
-  //     await refreshSession();
-  //     console.log("Post-refreshSession user state:", user, "LocalStorage:", localStorage.getItem("user"));
-
-  //     if (["regular", "head_volunteer", "admin"].includes(user.role)) {
-  //       navigate("/home");
-  //     } else {
-  //       setError("Unauthorized role");
-  //     }
-  //   } catch (err) {
-  //     const errorMessage =
-  //       err.response?.data?.error ||
-  //       err.response?.data?.message ||
-  //       "Login Failed: Incorrect Email or Password";
-  //     setError(errorMessage);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-
-  // Stores the JWT token to localStorage
   const handleLogin = async (event) => {
     event.preventDefault();
     setError("");
@@ -1044,24 +991,23 @@ const Login = () => {
         { email, password },
         { withCredentials: true }
       );
-      console.log("Login response:", response.data);
 
       const user = response.data.user;
-      const token = response.data.token; // Assuming the backend sends the token
-      if (!user || !token) throw new Error("User data or token not received");
+      if (!user) throw new Error("User data not received");
 
+      // Store user in localStorage with error handling
       try {
         localStorage.setItem("user", JSON.stringify(user));
-        localStorage.setItem("token", token); // Store the JWT token
-        console.log("LocalStorage set - User:", JSON.parse(localStorage.getItem("user")), "Token:", localStorage.getItem("token"));
+        console.log("LocalStorage set in Login.jsx:", JSON.parse(localStorage.getItem("user")));
       } catch (e) {
-        console.error("Failed to save to localStorage:", e);
+        console.error("Failed to save user to localStorage:", e);
       }
 
       setUser(user);
       await new Promise((resolve) => setTimeout(resolve, 200));
+      login(user);
       await refreshSession();
-      console.log("Post-refreshSession user state:", user, "LocalStorage Token:", localStorage.getItem("token"));
+      console.log("Post-refreshSession user state:", user, "LocalStorage:", localStorage.getItem("user"));
 
       if (["regular", "head_volunteer", "admin"].includes(user.role)) {
         navigate("/home");
@@ -1074,11 +1020,65 @@ const Login = () => {
         err.response?.data?.message ||
         "Login Failed: Incorrect Email or Password";
       setError(errorMessage);
-      console.error("Login error:", err.response ? err.response.data : err.message);
     } finally {
       setLoading(false);
     }
   };
+
+
+  // Stores the JWT token to localStorage
+  // const handleLogin = async (event) => {
+  //   event.preventDefault();
+  //   setError("");
+  //   setLoading(true);
+
+  //   if (!emailRegex.test(email)) {
+  //     setError("Please enter a valid email address");
+  //     setLoading(false);
+  //     return;
+  //   }
+
+  //   try {
+  //     const response = await axios.post(
+  //       `${url}/user/login`,
+  //       { email, password },
+  //       { withCredentials: true }
+  //     );
+  //     console.log("Login response:", response.data);
+
+  //     const user = response.data.user;
+  //     const token = response.data.token; // Assuming the backend sends the token
+  //     if (!user || !token) throw new Error("User data or token not received");
+
+  //     try {
+  //       localStorage.setItem("user", JSON.stringify(user));
+  //       localStorage.setItem("token", token); // Store the JWT token
+  //       console.log("LocalStorage set - User:", JSON.parse(localStorage.getItem("user")), "Token:", localStorage.getItem("token"));
+  //     } catch (e) {
+  //       console.error("Failed to save to localStorage:", e);
+  //     }
+
+  //     setUser(user);
+  //     await new Promise((resolve) => setTimeout(resolve, 200));
+  //     await refreshSession();
+  //     console.log("Post-refreshSession user state:", user, "LocalStorage Token:", localStorage.getItem("token"));
+
+  //     if (["regular", "head_volunteer", "admin"].includes(user.role)) {
+  //       navigate("/home");
+  //     } else {
+  //       setError("Unauthorized role");
+  //     }
+  //   } catch (err) {
+  //     const errorMessage =
+  //       err.response?.data?.error ||
+  //       err.response?.data?.message ||
+  //       "Login Failed: Incorrect Email or Password";
+  //     setError(errorMessage);
+  //     console.error("Login error:", err.response ? err.response.data : err.message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   // ------------------- FORGOT PASSWORD -------------------
   const handleForgotPassword = async () => {
