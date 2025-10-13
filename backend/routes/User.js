@@ -428,9 +428,10 @@ UserRoute.post("/login", async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // true on Render/Vercel
-      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      secure: true,        // ✅ required for HTTPS
+      sameSite: "None",    // ✅ allows cross-site cookies
+      path: "/",           // ✅ applies to all routes
+      maxAge: 24 * 60 * 60 * 1000 // optional: 1 day
     });
 
     res.status(200).json({

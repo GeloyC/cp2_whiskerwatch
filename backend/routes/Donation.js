@@ -208,7 +208,7 @@ DonationRoute.post(
       const parsedItems = JSON.parse(items); // frontend sends JSON as a string
       const proofImageURL = file?.path || null; // Cloudinary URL
 
-      // 1️⃣ Insert main donation record
+      // Insert main donation record
       const [donationResult] = await db.query(
         `INSERT INTO donation (donator_id, proofimage, description) VALUES (?, ?, ?)`,
         [donator_id, proofImageURL, '']
@@ -233,7 +233,7 @@ DonationRoute.post(
         await db.query(
           `INSERT INTO donation_items
             (donation_id, donation_type, amount, food_type, quantity, description, proof_image)
-           VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            VALUES (?, ?, ?, ?, ?, ?, ?)`,
           [donation_id, donation_type, amount, food_type, quantity, description, itemProofImage]
         );
 
