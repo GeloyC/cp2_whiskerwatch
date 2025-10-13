@@ -393,6 +393,59 @@ UserRoute.post('/check_username', async (req, res) => {
 // }, 5 * 60 * 1000);
 
 
+// UserRoute.post("/login", async (req, res) => {
+//   const db = getDB();
+//   try {
+//     const { email, password } = req.body;
+
+//     if (!email || !password) {
+//       return res.status(400).json({ error: "Email and password are required" });
+//     }
+
+//     const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+//     if (rows.length === 0) {
+//       return res.status(401).json({ error: "Invalid email or password" });
+//     }
+
+//     const user = rows[0];
+//     const isMatch = await bcrypt.compare(password, user.password);
+//     if (!isMatch) {
+//       return res.status(401).json({ error: "Invalid email or password" });
+//     }
+
+//     const payload = {
+//       user_id: user.user_id,
+//       role: user.role,
+//       firstname: user.firstname,
+//       lastname: user.lastname,
+//       email: user.email,
+//       username: user.username,
+//       profile_image: user.profile_image || null,
+//     };
+
+//     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
+//     console.log("Generated token:", token);
+
+
+//     res.cookie("token", token, {
+//       httpOnly: true,
+//       secure: process.env.NODE_ENV === "production", // Only secure in production
+//       sameSite: "Lax",
+//       path: "/",
+//       maxAge: 24 * 60 * 60 * 1000
+//     });
+    
+
+//     res.status(200).json({
+//       message: "Login successful!",
+//       user: payload,
+//     });
+//   } catch (err) {
+//     console.error("Login error:", err);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
+
 UserRoute.post("/login", async (req, res) => {
   const db = getDB();
   try {
@@ -426,22 +479,20 @@ UserRoute.post("/login", async (req, res) => {
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
     console.log("Generated token:", token);
 
-
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // Only secure in production
-      sameSite: "Lax",
+      secure: process.env.NODE_ENV === "production" || process.env.NODE_ENV === "staging", // Ensure secure in production/staging
+      sameSite: "Lax", // Test with Lax; revert to "None" if needed with secure context
       path: "/",
-      maxAge: 24 * 60 * 60 * 1000
+      maxAge: 7 * 24 * 60 * 60 * 1000 // Match JWT expiration (7 days)
     });
-    
 
     res.status(200).json({
       message: "Login successful!",
       user: payload,
     });
   } catch (err) {
-    console.error("Login error:", err);
+    console.error("Login error:", err.message, err.stack); // Enhanced logging
     res.status(500).json({ error: "Internal server error" });
   }
 });
