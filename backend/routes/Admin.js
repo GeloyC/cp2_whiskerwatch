@@ -191,7 +191,6 @@ AdminRoute.patch('/manage/update/:user_id', async (req, res) => {
     const {
         firstname = '',
         lastname = '',
-        email = '',
         role = ''
     } = req.body
 
@@ -200,11 +199,10 @@ AdminRoute.patch('/manage/update/:user_id', async (req, res) => {
             UPDATE users SET
                 firstname = ?, 
                 lastname = ?,
-                email = ?,
                 role = ?,
                 updated_at = CURRENT_TIMESTAMP
             WHERE user_id = ?`,
-            [firstname, lastname, email, role, user_id]);
+            [firstname, lastname, role, user_id]);
 
             if (update.affectedRows === 0) {
                 return res.status(404).json({ message: 'User not found' });
