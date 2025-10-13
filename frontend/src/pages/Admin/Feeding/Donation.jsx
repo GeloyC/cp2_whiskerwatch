@@ -79,7 +79,7 @@ const Donation = () => {
                       <td>{donate.quantity}</td>
                       <td>
                         {donate.item_description || 
-                        <a href={`${url}/FileUploads/donation_image/${donate.donation_image}`} target='_blank' className='hover:underline'>{donate.donation_image}</a>}
+                        <a href={`${donate.donation_image}`} target='_blank' className='hover:underline'>View transaction receipt</a>}
                       </td>
                       {/* <td>{donate.donation_image || 'No Image'}</td> */}
 
