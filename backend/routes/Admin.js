@@ -227,30 +227,34 @@ AdminRoute.get('/manage/role/:user_id', async (req, res) => {
 
 AdminRoute.patch('/manage/update/:user_id', async (req, res) => {
     const db = getDB();
-    const targetUserId = req.params.user_id;
+    const targetUserId = req.params.user_id; // 🧭 The user being updated
     const { firstname = '', lastname = '', role = '' } = req.body;
 
-    // Get token from Authorization header
+    // 🔒 Extract token from Authorization header
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
         return res.status(401).json({ message: 'Access denied. No token provided.' });
     }
 
     try {
-        // Verify and decode token
+        // ✅ Verify token to identify the logged-in user
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        //  Prevent a user from editing their own role
-        if (Number(decoded.user_id) === Number(targetUserId)) {
-        return res.status(403).json({ message: "You can't update your own role." });
-        }
+        // 🧠 The logged-in user performing the update
+        const actingUserId = decoded.user_id;
+        const actingUserRole = decoded.role;
 
-        // Only admins can update roles
-        if (decoded.role !== 'admin') {
+        // 🚫 Prevent non-admins from updating roles
+        if (actingUserRole !== 'admin') {
         return res.status(403).json({ message: 'Unauthorized: Admin access required.' });
         }
 
-        // Update user role in database
+        // 🚫 Prevent an admin from updating their own role
+        if (Number(actingUserId) === Number(targetUserId)) {
+        return res.status(403).json({ message: "You can't update your own role." });
+        }
+
+        // ✅ Update the target user in the database
         const [update] = await db.query(
         `
             UPDATE users 
@@ -264,19 +268,19 @@ AdminRoute.patch('/manage/update/:user_id', async (req, res) => {
         return res.status(404).json({ message: 'User not found.' });
         }
 
-        // Create notification for updated user
-        const message = `Your role at WhiskerWatch is now updated to ${role}. Congratulations!`;
+        // 📨 Add notification for the target user
+        const message = `Your role at WhiskerWatch has been updated to ${role}. Congratulations!`;
         await db.query(
         `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
         [targetUserId, message]
         );
 
-        console.log(`✅ User ${targetUserId} updated to role: ${role}`);
+        console.log(`✅ Admin ${actingUserId} updated user ${targetUserId} to role: ${role}`);
+
         res.status(200).json({ message: 'User role updated successfully!' });
     } catch (err) {
         console.error('Error updating user role:', err);
 
-        // Handle token expiration or verification error
         if (err.name === 'TokenExpiredError') {
         return res.status(401).json({ message: 'Session expired. Please log in again.' });
         }
