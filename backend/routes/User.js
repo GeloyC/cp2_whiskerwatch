@@ -571,16 +571,30 @@ UserRoute.post('/reset_password', async (req, res) => {
 
 
 
-UserRoute.get("/api/session", (req, res) => {
-  const token = req.cookies.token;
-  if (!token) return res.json({ loggedIn: false, user: null });
+// UserRoute.get("/api/session", (req, res) => {
+//   const token = req.cookies.token;
+//   if (!token) return res.json({ loggedIn: false, user: null });
+
+//   try {
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//     res.json({ loggedIn: true, user: decoded });
+//   } catch (err) {
+//     console.error("Session error:", err);
+//     res.json({ loggedIn: false, user: null });
+//   }
+// });
+
+UserRoute.get("/api/session", async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1] || req.cookies.token;
+  console.log("Received token from header or cookie:", token);
+  if (!token) return res.status(401).json({ loggedIn: false });
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    res.json({ loggedIn: true, user: decoded });
+    res.status(200).json({ loggedIn: true, user: decoded });
   } catch (err) {
-    console.error("Session error:", err);
-    res.json({ loggedIn: false, user: null });
+    console.error("Token verification error:", err);
+    res.status(401).json({ loggedIn: false });
   }
 });
 
@@ -687,7 +701,7 @@ UserRoute.post('/adminlogin', async (req, res) => {
 UserRoute.get('/profile', async (req, res) => {
   let db = getDB();
   try {
-    const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+    const token = req.headers.authorization?.split(' ')[1] || req.cookies.token; 
     if (!token) {
       return res.status(401).json({ error: 'Please login to view your profile.' });
     }

@@ -169,34 +169,86 @@ export function SessionProvider({ children }) {
 
     // const login = (userData) => setUser(userData);
     
+  
+
+    // const refreshSession = async () => {
+    //     setLoading(true);
+    //     try {
+    //         const response = await axios.get(`${url}/user/api/session`, {
+    //             withCredentials: true,
+    //         });
+    //         console.log("Session refresh response:", response.data, "Cookies sent:", document.cookie);
+    //         if (response.data.loggedIn) {
+    //         setUser(response.data.user);
+    //         try {
+    //             localStorage.setItem("user", JSON.stringify(response.data.user));
+    //             console.log("LocalStorage updated in refreshSession:", JSON.parse(localStorage.getItem("user")));
+    //         } catch (e) {
+    //             console.error("Failed to update localStorage in refreshSession:", e);
+    //         }
+    //         } else {
+    //         console.warn("Session not logged in, preserving existing localStorage");
+    //         const storedUser = localStorage.getItem("user");
+    //         if (storedUser) {
+    //             setUser(JSON.parse(storedUser));
+    //             console.log("Falling back to localStorage:", storedUser);
+    //         } else {
+    //             setUser(null); // Only clear user if no localStorage
+    //         }
+    //         }
+    //     } catch (err) {
+    //         console.error("Session refresh error:", err.message, "Cookies available:", document.cookie);
+    //         const storedUser = localStorage.getItem("user");
+    //         if (storedUser) {
+    //         setUser(JSON.parse(storedUser));
+    //         console.log("Error fallback to localStorage:", storedUser);
+    //         } else {
+    //         setUser(null);
+    //         }
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
+
+
     const refreshSession = async () => {
         setLoading(true);
+        let isCookieAvailable = true;
         try {
+            const storedToken = localStorage.getItem("token");
+            if (storedToken) {
             const response = await axios.get(`${url}/user/api/session`, {
-                withCredentials: true,
+                headers: { Authorization: `Bearer ${storedToken}` }, // Send token in header
             });
-            console.log("Session refresh response:", response.data, "Cookies sent:", document.cookie);
+            console.log("Session refresh response:", response.data, "Token used:", storedToken);
             if (response.data.loggedIn) {
-            setUser(response.data.user);
-            try {
+                setUser(response.data.user);
+                try {
                 localStorage.setItem("user", JSON.stringify(response.data.user));
                 console.log("LocalStorage updated in refreshSession:", JSON.parse(localStorage.getItem("user")));
-            } catch (e) {
+                } catch (e) {
                 console.error("Failed to update localStorage in refreshSession:", e);
-            }
+                }
             } else {
-            console.warn("Session not logged in, preserving existing localStorage");
-            const storedUser = localStorage.getItem("user");
-            if (storedUser) {
+                console.warn("Session not logged in, preserving localStorage");
+                isCookieAvailable = false;
+                const storedUser = localStorage.getItem("user");
+                if (storedUser) {
                 setUser(JSON.parse(storedUser));
                 console.log("Falling back to localStorage:", storedUser);
-            } else {
-                setUser(null); // Only clear user if no localStorage
+                } else {
+                setUser(null);
+                }
             }
+            } else {
+            console.warn("No stored token, session invalid");
+            isCookieAvailable = false;
+            setUser(null);
             }
         } catch (err) {
-            console.error("Session refresh error:", err.message, "Cookies available:", document.cookie);
-            const storedUser = localStorage.getItem("user");
+            console.error("Session refresh error:", err.message);
+            isCookieAvailable = false;
+            const storedUser = localStorage.getItem("token") ? localStorage.getItem("user") : null;
             if (storedUser) {
             setUser(JSON.parse(storedUser));
             console.log("Error fallback to localStorage:", storedUser);
@@ -205,8 +257,11 @@ export function SessionProvider({ children }) {
             }
         } finally {
             setLoading(false);
+            setUser((prev) => ({ ...prev, isCookieAvailable }));
         }
-        };
+    };
+
+
     
     const login = (userData) => {
         setUser(userData);
