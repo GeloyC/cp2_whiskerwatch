@@ -135,20 +135,40 @@ export function SessionProvider({ children }) {
 
     const refreshSession = async () => {
         try {
-        const response = await axios.get(`${url}/user/api/session`, {
-            withCredentials: true,
-        });
-        setUser(response.data.loggedIn ? response.data.user : null);
+            const storedUser = localStorage.getItem("user");
+            const response = await axios.get(`${url}/user/api/session`, {
+                withCredentials: true,
+            });
+            // setUser(response.data.loggedIn ? response.data.user : storedUser);
+            // localStorage.setItem("user", JSON.stringify(response.data.user));
+
+            if (response.data.loggedIn) {
+                setUser(response.data.user);
+                localStorage.setItem("user", JSON.stringify(response.data.user));
+            } else {
+                setUser(null);
+                localStorage.removeItem("user"); // Clear stale data
+            }
 
         } catch (err) {
             console.error("Session refresh error:", err);
-            setUser(null);
+            const storedUser = localStorage.getItem("user");
+            if (storedUser) {
+                setUser(JSON.parse(storedUser));
+                console.warn("Falling back to localStorage user:", storedUser);
+            } else {
+                setUser(null);
+            }
         } finally {
             setLoading(false);
         }
     };
 
-    const login = (userData) => setUser(userData);
+    // const login = (userData) => setUser(userData);
+    const login = (userData) => {
+        setUser(userData);
+        localStorage.setItem("user", JSON.stringify(userData)); // Sync with backup
+    };
 
     const logout = async () => {
         try {
@@ -159,6 +179,7 @@ export function SessionProvider({ children }) {
         }
         
         setUser(null);
+        localStorage.removeItem("user");
         await refreshSession();
     };
 

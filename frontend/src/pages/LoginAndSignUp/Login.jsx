@@ -488,6 +488,7 @@ const Login = () => {
       const user = response.data.user;
       if (!user) throw new Error("User data not received");
 
+      localStorage.setItem("user", JSON.stringify(user));
       setUser(user);
       login(user);
       await refreshSession();
