@@ -23,7 +23,7 @@ const ContactUs = () => {
       <div className='flex flex-col items-center xl:py-10 lg:py-10 md:py-7 sm:py-3'>
         <div className='flex flex-col items-center justify-center'> 
           <div className='relative flex flex-col items-center bg-[#FFF] xl:w-[1000px] overflow-hidden p-10 gap-5 rounded-[25px] shadow-md'>
-            <label className='font-bold text-2xl text-center'>Pet Shops and Veterinary Clinics Near Us</label>
+            {/* <label className='font-bold text-2xl text-center'>Pet Shops and Veterinary Clinics Near Us</label> */}
 
             <div className='flex flex-col w-full xl:grid xl:grid-cols-2  gap-7'>
               <div className='flex flex-col bg-[#FDF5D8] p-3 drop-shadow-[0px_-12px_0px_rgba(181,192,74,1)] w-full rounded-[25px] gap-3'>
