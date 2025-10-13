@@ -148,6 +148,7 @@ const UpdateRole = () => {
     const { user_id } = useParams();
 
     const [role, setRole] = useState('');
+    const [selectedUser, setSelectedUser] = useState('');
     const [roleOriginal, setRoleOriginal] = useState('');
     const [updateMessage, setUpdateMessage] = useState('');
 
@@ -168,6 +169,7 @@ const UpdateRole = () => {
             });
 
             setRole(response.data.role);
+            setSelectedUser(response.data)
             setRoleOriginal(response.data.role);
         } catch (err) {
             console.error('Failed to fetch user:', err.response?.data || err.message);
@@ -191,8 +193,8 @@ const UpdateRole = () => {
         const response = await axios.patch(
             `${url}/admin/manage/update/${user_id}`,
             {
-            firstname: user.firstname,
-            lastname: user.lastname,
+            firstname: selectedUser.firstname,
+            lastname: selectedUser.lastname,
             role: role,
             },
             {
@@ -230,14 +232,14 @@ const UpdateRole = () => {
             <div className="flex flex-col w-full justify-start">
                 <label className="text-[#595959] text-[14px]">Firstname</label>
                 <label className="p-2 border-1 border-[#CCCCCC] rounded-[10px] font-bold">
-                {user.firstname}
+                {selectedUser.firstname}
                 </label>
             </div>
 
             <div className="flex flex-col w-full justify-start">
                 <label className="text-[#595959] text-[14px]">Lastname</label>
                 <label className="p-2 border-1 border-[#CCCCCC] rounded-[10px] font-bold">
-                {user.lastname}
+                {selectedUser.lastname}
                 </label>
             </div>
 
