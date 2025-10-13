@@ -393,59 +393,6 @@ UserRoute.post('/check_username', async (req, res) => {
 // }, 5 * 60 * 1000);
 
 
-UserRoute.post("/login", async (req, res) => {
-  const db = getDB();
-  try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ error: "Email and password are required" });
-    }
-
-    const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
-    if (rows.length === 0) {
-      return res.status(401).json({ error: "Invalid email or password" });
-    }
-
-    const user = rows[0];
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(401).json({ error: "Invalid email or password" });
-    }
-
-    const payload = {
-      user_id: user.user_id,
-      role: user.role,
-      firstname: user.firstname,
-      lastname: user.lastname,
-      email: user.email,
-      username: user.username,
-      profile_image: user.profile_image || null,
-    };
-
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
-    console.log("Generated token:", token);
-
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-    });
-    
-
-    res.status(200).json({
-      message: "Login successful!",
-      user: payload,
-    });
-  } catch (err) {
-    console.error("Login error:", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-
-// This route sends the JWT Token to the localStorage
 // UserRoute.post("/login", async (req, res) => {
 //   const db = getDB();
 //   try {
@@ -476,29 +423,82 @@ UserRoute.post("/login", async (req, res) => {
 //       profile_image: user.profile_image || null,
 //     };
 
-//     // 🔹 Generate JWT
 //     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
 //     console.log("Generated token:", token);
 
-//     // ❌ Remove cookie logic
-//     // res.cookie("token", token, {
-//     //   httpOnly: true,
-//     //   secure: true,
-//     //   sameSite: "None",
-//     // });
 
-//     // ✅ Send token in response body
+//     res.cookie("token", token, {
+//       httpOnly: true,
+//       secure: true,
+//       sameSite: "None",
+//     });
+    
+
 //     res.status(200).json({
 //       message: "Login successful!",
-//       token,  // send JWT to frontend
 //       user: payload,
 //     });
-
 //   } catch (err) {
 //     console.error("Login error:", err);
 //     res.status(500).json({ error: "Internal server error" });
 //   }
 // });
+
+
+// This route sends the JWT Token to the localStorage
+UserRoute.post("/login", async (req, res) => {
+  const db = getDB();
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and password are required" });
+    }
+
+    const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+    if (rows.length === 0) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    const user = rows[0];
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    const payload = {
+      user_id: user.user_id,
+      role: user.role,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      email: user.email,
+      username: user.username,
+      profile_image: user.profile_image || null,
+    };
+
+    // 🔹 Generate JWT
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
+    console.log("Generated token:", token);
+
+    // ❌ Remove cookie logic
+    // res.cookie("token", token, {
+    //   httpOnly: true,
+    //   secure: true,
+    //   sameSite: "None",
+    // });
+
+    // ✅ Send token in response body
+    res.status(200).json({
+      message: "Login successful!",
+      token,  // send JWT to frontend
+      user: payload,
+    });
+
+  } catch (err) {
+    console.error("Login error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 
 
@@ -588,16 +588,36 @@ UserRoute.post('/reset_password', async (req, res) => {
 // });
 
 UserRoute.get("/api/session", async (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1] || req.cookies.token;
-  console.log("Received token from header or cookie:", token);
-  if (!token) return res.status(401).json({ loggedIn: false });
-
   try {
+    // Check for token from either Authorization header or cookie (fallback)
+    const authHeader = req.headers.authorization;
+    const token =
+      (authHeader && authHeader.startsWith("Bearer "))
+        ? authHeader.split(" ")[1]
+        : req.cookies?.token;
+
+    console.log("Received token:", token ? "Present" : "Missing");
+
+    if (!token) {
+      return res.status(401).json({ loggedIn: false, message: "No token provided" });
+    }
+
+    // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    res.status(200).json({ loggedIn: true, user: decoded });
+
+    // Return success response
+    return res.status(200).json({
+      loggedIn: true,
+      user: decoded,
+      message: "Session valid",
+    });
   } catch (err) {
-    console.error("Token verification error:", err);
-    res.status(401).json({ loggedIn: false });
+    console.error("Token verification error:", err.message);
+
+    return res.status(401).json({
+      loggedIn: false,
+      message: "Invalid or expired token",
+    });
   }
 });
 

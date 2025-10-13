@@ -109,20 +109,18 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
-import Cookies from 'js-cookie';
 
 const SessionContext = createContext(null);
 
 export function useSession() {
     const context = useContext(SessionContext);
-    
     if (!context) {
         throw new Error("useSession must be used within a SessionProvider");
     }
     return context;
     }
 
-export function SessionProvider({ children }) {
+    export function SessionProvider({ children }) {
     const url = `https://whiskerwatch-0j6g.onrender.com`;
 
     const [user, setUser] = useState(null);
@@ -130,174 +128,95 @@ export function SessionProvider({ children }) {
     const [notifications, setNotifications] = useState([]);
     const [whiskerUpdateTrigger, setWhiskerUpdateTrigger] = useState(0);
 
-    axios.defaults.withCredentials = true;
     const triggerWhiskerUpdate = () => setWhiskerUpdateTrigger(Date.now());
 
+    // ✅ Attach token to all outgoing axios requests
+    axios.interceptors.request.use((config) => {
+        const token = localStorage.getItem("token");
+        if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    });
+
+    // ✅ Refresh session using JWT token
     const refreshSession = async () => {
+        setLoading(true);
         try {
-            const storedUser = localStorage.getItem("user");
-            const response = await axios.get(`${url}/user/api/session`, {
-                withCredentials: true,
-            });
-            // setUser(response.data.loggedIn ? response.data.user : storedUser);
-            // localStorage.setItem("user", JSON.stringify(response.data.user));
-
-            if (response.data.loggedIn) {
-                setUser(response.data.user);
-                localStorage.setItem("user", JSON.stringify(response.data.user));
-            } else {
-                setUser(null);
-                localStorage.removeItem("user"); // Clear stale data
-            }
-
-        } catch (err) {
-            console.error("Session refresh error:", err);
-            const storedUser = localStorage.getItem("user");
-            if (storedUser) {
-                setUser(JSON.parse(storedUser));
-                console.warn("Falling back to localStorage user:", storedUser);
-            } else {
-                setUser(null);
-            }
-        } finally {
+        const storedToken = localStorage.getItem("token");
+        if (!storedToken) {
+            console.warn("No stored token — user not logged in");
+            setUser(null);
             setLoading(false);
+            return;
+        }
+
+        // Verify token on backend
+        const response = await axios.get(`${url}/user/api/session`, {
+            headers: { Authorization: `Bearer ${storedToken}` },
+        });
+
+        if (response.data?.loggedIn) {
+            setUser(response.data.user);
+            localStorage.setItem("user", JSON.stringify(response.data.user));
+            console.log("Session refreshed:", response.data.user);
+        } else {
+            console.warn("Session not valid, clearing storage");
+            setUser(null);
+            localStorage.removeItem("user");
+            localStorage.removeItem("token");
+        }
+        } catch (err) {
+        console.error("Session refresh error:", err.message);
+        // fallback to localStorage user if available
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+            console.warn("Fallback to localStorage user");
+        } else {
+            setUser(null);
+        }
+        } finally {
+        setLoading(false);
         }
     };
 
+    // ✅ Login helper — stores user & token in localStorage
+    const login = (userData, token) => {
+        setUser(userData);
+        localStorage.setItem("user", JSON.stringify(userData));
+        if (token) localStorage.setItem("token", token);
+    };
 
-
-
-    const login = (userData) => setUser(userData);
-    
-  
-
-    // const refreshSession = async () => {
-    //     setLoading(true);
-    //     try {
-    //         const response = await axios.get(`${url}/user/api/session`, {
-    //             withCredentials: true,
-    //         });
-    //         console.log("Session refresh response:", response.data, "Cookies sent:", document.cookie);
-    //         if (response.data.loggedIn) {
-    //         setUser(response.data.user);
-    //         try {
-    //             localStorage.setItem("user", JSON.stringify(response.data.user));
-    //             console.log("LocalStorage updated in refreshSession:", JSON.parse(localStorage.getItem("user")));
-    //         } catch (e) {
-    //             console.error("Failed to update localStorage in refreshSession:", e);
-    //         }
-    //         } else {
-    //         console.warn("Session not logged in, preserving existing localStorage");
-    //         const storedUser = localStorage.getItem("user");
-    //         if (storedUser) {
-    //             setUser(JSON.parse(storedUser));
-    //             console.log("Falling back to localStorage:", storedUser);
-    //         } else {
-    //             setUser(null); // Only clear user if no localStorage
-    //         }
-    //         }
-    //     } catch (err) {
-    //         console.error("Session refresh error:", err.message, "Cookies available:", document.cookie);
-    //         const storedUser = localStorage.getItem("user");
-    //         if (storedUser) {
-    //         setUser(JSON.parse(storedUser));
-    //         console.log("Error fallback to localStorage:", storedUser);
-    //         } else {
-    //         setUser(null);
-    //         }
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
-
-
-    // const refreshSession = async () => {
-    //     setLoading(true);
-    //     // let isCookieAvailable = true;
-    //     try {
-    //         const storedToken = localStorage.getItem("token");
-    //         if (storedToken) {
-    //         const response = await axios.get(`${url}/user/api/session`, {
-    //             headers: { Authorization: `Bearer ${storedToken}` }, // Send token in header
-    //         });
-    //         console.log("Session refresh response:", response.data, "Token used:", storedToken);
-
-    //         if (response.data.loggedIn) {
-    //             setUser(response.data.user);
-    //             try {
-    //                 localStorage.setItem("user", JSON.stringify(response.data.user));
-    //                 console.log("LocalStorage updated in refreshSession:", JSON.parse(localStorage.getItem("user")));
-    //             } catch (e) {
-    //                 console.error("Failed to update localStorage in refreshSession:", e);
-    //             }
-    //         } else {
-    //             console.warn("Session not logged in, preserving localStorage");
-    //             // isCookieAvailable = false;
-    //             const storedUser = localStorage.getItem("user");
-    //             if (storedUser) {
-    //                 setUser(JSON.parse(storedUser));
-    //                 console.log("Falling back to localStorage:", storedUser);
-    //             } else {
-    //                 setUser(null);
-    //             }
-    //         }
-    //         } else {
-    //         console.warn("No stored token, session invalid");
-    //         // isCookieAvailable = false;
-    //         setUser(null);
-    //         }
-    //     } catch (err) {
-    //         console.error("Session refresh error:", err.message);
-    //         // isCookieAvailable = false;
-    //         const storedUser = localStorage.getItem("token") ? localStorage.getItem("user") : null;
-    //         if (storedUser) {
-    //             setUser(JSON.parse(storedUser));
-    //             console.log("Error fallback to localStorage:", storedUser);
-    //         } else {
-    //             setUser(null);
-    //         }
-    //     } finally {
-    //         setLoading(false);
-    //         // setUser((prev) => ({ ...prev, isCookieAvailable }));
-    //     }
-    // };
-
-
-    
-    // const login = (userData) => {
-    //     setUser(userData);
-    //     localStorage.setItem("user", JSON.stringify(userData)); // Sync with backup
-    // };
-
+    // ✅ Logout — clears everything
     const logout = async () => {
         try {
-            await axios.post(`${url}/user/logout`, {}, { withCredentials: true });
-            Cookies.remove("token", { path: "/" });
-            localStorage.removeItem("user");
+        await axios.post(`${url}/user/logout`);
         } catch (err) {
-            console.error("Logout failed:", err);
+        console.error("Logout failed:", err.message);
         }
-        
         setUser(null);
         localStorage.removeItem("user");
-        await refreshSession();
+        localStorage.removeItem("token");
     };
 
+    // ✅ Fetch user notifications
     const fetchNotifications = async (user_id) => {
         if (!user_id) return;
-        
         try {
-            const response = await axios.get(`${url}/user/notifications/${user_id}`);
-            setNotifications(response.data);
+        const response = await axios.get(`${url}/user/notifications/${user_id}`);
+        setNotifications(response.data);
         } catch (err) {
         console.error("Failed to fetch notifications:", err);
         }
     };
 
+    // Auto-fetch notifications when user changes
     useEffect(() => {
         if (user?.user_id) fetchNotifications(user.user_id);
     }, [user]);
 
+    // Restore session on app load
     useEffect(() => {
         refreshSession();
     }, []);
@@ -308,9 +227,9 @@ export function SessionProvider({ children }) {
             user,
             setUser,
             login,
+            logout,
             loading,
             refreshSession,
-            logout,
             notifications,
             fetchNotifications,
             whiskerUpdateTrigger,
