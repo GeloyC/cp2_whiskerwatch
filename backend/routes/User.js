@@ -424,15 +424,17 @@ UserRoute.post("/login", async (req, res) => {
     };
 
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
+    console.log("Generated token:", token);
 
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true,        
-      sameSite: "None",    
-      path: "/",         
-      maxAge: 24 * 60 * 60 * 1000 // optional: 1 day
+      secure: process.env.NODE_ENV === "production", // Only secure in production
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      path: "/",
+      maxAge: 24 * 60 * 60 * 1000
     });
+    
 
     res.status(200).json({
       message: "Login successful!",
