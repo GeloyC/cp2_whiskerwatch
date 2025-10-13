@@ -428,9 +428,9 @@ UserRoute.post("/login", async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true,        // ✅ required for HTTPS
-      sameSite: "None",    // ✅ allows cross-site cookies
-      path: "/",           // ✅ applies to all routes
+      secure: true,        
+      sameSite: "None",    
+      path: "/",         
       maxAge: 24 * 60 * 60 * 1000 // optional: 1 day
     });
 

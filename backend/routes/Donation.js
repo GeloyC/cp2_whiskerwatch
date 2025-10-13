@@ -256,7 +256,7 @@ DonationRoute.post(
             itemSummary = 'an item';
         }
 
-        const message = `We received your donation of ${itemSummary}. <strong>We'd like to thank you for donating to WhiskerWatch!</strong>`;
+        const message = `We received your donation of ${itemSummary}. We'd like to thank you for donating to WhiskerWatch!`;
         await db.query(
           `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
           [donator_id, message]
