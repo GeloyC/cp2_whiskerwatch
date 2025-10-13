@@ -16,6 +16,7 @@ const pageCurrent = 'hidden xl:flex lg:flex md:flex sm:hidden items-center justi
 
 const NavigationBar = () => {
   const url = `https://whiskerwatch-0j6g.onrender.com`;
+  axios.defaults.withCredentials = true;
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -44,9 +45,6 @@ const NavigationBar = () => {
       try {
         const response = await axios.get(`${url}/user/profile`, { 
           withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${Cookies.get("token")}`, // Explicitly send token
-          },
         });
 
         setProfileImage(response.data.profile_image || '/assets/icons/account.png');
