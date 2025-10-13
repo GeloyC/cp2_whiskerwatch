@@ -173,7 +173,7 @@ export function SessionProvider({ children }) {
         setLoading(true);
         try {
             const response = await axios.get(`${url}/user/api/session`, {
-            withCredentials: true,
+                withCredentials: true,
             });
             console.log("Session refresh response:", response.data, "Cookies sent:", document.cookie);
             if (response.data.loggedIn) {
