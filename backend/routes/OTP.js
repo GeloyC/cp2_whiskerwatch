@@ -314,7 +314,7 @@ export const signupUser = async (req, res) => {
         html: `
             <p>Hi ${firstname}</p>
             <p>Your One-Time Password (OTP) is:</p>
-            <h1>${newOtp}</h1>
+            <h1>${otp}</h1>
             <p>Please enter this code to complete your account verification process.</p>
             <p>This code will expire in 5 minutes.</p>
             <p>If you didn't request this, please ignore this message and never share it with anyone to keep your WhiskerWatch account safe.</p>
