@@ -152,7 +152,7 @@ const UpdateRole = () => {
     const [roleOriginal, setRoleOriginal] = useState('');
     const [updateMessage, setUpdateMessage] = useState('');
 
-    const goBack = () => navigate('/adminlist');
+    const goBack = () => {navigate('/adminlist'); window.location.reload();};
 
     // ✅ Fetch user by ID (target user being updated)
     useEffect(() => {
