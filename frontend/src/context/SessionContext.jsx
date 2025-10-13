@@ -159,7 +159,6 @@ export function useSession() {
         if (response.data?.loggedIn) {
             setUser(response.data.user);
             localStorage.setItem("user", JSON.stringify(response.data.user));
-            console.log("Session refreshed:", response.data.user);
         } else {
             console.warn("Session not valid, clearing storage");
             setUser(null);
@@ -181,14 +180,14 @@ export function useSession() {
         }
     };
 
-    // ✅ Login helper — stores user & token in localStorage
+    // Login helper — stores user & token in localStorage
     const login = (userData, token) => {
         setUser(userData);
         localStorage.setItem("user", JSON.stringify(userData));
         if (token) localStorage.setItem("token", token);
     };
 
-    // ✅ Logout — clears everything
+    //  Logout — clears everything
     const logout = async () => {
         try {
         await axios.post(`${url}/user/logout`);

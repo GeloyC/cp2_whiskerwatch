@@ -478,7 +478,6 @@ UserRoute.post("/login", async (req, res) => {
 
     // 🔹 Generate JWT
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
-    console.log("Generated token:", token);
 
     // ❌ Remove cookie logic
     // res.cookie("token", token, {
@@ -596,7 +595,6 @@ UserRoute.get("/api/session", async (req, res) => {
         ? authHeader.split(" ")[1]
         : req.cookies?.token;
 
-    console.log("Received token:", token ? "Present" : "Missing");
 
     if (!token) {
       return res.status(401).json({ loggedIn: false, message: "No token provided" });
