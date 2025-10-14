@@ -38,21 +38,21 @@ const Profile = () => {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-            const response = await axios.get(`${url}/user/profile`, {
-                withCredentials: true, // This automatically sends your cookie
-            });
+                const response = await axios.get(`${url}/user/profile`, {
+                    withCredentials: true, // This automatically sends your cookie
+                });
 
-            setProfile(response.data);
-            setOriginalProfile(response.data);
+                setProfile(response.data);
+                setOriginalProfile(response.data);
 
-            // Fetch certificates using user_id from the response
-            if (response.data.user_id) {
-                const certificateResponse = await axios.get(
-                `${url}/admin/adopters_certificate/${response.data.user_id}`,
-                    { withCredentials: true }
-                );
-                setUserCertificates(certificateResponse.data);
-            }
+                // Fetch certificates using user_id from the response
+                if (response.data.user_id) {
+                    const certificateResponse = await axios.get(
+                    `${url}/admin/adopters_certificate/${response.data.user_id}`,
+                        { withCredentials: true }
+                    );
+                    setUserCertificates(certificateResponse.data);
+                }
 
             } catch (err) {
             console.error("Error fetching user:", err.response?.data || err.message);
@@ -165,25 +165,26 @@ const Profile = () => {
 
     useEffect(() => {
         const fetchWhiskerPoints = async () => {
-        if (!user?.user_id) return;
-        try {
-            const token = Cookies.get('token');
-            const response = await axios.get(`${url}/whisker/whiskermeter/${user.user_id}`, {
-                withCredentials: true, 
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            setPoints(response.data.points || 0);
-        } catch (err) {
-            console.error('Failed to fetch whisker points:', err);
-        }
+            if (!user?.user_id) return;
+            try {
+                const token = Cookies.get('token');
+                const response = await axios.get(`${url}/whisker/whiskermeter/${user.user_id}`, {
+                    withCredentials: true, 
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                setPoints(response.data.points || 0);
+            } catch (err) {
+                console.error('Failed to fetch whisker points:', err);
+            }
         };
         fetchWhiskerPoints();
     }, [user, whiskerUpdateTrigger]);
 
     useEffect(() => {
         const fetchApplications = async () => {
+            const token = Cookies.get('token');
             const response = await axios.get(`${url}/user/show_application/${user.user_id}`, {
                 withCredentials: true,
                 headers: {
