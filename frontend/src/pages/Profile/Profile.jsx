@@ -293,7 +293,7 @@ const Profile = () => {
                                                         <div className='flex flex-row items-center gap-3 pt-2 pb-2'>
                                                             {userCertificates.length > 0 && (
                                                                 userCertificates.map((cert, index) => (
-                                                                    <div className='flex flex-col w-full h-auto p-5 rounded-[10] border-dashed border-2 border-[#99A339] bg-[#FFF]'>
+                                                                    <div className={!cert.certificate ? 'flex flex-col w-full h-auto p-5 rounded-[10] border-dashed border-2 border-[#99A339] bg-[#FFF]' : 'hidden'}>
                                                                         {/* Pending Application status provider 
                                                                             If adoption applciation is in review display this
                                                                         */}
@@ -301,10 +301,10 @@ const Profile = () => {
                                                                             <div className='flex flex-col gap-2'>
                                                                                 <span className='flex flex-row w-full justify-between'>
                                                                                     <label className='font-bold text-lg text-[#2F2F2F]'>You have a pending adoption application</label>
-                                                                                    <label className={`rounded-[10px] px-1 py-2 ${app.status === 'Pending' ? 'bg-[#F9F7DC] text-[#B67101]' : 'bg-[#e3e697] text-[#889132]'}`}>{app.status}</label>
+                                                                                    <label className={`rounded-[10px] px-3 py-1 ${app.status === 'Pending' ? 'bg-[#F9F7DC] text-[#B67101]' : 'bg-[#e3e697] text-[#889132]'}`}>{app.status}</label>
                                                                                 </span>
                                                                                 <label className='font-bold text-lg text-[#2F2F2F]'></label>
-                                                                                    <div className='flex flex-col justify-between gap-1 w-full'>
+                                                                                    <div className='flex flex-col justify-between gap-1 w-full text-md'>
                                                                                         <span>{`You applied to adopt: ${app.cat_name}`}</span>
                                                                                         <span>{`View your application form ${<a href={app.application_form}>here</a>}.`}</span>
                                                                                         <span>{app.application_date}</span>
