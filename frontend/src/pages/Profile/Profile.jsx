@@ -299,10 +299,10 @@ const Profile = () => {
                                                                         */}
                                                                         <div className='flex flex-col gap-2'>
                                                                             <label className='font-bold text-lg text-[#2F2F2F]'>You have an adoption application</label>
-                                                                            {applications.map((app) => {
+                                                                            {applications.map((app) => (
                                                                                 <span className='text-md text-[#2F2F2F]'>{app.user_name}</span>
 
-                                                                            })}
+                                                                            ))}
                                                                         </div>
 
                                                                         <a
