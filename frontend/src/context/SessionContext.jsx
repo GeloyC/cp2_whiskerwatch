@@ -163,41 +163,58 @@ export function SessionProvider({ children }) {
     //     await refreshSession();
     // };
 
+    // const logout = async () => {
+    //     try {
+    //         // Clear server-side cookie first
+    //         await axios.post(`${url}/user/logout`, {}, { 
+    //         withCredentials: true 
+    //         });
+    //         console.log("Server logout successful");
+    //     } catch (err) {
+    //         console.error("Logout API failed:", err);
+    //         // Continue with client-side cleanup even if server fails
+    //     }
+        
+    //     // CRITICAL: Clear token BEFORE setting user to null
+    //     localStorage.removeItem('jwt_token');
+    //     console.log("Token removed from localStorage");
+        
+    //     // Clear axios default auth header
+    //     delete axios.defaults.headers.common['Authorization'];
+        
+    //     // Clear axios interceptors to prevent token re-injection
+    //     axios.interceptors.request.eject(
+    //         axios.interceptors.request.handlers.find(h => 
+    //         h.onFulfilled.toString().includes('localStorage.getItem')
+    //         )?.id
+    //     );
+    //     console.log("Axios interceptors cleared");
+        
+    //     // Set user to null
+    //     setUser(null);
+        
+    //     // DON'T call refreshSession() - it would re-add the interceptor and token
+    //     setLoading(false);
+        
+    //     // Redirect to login manually
+    //     window.location.href = '/login'; // or use navigate from react-router
+    // };
+
     const logout = async () => {
         try {
-            // Clear server-side cookie first
-            await axios.post(`${url}/user/logout`, {}, { 
-            withCredentials: true 
-            });
-            console.log("Server logout successful");
+            await axios.post(`${url}/user/logout`, {}, { withCredentials: true });
         } catch (err) {
             console.error("Logout API failed:", err);
-            // Continue with client-side cleanup even if server fails
         }
         
-        // CRITICAL: Clear token BEFORE setting user to null
+        // Clear both cookie and localStorage
         localStorage.removeItem('jwt_token');
-        console.log("Token removed from localStorage");
-        
-        // Clear axios default auth header
-        delete axios.defaults.headers.common['Authorization'];
-        
-        // Clear axios interceptors to prevent token re-injection
-        axios.interceptors.request.eject(
-            axios.interceptors.request.handlers.find(h => 
-            h.onFulfilled.toString().includes('localStorage.getItem')
-            )?.id
-        );
-        console.log("Axios interceptors cleared");
-        
-        // Set user to null
         setUser(null);
         
-        // DON'T call refreshSession() - it would re-add the interceptor and token
-        setLoading(false);
+        // Clear axios auth header
+        delete axios.defaults.headers.common['Authorization'];
         
-        // Redirect to login manually
-        window.location.href = '/login'; // or use navigate from react-router
+        await refreshSession();
     };
 
 

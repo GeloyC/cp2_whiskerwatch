@@ -516,32 +516,17 @@ UserRoute.post("/login", async (req, res) => {
 // });
 
 
-// UserRoute.post("/logout", (req, res) => {
-//   res.clearCookie("token", {
-//     httpOnly: true,
-//     secure: true,
-//     sameSite: "none",
-//     path: "/",
-//   });
-//   res.status(200).json({ message: "Logout successful" });
-// });
+UserRoute.post("/logout", (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    path: "/",
+  });
+  res.status(200).json({ message: "Logout successful" });
+});
 
-const logout = async () => {
-  try {
-    await axios.post(`${url}/user/logout`, {}, { withCredentials: true });
-  } catch (err) {
-    console.error("Logout API failed:", err);
-  }
-  
-  // Clear both cookie and localStorage
-  localStorage.removeItem('jwt_token');
-  setUser(null);
-  
-  // Clear axios auth header
-  delete axios.defaults.headers.common['Authorization'];
-  
-  await refreshSession();
-};
+
 
 
 UserRoute.post('/forgot_password', async (req, res) => {
