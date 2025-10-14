@@ -32,8 +32,7 @@ export function SessionProvider({ children }) {
             
             // If token exists, add Authorization header
             if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-            console.log("Added Authorization header to request:", config.url);
+                config.headers.Authorization = `Bearer ${token}`;
             }
             
             return config;
@@ -106,16 +105,13 @@ export function SessionProvider({ children }) {
             // If user is authenticated via cookie, we're good
             if (response.data.loggedIn) {
                 setUser(response.data.user);
-                console.log("Session refreshed via cookie:", response.data);
                 return;
             }
             
             // Cookie failed - try localStorage token
-            console.log("Cookie authentication failed, trying localStorage token");
             const token = localStorage.getItem('jwt_token');
             
             if (!token) {
-                console.log("No token found in localStorage");
                 setUser(null);
                 return;
             }
@@ -127,9 +123,7 @@ export function SessionProvider({ children }) {
             
             if (response.data.loggedIn) {
                 setUser(response.data.user);
-                console.log("Session refreshed via Authorization header:", response.data);
             } else {
-                console.log("Both cookie and token authentication failed");
                 localStorage.removeItem('jwt_token'); // Clear invalid token
                 setUser(null);
             }
@@ -221,10 +215,10 @@ export function SessionProvider({ children }) {
     const fetchNotifications = async (user_id) => {
         if (!user_id) return;
         try {
-        const response = await axios.get(`${url}/user/notifications/${user_id}`);
-        setNotifications(response.data);
+            const response = await axios.get(`${url}/user/notifications/${user_id}`);
+            setNotifications(response.data);
         } catch (err) {
-        console.error("Failed to fetch notifications:", err);
+            console.error("Failed to fetch notifications:", err);
         }
     };
 

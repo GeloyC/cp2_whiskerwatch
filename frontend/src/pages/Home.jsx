@@ -54,7 +54,7 @@ const Home = () => {
       <NavigationBar />
       <Whisker /> 
       {/* Cat Community News Section */}
-      <div className='flex flex-col items-center h-full w-full overflow-hidden pb-10'>
+      <div className='flex flex-col items-center h-full w-full overflow-hidden'>
           <div className='flex flex-col box-border w-full'>
             
             {/* MAIN CONTENT STARTS HERE */}
@@ -74,31 +74,20 @@ const Home = () => {
 
 
             <div className='flex flex-col items-center w-full'>
-              <div className='flex flex-col items-center gap-5 px-5 py-10 w-full bg-[#FFF] bg-[url(/assets/background-paws.png)] bg-cover bg-fit bg-repeat'>
+              <div className='flex flex-col items-center gap-5 px-5 py-10 w-full bg-[#F9F7DC] bg-[url(/assets/background-paws.png)] bg-cover bg-fit bg-repeat'>
                 <label className='text-[#2F2F2F] text-[40px] text-center font-bold leading-tight'>From Stray to Stay: <br/> Caring for a Rescue Cat</label>
 
                 <div className='text-center px-10 text-[#2F2F2F] text-[20px] font-bold w-[400px] xl:w-[500px] lg:w-[500px] md:w-[500px]'>
                   Adopting is a big responsibility as cats who once lived on the streets need time, patience and extra love to adjust to their new home.
                 </div>
               </div>
-              
-              <div className='flex flex-col xl:flex-row w-full justify-center gap-10 py-10 leading-tight bg-[#B5C04A] border-y-2 border-y-[#889132] bg-[url(/assets/background-paws.png)] bg-cover bg-fit bg-repeat'>
-                <div className='flex flex-col items-center justify-center rounded-[15px] p-4'>
-                  <div className='text-[60px] text-[#FFF] text-center font-bold w-[350px]'>10, 000</div>
-                  <div className='font-bold text-[20px] text-[#2F2F2F]'>Total Cats Adopted</div>
-                </div>
+            
 
-                <div className='flex flex-col items-center justify-center rounded-[15px] p-4'>
-                  <div className='text-[60px] text-[#FFF] text-center font-bold min-w-[350px]'>₱10, 000</div>
-                  <div className='font-bold text-[20px] text-[#2F2F2F]'>Total Donations Received</div>
-                </div>
-              </div>
-
-              <div className='flex flex-col items-center justify-center px-15 xl:px-0 lg:px-0 md:px-0 sm:px-0 gap-4 bg-[#F9F7DC] bg-[url(src/assets/background-paws.png)] bg-cover bg-fit bg-repeat w-[500px] xl:px-20 lg:px-20 xl:w-auto lg:w-auto md:w-auto sm:w-full'>
-                <div className='grid grid-cols-[auto_auto_auto_auto] overflow-y-auto w-full xl:w-full lg:w-auto px-10 sm:grid-cols-4 sm:w-full p-4 xl:grid xl:grid-cols-[auto_auto_auto_auto] lg:grid-cols-[auto_auto_auto_auto] md:grid-cols-[auto_auto] sm:grid-cols-[auto_auto] gap-2 xl:px-[5%] lg:px-[5%]'>
+              <div className='flex flex-col items-center justify-center px-15 pb-10 xl:px-0 lg:px-0 md:px-0 sm:px-0 gap-4 bg-[#F9F7DC] bg-[url(src/assets/background-paws.png)] bg-cover bg-fit bg-repeat w-[500px] md::w-auto xl:px-20 lg:px-20 xl:w-auto lg:w-auto md:w-auto sm:w-full'>
+                <div className='grid grid-cols-[auto_auto_auto_auto] scrollbar-thin overflow-x-scroll overflow-y-hidden w-full xl:w-full lg:w-full sm:grid-cols-4 md:w-full  sm:w-full xl:grid xl:grid-cols-[auto_auto_auto_auto] lg:grid-cols-[auto_auto_auto_auto] md:grid-cols-[auto_auto] sm:grid-cols-[auto_auto] gap-2 xl:px-[5%] lg:px-[5%]'>
                   {catList.map((cat) => (
                     <div key={cat.cat_id} onClick={() => navigate(`/catprofile/${cat.cat_id}`)}
-                    className='w-[300px] xl:w-full lg:w-full md:w-[300px] sm:w-full grid grid-rows-[auto_auto] rounded-[25px] border-2 border-[#FFF] bg-white hover:border-2 hover:border-[#B5C04A] hover:scale-102 active:scale-98 transition-all duration-100'>
+                    className='w-[300px] xl:w-full lg:w-full md:w-full sm:w-full grid grid-rows-[auto_auto] rounded-[25px] border-2 border-[#FFF] bg-white hover:border-2 hover:border-[#B5C04A] hover:scale-102 active:scale-98 transition-all duration-100'>
                       <div className='overflow-hidden flex rounded-t-[25px] w-auto h-[250px] xl:w-full lg:w-full md:w-full '>
                         <img 
                         src={cat.thumbnail} 
@@ -146,6 +135,36 @@ const Home = () => {
                 <Link to="/catadoption" className='w-fit self-center bg-[#99A339] text-[#FFF] font-bold p-3 rounded-[15px] hover:scale-105 active:scale-95 transition-all duration-100'>SEE MORE CATS</Link>
               </div>
 
+              <div className='grid grid-rows-1 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2 xl:flex-row w-full h-full p-10 gap-5 px-25 justify-between items-center leading-tight bg-[#FFF] bg-[url(/assets/background-paws.png)] bg-cover bg-fit bg-repeat'>
+                {/* <div className='flex flex-col items-center justify-center rounded-[15px] p-4'>
+                  <div className='text-[60px] text-[#FFF] text-center font-bold w-[350px]'>10, 000</div>
+                  <div className='font-bold text-[20px] text-[#2F2F2F]'>Total Cats Adopted</div>
+                </div>
+
+                <div className='flex flex-col items-center justify-center rounded-[15px] p-4'>
+                  <div className='text-[60px] text-[#FFF] text-center font-bold min-w-[350px]'>₱10, 000</div>
+                  <div className='font-bold text-[20px] text-[#2F2F2F]'>Total Donations Received</div>
+                </div> */}
+
+                  <div className='flex flex-row items-center justify-center'>
+                    <div className='flex flex-col gap-2'>
+                      <div className='w-full h-[400px] object-cover rounded-[10px] overflow-hidden'>
+                        <img src="/assets/image/who_are_we.jpg" alt="" className='w-full h-full object-cover' />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className='flex flex-col justify-center items-center h-full gap-5'>
+                    <label className='font-bold text-3xl'>Get to Know us</label>
+                    <span className='text-center'>
+                      The Siena Park Cat Community is a dedicated group focused on the welfare of stray cats in Siena Park Residences. Supported by DMCI Homes, the group advocates for responsible pet ownership through a shared vision of reducing the stray cat population and finding forever homes for these cats.
+                    </span>
+
+                    <div className='flex '>
+                      <Link to='/aboutus' className='bg-[#DC8801] px-6 py-2 font-bold text-[#FFF] rounded-[10px] hover:scale-103 active:scale-97 transition-all duration-100'>More info</Link>
+                    </div>
+                  </div>
+              </div>
               
             </div>
 

@@ -599,6 +599,8 @@ const Feeding = () => {
       setSubmitMessage(
         `${message}\n\nYou successfully submitted your application!\nPlease wait for approval.`
       );
+
+      window.location.reload();
     } catch (err) {
       if (err.response && err.response.status === 409) {
         const errorMsg = err.response.data?.error;
