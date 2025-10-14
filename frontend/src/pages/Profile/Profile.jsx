@@ -273,34 +273,32 @@ const Profile = () => {
                                                         <div className='flex flex-row items-center gap-3 pt-2 pb-2'>
                                                             {userCertificates.length > 0 && (
                                                                 userCertificates.map((cert, index) => (
-                                                                    <a
-                                                                        key={index}
-                                                                        href={cert.certificate}
-                                                                        target='_blank'
-                                                                        rel='noopener noreferrer'
-                                                                        className='flex items-center justify-between self-start min-w-[300px] gap-3 p-2 pl-4 pr-4 bg-[#E3E697] text-[#2F2F2F] rounded-[10px] hover:underline border-dashed border-2 border-[#99A339]'
-                                                                    >
-                                                                        {cert.certificate ? `View Certificate # ${index + 1}` : `Pending certificate`}
-                                                                        <div className='w-[25px] h-auto'>
-                                                                            <img src="/assets/icons/document-black.png" alt="" />
+                                                                    <div className='flex flex-col w-full h-auto p-3 border-dashed border-[#99A339] bg-[#FFF]'>
+                                                                        {/* Pending Application status provider 
+                                                                            If adoption applciation is in review display this
+                                                                        */}
+                                                                        <div className='flex flex-col gap-2'>
+                                                                            <label className='font-bold text-lg text-[#2F2F2F]'>You have an adoption application</label>
+                                                                            <span className='text-md text-[#2F2F2F]'>asdasdasd</span>
                                                                         </div>
-                                                                    </a>
+
+                                                                        <a
+                                                                            key={index}
+                                                                            href={cert.certificate}
+                                                                            target='_blank'
+                                                                            rel='noopener noreferrer'
+                                                                            className='flex items-center justify-between self-start min-w-[300px] gap-3 p-2 pl-4 pr-4 bg-[#E3E697] text-[#2F2F2F] rounded-[10px] hover:underline border-dashed border-2 border-[#99A339]'
+                                                                        >
+                                                                            {cert.certificate ? `View Certificate # ${index + 1}` : `Pending certificate`}
+                                                                            <div className='w-[25px] h-auto'>
+                                                                                <img src="/assets/icons/document-black.png" alt="" />
+                                                                            </div>
+                                                                        </a>
+                                                                        
+                                                                    </div>
                                                                 ))
                                                             )}
                                                         </div>
-
-                                                        {!userCertificates && (
-                                                            <div className='flex flex-col w-full h-auto p-3 border-dashed border-[#99A339] bg-[#FFF]'>
-                                                                {/* Pending Application status provider 
-                                                                    If adoption applciation is in review display this
-                                                                */}
-                                                                <div className='flex flex-col gap-2'>
-                                                                    <label className='font-bold text-lg text-[#2F2F2F]'>You have an adoption application</label>
-                                                                    <span className='text-md text-[#2F2F2F]'>asdasdasd</span>
-                                                                </div>
-                                                                
-                                                            </div>
-                                                        )}
                                                     </div>
                                                 </div>  
                                             </div> 

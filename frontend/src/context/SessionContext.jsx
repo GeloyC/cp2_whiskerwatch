@@ -26,23 +26,20 @@ export function SessionProvider({ children }) {
     useEffect(() => {
         const requestInterceptor = axios.interceptors.request.use(
         (config) => {
-            console.log("Interceptor triggered for:", config.url);
-            console.log("Current user state:", user ? "Authenticated" : "Not authenticated");
             if (user) {
-            const token = localStorage.getItem('jwt_token');
-            console.log("Token from localStorage:", token ? `${token.substring(0, 20)}...` : "No token");
+                const token = localStorage.getItem('jwt_token');
+
             if (token) {
                 config.headers.Authorization = `Bearer ${token}`;
-                console.log("Added Authorization header to:", config.url);
             } else {
                 console.warn("No token found in localStorage");
             }
             } else {
-            console.warn("No user in context, skipping Authorization");
+                console.warn("No user in context, skipping Authorization");
             }
             return config;
         },
-        (error) => Promise.reject(error)
+            (error) => Promise.reject(error)
         );
 
         return () => axios.interceptors.request.eject(requestInterceptor);
@@ -55,10 +52,9 @@ export function SessionProvider({ children }) {
         (response) => response,
         (error) => {
             if (error.response?.status === 401 && user) {
-            console.log("401 detected - logging out");
-            localStorage.removeItem('jwt_token');
-            setUser(null);
-            window.location.href = '/login';
+                localStorage.removeItem('jwt_token');
+                setUser(null);
+                window.location.href = '/login';
             }
             return Promise.reject(error);
         }
@@ -135,7 +131,6 @@ export function SessionProvider({ children }) {
                 return;
             }
             
-            console.log("Cookie failed, using localStorage token (via interceptor)");
             response = await axios.get(`${url}/user/api/session`, {
                 withCredentials: true // Still include in case other cookies are needed
             });
