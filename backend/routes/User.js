@@ -575,51 +575,53 @@ UserRoute.post('/reset_password', async (req, res) => {
 
 
 
-// UserRoute.get("/api/session", (req, res) => {
-//   const token = req.cookies.token;
-//   if (!token) return res.json({ loggedIn: false, user: null });
+UserRoute.get("/api/session", (req, res) => {
+  const token = req.cookies.token;
+  if (!token) return res.json({ loggedIn: false, user: null });
 
-//   try {
-//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-//     res.json({ loggedIn: true, user: decoded });
-//   } catch (err) {
-//     console.error("Session error:", err);
-//     res.json({ loggedIn: false, user: null });
-//   }
-// });
-
-UserRoute.get("/api/session", async (req, res) => {
   try {
-    // Check for token from either Authorization header or cookie (fallback)
-    const authHeader = req.headers.authorization;
-    const token =
-      (authHeader && authHeader.startsWith("Bearer "))
-        ? authHeader.split(" ")[1]
-        : req.cookies?.token;
-
-
-    if (!token) {
-      return res.status(401).json({ loggedIn: false, message: "No token provided" });
-    }
-
-    // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // Return success response
-    return res.status(200).json({
-      loggedIn: true,
-      user: decoded,
-      message: "Session valid",
-    });
+    res.json({ loggedIn: true, user: decoded });
   } catch (err) {
-    console.error("Token verification error:", err.message);
-
-    return res.status(401).json({
-      loggedIn: false,
-      message: "Invalid or expired token",
-    });
+    console.error("Session error:", err);
+    res.json({ loggedIn: false, user: null });
   }
 });
+
+
+// ---->  Deals with the LocalStorage
+// UserRoute.get("/api/session", async (req, res) => {
+//   try {
+//     // Check for token from either Authorization header or cookie (fallback)
+//     const authHeader = req.headers.authorization;
+//     const token =
+//       (authHeader && authHeader.startsWith("Bearer "))
+//         ? authHeader.split(" ")[1]
+//         : req.cookies?.token;
+
+
+//     if (!token) {
+//       return res.status(401).json({ loggedIn: false, message: "No token provided" });
+//     }
+
+//     // Verify token
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+//     // Return success response
+//     return res.status(200).json({
+//       loggedIn: true,
+//       user: decoded,
+//       message: "Session valid",
+//     });
+//   } catch (err) {
+//     console.error("Token verification error:", err.message);
+
+//     return res.status(401).json({
+//       loggedIn: false,
+//       message: "Invalid or expired token",
+//     });
+//   }
+// });
 
 
 
