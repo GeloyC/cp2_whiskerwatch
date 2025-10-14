@@ -150,18 +150,56 @@ export function SessionProvider({ children }) {
 
     const login = (userData) => setUser(userData);
 
+    // const logout = async () => {
+    //     try {
+    //         const response = await axios.post(`${url}/user/logout`, {}, { withCredentials: true });
+    //         console.log("Logout response:", response.data);
+    //         Cookies.remove("token", { path: "/" });
+    //     } catch (err) {
+    //         console.error("Logout failed:", err);
+    //     }
+        
+    //     setUser(null);
+    //     await refreshSession();
+    // };
+
     const logout = async () => {
         try {
-            const response = await axios.post(`${url}/user/logout`, {}, { withCredentials: true });
-            console.log("Logout response:", response.data);
-            Cookies.remove("token", { path: "/" });
+            // Clear server-side cookie first
+            await axios.post(`${url}/user/logout`, {}, { 
+            withCredentials: true 
+            });
+            console.log("Server logout successful");
         } catch (err) {
-            console.error("Logout failed:", err);
+            console.error("Logout API failed:", err);
+            // Continue with client-side cleanup even if server fails
         }
         
+        // CRITICAL: Clear token BEFORE setting user to null
+        localStorage.removeItem('jwt_token');
+        console.log("Token removed from localStorage");
+        
+        // Clear axios default auth header
+        delete axios.defaults.headers.common['Authorization'];
+        
+        // Clear axios interceptors to prevent token re-injection
+        axios.interceptors.request.eject(
+            axios.interceptors.request.handlers.find(h => 
+            h.onFulfilled.toString().includes('localStorage.getItem')
+            )?.id
+        );
+        console.log("Axios interceptors cleared");
+        
+        // Set user to null
         setUser(null);
-        await refreshSession();
+        
+        // DON'T call refreshSession() - it would re-add the interceptor and token
+        setLoading(false);
+        
+        // Redirect to login manually
+        window.location.href = '/login'; // or use navigate from react-router
     };
+
 
     const fetchNotifications = async (user_id) => {
         if (!user_id) return;
