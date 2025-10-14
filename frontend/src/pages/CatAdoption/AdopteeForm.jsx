@@ -157,7 +157,7 @@ const AdopteeForm = () => {
                         </div> */}
 
                         {!submitMessage ? (
-                            <form ref={printRef} className="hidden xl:flex xl:flex-col lg:flex lg:flex-col items-start w-full p-5 gap-5 bg-[#FFF] rounded-[15px]">
+                            <form ref={printRef} className=" xl:flex xl:flex-col lg:flex lg:flex-col items-start w-full p-5 gap-5 bg-[#FFF] rounded-[15px]">
                                 <div className="flex flex-row gap-2 w-full justify-between">
                                     {catprofile && (
                                         <div className="flex gap-2">
