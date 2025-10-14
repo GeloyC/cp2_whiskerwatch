@@ -117,7 +117,7 @@ const Profile = () => {
                 withCredentials: true,
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                    // Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
                 },
             });
 
@@ -307,7 +307,7 @@ const Profile = () => {
                                                     profile.profile_image?.startsWith('blob:') 
                                                     ? profile.profile_image
                                                     : profile.profile_image
-                                                        ? `${url}/FileUploads/${profile.profile_image}` || '/assets/UserProfile/default_profile_image.jpg'
+                                                        ? `${profile.profile_image}` || '/assets/UserProfile/default_profile_image.jpg'
                                                         : '/assets/UserProfile/default_profile_image.jpg'} alt="" 
                                                 className='w-full h-full object-cover'/>
                                             </div>
