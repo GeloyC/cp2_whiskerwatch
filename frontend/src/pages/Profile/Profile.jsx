@@ -184,22 +184,23 @@ const Profile = () => {
 
     useEffect(() => {
         const fetchApplications = async () => {
-            if (!user?.user_id) {
-            console.log("No user_id available, skipping fetch");
-            return;
-            }
-            try {
-            const token = Cookies.get('token') || localStorage.getItem('jwt_token'); // Fallback to localStorage
-            console.log("Fetching applications for user_id:", user.user_id, "with token:", token ? `${token.substring(0, 20)}...` : "No token");
             
-            const response = await axios.get(`${url}/user/show_application/${user.user_id}`, {
-                withCredentials: true,
-                headers: {
-                Authorization: `Bearer ${token}`,
-                },
-            });
-            console.log('Applications fetched:', response.data);
-            setApplications(response.data);
+            try {
+                if (!user?.user_id) {
+                    console.log("No user_id available, skipping fetch");
+                    return;
+                }
+                const token = Cookies.get('token') || localStorage.getItem('jwt_token'); // Fallback to localStorage
+                console.log("Fetching applications for user_id:", user.user_id, "with token:", token ? `${token.substring(0, 20)}...` : "No token");
+            
+                const response = await axios.get(`${url}/user/show_application/${user.user_id}`, {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                console.log('Applications fetched:', response.data);
+                setApplications(response.data);
             } catch (err) {
             console.error('Error fetching user application data:', err.response?.status, err.response?.data || err.message);
             }
