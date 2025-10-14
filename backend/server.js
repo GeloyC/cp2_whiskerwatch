@@ -40,13 +40,13 @@ const __dirname = path.dirname(__filename);
 //   })
 // );
 
+const allowedOrigins = [
+  "https://cp2-whiskerwatch.vercel.app",
+  "https://www.whiskerwatch.site",
+  "https://whiskerwatch-0j6g.onrender.com"
+];
+
 app.use((req, res, next) => {
-  const allowedOrigins = [
-    "https://cp2-whiskerwatch.vercel.app",
-    "https://www.whiskerwatch.site",
-    "https://whiskerwatch-0j6g.onrender.com"
-  ];
-  
   const origin = req.headers.origin;
   
   if (allowedOrigins.includes(origin)) {
