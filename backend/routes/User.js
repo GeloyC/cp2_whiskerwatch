@@ -1192,7 +1192,8 @@ UserRoute.get(`/show_application/:user_id`, async (req, res) => {
 
     res.json(application);
   } catch (err) {
-    res.status(404).json({ message: 'Error fetching application data'});
+    console.error('Error fetch applicaion/s: ', err)
+    res.status(500).json({ message: 'Error fetching application data'});
   }
 });
 
