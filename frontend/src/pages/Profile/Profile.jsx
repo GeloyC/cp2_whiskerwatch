@@ -48,7 +48,7 @@ const Profile = () => {
             if (response.data.user_id) {
                 const certificateResponse = await axios.get(
                 `${url}/admin/adopters_certificate/${response.data.user_id}`,
-                { withCredentials: true }
+                    { withCredentials: true }
                 );
                 setUserCertificates(certificateResponse.data);
             }
@@ -115,14 +115,16 @@ const Profile = () => {
 
             const response = await axios.patch(`${url}/user/profile/update`, formData, {
                 withCredentials: true,
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    Authorization: `Bearer ${token}`,
-                },
+                // headers: {
+                //     'Content-Type': 'multipart/form-data',
+                //     Authorization: `Bearer ${token}`,
+                // },
             });
 
 
-            URL.revokeObjectURL(profile.profile_image); 
+            if (profile.profile_image?.startsWith('blob:')) {
+                URL.revokeObjectURL(profile.profile_image);
+            }
 
             setProfile(response.data.profile);
             setOriginalProfile(response.data.profile);

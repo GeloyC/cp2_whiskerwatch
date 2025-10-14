@@ -16,7 +16,9 @@ const Whisker = () => {
     const fetchWhiskerPoints = async () => {
       if (!user?.user_id) return;
       try {
-        const response = await axios.get(`${url}/whisker/whiskermeter/${user.user_id}`);
+        const response = await axios.get(`${url}/whisker/whiskermeter/${user.user_id}`, {
+          withCredentials: true
+        });
         setPoints(response.data.points);
         
       } catch (err) {

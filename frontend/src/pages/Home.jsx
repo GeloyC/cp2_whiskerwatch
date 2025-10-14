@@ -135,7 +135,7 @@ const Home = () => {
                 <Link to="/catadoption" className='w-fit self-center bg-[#99A339] text-[#FFF] font-bold p-3 rounded-[15px] hover:scale-105 active:scale-95 transition-all duration-100'>SEE MORE CATS</Link>
               </div>
 
-              <div className='grid grid-rows-1 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2 xl:flex-row w-full h-full p-10 gap-5 px-25 justify-between items-center leading-tight bg-[#FFF] bg-[url(/assets/background-paws.png)] bg-cover bg-fit bg-repeat'>
+              <div className='grid grid-rows-1 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2 xl:flex-row w-full h-full xl:p-10 lg:p-10 md:p-10  gap-5 px-25 justify-between items-center leading-tight bg-[#FFF] bg-[url(/assets/background-paws.png)] bg-cover bg-fit bg-repeat'>
                 {/* <div className='flex flex-col items-center justify-center rounded-[15px] p-4'>
                   <div className='text-[60px] text-[#FFF] text-center font-bold w-[350px]'>10, 000</div>
                   <div className='font-bold text-[20px] text-[#2F2F2F]'>Total Cats Adopted</div>
