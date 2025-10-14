@@ -182,6 +182,8 @@ const Profile = () => {
         fetchWhiskerPoints();
     }, [user, whiskerUpdateTrigger]);
 
+
+    console.log('Current user: ', user)
     useEffect(() => {
         const fetchApplications = async () => {
             if (!user?.user_id) return;
@@ -298,7 +300,7 @@ const Profile = () => {
                                                                         */}
                                                                         <div className='flex flex-col gap-2'>
                                                                             <label className='font-bold text-lg text-[#2F2F2F]'>You have an adoption application</label>
-                                                                            <span className='text-md text-[#2F2F2F]'>asdasdasd</span>
+                                                                            <span className='text-md text-[#2F2F2F]'>{applications}</span>
                                                                         </div>
 
                                                                         <a
