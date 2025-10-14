@@ -222,7 +222,7 @@ const Profile = () => {
                                 {!updateProfile && (
                                     <>
                                         {profile && (
-                                            <div className='relative flex flex-col p-[2%] xl:flex-row lg:flex-row gap-5'>
+                                            <div className='relative flex flex-col p-[2%] xl:flex-row xl:items-start lg:flex-row gap-5'>
                                                 <div className='flex flex-row xl:flex-col lg:flex-col gap-3 justify-center'>
                                                     <div className='flex w-[250px] h-[250px] bg-[#B5C04A] rounded-sm p-2'>
                                                         <img
@@ -293,7 +293,7 @@ const Profile = () => {
                                                         <div className='flex flex-row items-center pt-2 pb-2'>
                                                             {userCertificates.length > 0 && (
                                                                 userCertificates.map((cert, index) => (
-                                                                    <div className={!cert.certificate ? 'flex flex-col w-full h-auto p-5 gap-2 rounded-[10] border-dashed border-2 border-[#99A339] bg-[#FFF]' : 'hidden'}>
+                                                                    <div className={'flex flex-col w-full h-auto p-5 gap-2 rounded-[10] border-dashed border-2 border-[#99A339] bg-[#FFF]'}>
                                                                         {/* Pending Application status provider 
                                                                             If adoption applciation is in review display this
                                                                         */}

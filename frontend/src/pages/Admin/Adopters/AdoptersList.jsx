@@ -140,51 +140,43 @@ const AdoptersList = () => {
 // };
 
 
-const handleUploadCertificate = async (e, adoptee) => {
-  const file = e.target.files?.[0];
-  if (!file) {
-    alert("Please select a file.");
-    return;
-  }
+  const handleUploadCertificate = async (e, adoptee) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      alert("Please select a file.");
+      return;
+    }
 
-  if (file.type !== "image/png") {
-    alert("Only PNG files are allowed!");
-    return;
-  }
+    if (file.type !== "image/png") {
+      alert("Only PNG files are allowed!");
+      return;
+    }
 
-  const filename = `Certificate_${
-    adoptee.adopter ? adoptee.adopter.replace(/\s+/g, '_') : 'unknown'
-  }_${adoptee.adoption_id}.png`;
+    const filename = `Certificate_${
+      adoptee.adopter ? adoptee.adopter.replace(/\s+/g, '_') : 'unknown'
+    }_${adoptee.adoption_id}.png`;
 
 
-  const formData = new FormData();
-  formData.append( "certificate", file,filename);
-  formData.append("adoption_id", adoptee.adoption_id);
+    const formData = new FormData();
+    formData.append( "certificate", file,filename);
+    formData.append("adoption_id", adoptee.adoption_id);
 
-  try {
-    const response = await axios.post(
-      "https://whiskerwatch-0j6g.onrender.com/admin/upload_certificate",
-      formData,
-      { headers: { "Content-Type": "multipart/form-data" } }
-    );
+    try {
+      const response = await axios.post(
+        "https://whiskerwatch-0j6g.onrender.com/admin/upload_certificate",
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
 
-    console.log('Upload response:', response.data);
+      console.log('Upload response:', response.data);
 
-    // Update local state
-    // setAdopters((prev) =>
-    //   prev.map((a) =>
-    //     a.adoption_id === adoptee.adoption_id
-    //       ? { ...a, certificate: response.data.certificateUrl }
-    //       : a
-    //   )
-    // );
-
-    alert("Certificate uploaded successfully!");
-  } catch (err) {
-    console.error("Upload failed:", err.response?.data || err.message);
-    alert(`Upload failed: ${err.response?.data?.error || "Unknown error"}`);
-  }
-};
+      alert("Certificate uploaded successfully!");
+      window.location.reload();
+    } catch (err) {
+      console.error("Upload failed:", err.response?.data || err.message);
+      alert(`Upload failed: ${err.response?.data?.error || "Unknown error"}`);
+    }
+  };
 
 
 
@@ -223,7 +215,7 @@ const handleUploadCertificate = async (e, adoptee) => {
                 <th>Certificate</th>
               </tr>
             </thead>
-            <tbody className='flex flex-col w-full overflow-y-scroll max-h-[550px] gap-1'>
+            <tbody className='flex flex-col w-full overflow-y-scroll h-[550px] gap-1'>
               {adopters.map((adoptee) => (
                 <tr key={adoptee.adoption_id} className='grid grid-cols-6 w-full place-items-center justify-items-start bg-[#FFF] p-2 rounded-[15px] text-[#2F2F2F] border-b-1 border-b-[#595959]'>
                   <td>{adoptee.adoption_id}</td>
