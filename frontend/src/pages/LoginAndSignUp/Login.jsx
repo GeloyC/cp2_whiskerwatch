@@ -974,56 +974,61 @@ const Login = () => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   // ------------------- USER LOGIN -------------------
-  // const handleLogin = async (event) => {
-  //   event.preventDefault();
-  //   setError("");
-  //   setLoading(true);
+  const handleLogin = async (event) => {
+    event.preventDefault();
+    setError("");
+    setLoading(true);
 
-  //   if (!emailRegex.test(email)) {
-  //     setError("Please enter a valid email address");
-  //     setLoading(false);
-  //     return;
-  //   }
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address");
+      setLoading(false);
+      return;
+    }
 
-  //   try {
-  //     const response = await axios.post(
-  //       `${url}/user/login`,
-  //       { email, password },
-  //       { withCredentials: true }
-  //     );
+    try {
+      const response = await axios.post(
+        `${url}/user/login`,
+        { email, password },
+        { withCredentials: true }
+      );
 
-  //     const user = response.data.user;
-  //     if (!user) throw new Error("User data not received");
+      
+      const token = response.data.token;
 
-  //     // Store user in localStorage with error handling
-  //     try {
-  //       localStorage.setItem("user", JSON.stringify(user));
-  //       console.log("LocalStorage set in Login.jsx:", JSON.parse(localStorage.getItem("user")));
-  //     } catch (e) {
-  //       console.error("Failed to save user to localStorage:", e);
-  //     }
+      if (token) {
+        Cookies.set("token", token, {
+          expires: 7,
+          path: "/",
+          secure: process.env.NODE_ENV === "production",
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        });
+        console.log("Token set:", Cookies.get("token"));
+      }
 
-  //     setUser(user);
-  //     await new Promise((resolve) => setTimeout(resolve, 200));
-  //     login(user);
-  //     await refreshSession();
-  //     console.log("Post-refreshSession user state:", user, "LocalStorage:", localStorage.getItem("user"));
+      const user = response.data.user;
+      if (!user) throw new Error("User data not received");
 
-  //     if (["regular", "head_volunteer", "admin"].includes(user.role)) {
-  //       navigate("/home");
-  //     } else {
-  //       setError("Unauthorized role");
-  //     }
-  //   } catch (err) {
-  //     const errorMessage =
-  //       err.response?.data?.error ||
-  //       err.response?.data?.message ||
-  //       "Login Failed: Incorrect Email or Password";
-  //     setError(errorMessage);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+      // Update Session Context
+      setUser(user);
+      login(user);
+      await refreshSession();
+
+      if (user.role === "regular" || user.role === "head_volunteer" || user.role === "admin") {
+        navigate("/home");
+      } else {
+        setError("Unauthorized role");
+      }
+    } catch (err) {
+      const errorMessage =
+        err.response?.data?.error ||
+        err.response?.data?.message ||
+        "Login Failed: Incorrect Email or Password";
+      setError(errorMessage);
+      console.error("Login error:", err.response?.data || err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
   // Stores the JWT token to localStorage
@@ -1081,26 +1086,26 @@ const Login = () => {
   // };
 
 
-  const handleLogin = async (event) => {
-    event.preventDefault();
-    setError("");
-    setLoading(true);
+  // const handleLogin = async (event) => {
+  //   event.preventDefault();
+  //   setError("");
+  //   setLoading(true);
 
-    try {
-      const res = await axios.post(`${url}/user/login`, { email, password });
-      const { user, token } = res.data;
+  //   try {
+  //     const res = await axios.post(`${url}/user/login`, { email, password });
+  //     const { user, token } = res.data;
 
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
+  //     localStorage.setItem("token", token);
+  //     localStorage.setItem("user", JSON.stringify(user));
 
-      login(user, token);
-      navigate("/home");
-    } catch (err) {
-      setError("Login failed: " + (err.response?.data?.message || "Unknown error"));
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     login(user, token);
+  //     navigate("/home");
+  //   } catch (err) {
+  //     setError("Login failed: " + (err.response?.data?.message || "Unknown error"));
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
 
   // ------------------- FORGOT PASSWORD -------------------

@@ -32,7 +32,6 @@ app.use(
     origin: [
       "https://www.whiskerwatch.site",
       "https://cp2-whiskerwatch.vercel.app",
-      "https://whiskerwatch-cp2.vercel.app",
       "https://whiskerwatch-0j6g.onrender.com",
       /\.vercel\.app$/,
     ],
