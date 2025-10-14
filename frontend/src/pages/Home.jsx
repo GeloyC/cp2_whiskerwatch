@@ -135,7 +135,7 @@ const Home = () => {
                 <Link to="/catadoption" className='w-fit self-center bg-[#99A339] text-[#FFF] font-bold p-3 rounded-[15px] hover:scale-105 active:scale-95 transition-all duration-100'>SEE MORE CATS</Link>
               </div>
 
-              <div className='grid grid-rows-1 xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2 xl:flex-row w-full h-full xl:p-10 lg:p-10 md:p-10  gap-5 p-5 justify-between items-center leading-tight bg-[#FFF] bg-[url(/assets/background-paws.png)] bg-cover bg-fit bg-repeat'>
+              <div className='grid grid-rows-1 xl:grid-cols-2 lg:grid-rows-1 md:grid-rows-1 xl:flex-row w-full h-full xl:p-10 xl:px-50 lg:p-10 lg:px-50 md:p-10 md:px-15  gap-5 p-5 justify-between items-center leading-tight bg-[#FFF] bg-[url(/assets/background-paws.png)] bg-cover bg-fit bg-repeat'>
                 {/* <div className='flex flex-col items-center justify-center rounded-[15px] p-4'>
                   <div className='text-[60px] text-[#FFF] text-center font-bold w-[350px]'>10, 000</div>
                   <div className='font-bold text-[20px] text-[#2F2F2F]'>Total Cats Adopted</div>
@@ -147,20 +147,33 @@ const Home = () => {
                 </div> */}
 
                   <div className='flex flex-row items-center justify-center'>
-                    <div className='flex flex-col gap-2'>
-                      <div className='w-full h-[400px] object-cover rounded-[10px] overflow-hidden'>
+                    <div className='flex flex-col items-center gap-2 min-h-[300px] max-h-[500px]'>
+                      <div className='w-full max-h-[300px] object-cover rounded-[10px] overflow-hidden'>
                         <img src="/assets/image/who_are_we.jpg" alt="" className='w-full h-full object-cover' />
+                      </div>
+
+                      <div className='flex flex-row gap-2'>
+                        <div className='w-full max-h-[200px] object-cover rounded-[10px] overflow-hidden'>
+                          <img src="/assets/image/who_are_we.jpg" alt="" className='w-full h-full object-cover' />
+                        </div>
+                        <div className='w-full max-h-[200px] object-cover rounded-[10px] overflow-hidden'>
+                          <img src="/assets/image/who_are_we.jpg" alt="" className='w-full h-full object-cover' />
+                        </div>
+                        <div className='w-full max-h-[200px] object-cover rounded-[10px] overflow-hidden'>
+                          <img src="/assets/image/who_are_we.jpg" alt="" className='w-full h-full object-cover' />
+                        </div>
                       </div>
                     </div>
                   </div>
 
                   <div className='flex flex-col justify-center items-center h-full gap-5'>
-                    <label className='font-bold text-3xl'>Get to Know us</label>
-                    <span className='text-center'>
-                      The Siena Park Cat Community is a dedicated group focused on the welfare of stray cats in Siena Park Residences. Supported by DMCI Homes, the group advocates for responsible pet ownership through a shared vision of reducing the stray cat population and finding forever homes for these cats.
-                    </span>
+                    <label className='font-bold xl:text-5xl lg:text-4xl text-3xl'>Get to Know us</label>
+                    <div className='text-center flex flex-col text-md xl:text-xl lg:text-xl md:text-xl gap-2 xl:gap-4 lg:gap-2 md:gap-2'>
+                      <span>The Sienna Park Cat Community is a volunteer group dedicated to the welfare of community cats within Sienna Park Residences.</span>
+                      <span>With the support of DMCI Homes, the group fosters compassion and shared responsibility among residents, creating a safe and caring environment where cats and people can coexist harmoniously...</span>
+                    </div>
 
-                    <div className='flex '>
+                    <div className='flex text-xl'>
                       <Link to='/aboutus' className='bg-[#DC8801] px-6 py-2 font-bold text-[#FFF] rounded-[10px] hover:scale-103 active:scale-97 transition-all duration-100'>More info</Link>
                     </div>
                   </div>

@@ -29,9 +29,26 @@ const AboutUs = () => {
 
             <h1 className='font-bold text-3xl text-center'> About Siena Park Residences Cat Community </h1>
 
-            <label className='text-justify'>
-              The Siena Park Cat Community is a dedicated group focused on the welfare of stray cats in Siena Park Residences. Supported by DMCI Homes, the group advocates for responsible pet ownership through a shared vision of reducing the stray cat population and finding forever homes for these cats.
+            <label className='flex flex-col xl:gap-4 lg:gap-4 md:gap-4 gap-2  text-justify'>
+              <span>The Sienna Park Cat Community is a volunteer group dedicated to the welfare of community cats within Sienna Park Residences. With the support of DMCI Homes, the group fosters compassion and shared resposibility among residents, creating a safe and caring environment where cats and people can coexist harmonously.</span>
+
+              <span>The group works to humanely manage the community cat population through initiatives such as the Catch-Neuter-Vaccinate-Return (CNVR) Program, which improves health and well-being, and help rescued cats find loving, permanent homes.</span>
             </label>
+
+            <div className='flex max-h-[250px] items-center w-auto overflow-hidden'>
+              <div>
+                <img src="/assets/image/who_are_we.jpg" alt="" />
+              </div>
+              <div>
+                <img src="/assets/image/who_are_we_1.jpg" alt="" />
+              </div>
+              <div>
+                <img src="/assets/image/who_are_we_2.jpg" alt="" />
+              </div>
+              <div>
+                <img src="/assets/image/who_are_we_3.jpg" alt="" />
+              </div>
+            </div>
             
             <label className='flex items-start pb-1 border-b-2 border-b-[#DC8801] w-full font-bold text-2xl text-[#DC8801]'>Community Pillars</label>
 
@@ -41,8 +58,8 @@ const AboutUs = () => {
                 <label className='text-justify'>Advocating for the humane treatment of stray and community cats, the group promotes empathy, compassion, and responsible actions toward animals living within the residential environment.</label>
               </div>
               <div className='flex flex-col'>
-                <label className='font-bold'>Implementation of Trap-Neuter-Realease (TNVR) Program</label>
-                <label className='text-justify'>At the core of the community's initiatives is the TNVR program that focuses on humanely controlling the stray cat popuilation, reducing nuisance behaviors of feral cats and improve overall public health.</label>
+                <label className='font-bold'>Implementation of Catch-Neuter-Vaccinate-Return (CNVR) Program</label>
+                <label className='text-justify'>At the core of the community's initiatives is the CNVR program that focuses on humanely controlling the stray cat popuilation, reducing nuisance behaviors of feral cats and improve overall public health.</label>
               </div>
               <div className='flex flex-col'>
                 <label className='font-bold'>Rescue, Rehabilitation, and Rehoming</label>

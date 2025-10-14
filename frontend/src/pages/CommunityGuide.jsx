@@ -27,7 +27,7 @@ const CommunityGuide = () => {
         <div className='flex flex-col h-full xl:h-auto lg:h-auto md:h-full w-full'>
           <div className='flex flex-col h-full w-auto'>
             <div className='relative flex flex-col  w-auto h-full bg-[#FFF] p-10 xl:rounded-[25px] lg:rounded-[25px] gap-10'>
-
+              <label className='font-bold text-3xl'>COMMUNITY GUIDELINES</label>
               <div className='flex items-start gap-5'>
                 <div className='flex size-12 p-2 xl:size-17 lg:size-17 md:size-15 xl:p-4 lg:p-3 bg-[#f3e0c3] object-fill rounded-[75px]'>
                   <img src="/assets/icons/id.png" alt="id" className='min-w-full min-h-full object-cover'/>
@@ -65,18 +65,20 @@ const CommunityGuide = () => {
 
               </div>
 
-              {/* <div className='flex items-start gap-5'>
+              <div className='flex items-start gap-5'>
                 <div className='flex size-12 p-2 xl:size-17 lg:size-17 md:size-15 xl:p-4 lg:p-3 bg-[#f3e0c3] object-fill rounded-[75px]'>
-                  <img src="/assets/icons/canned-food.png" alt="id" className='min-w-full min-h-full object-cover'/>
-                  
+                  <img src="/assets/icons/warning.png" alt="id" className='min-w-full min-h-full object-cover'/>
                 </div>
 
-                <div className='flex flex-col items-start w-auto gap-2'>
-                  <label className='font-bold border-b-2 border-b-[#DC8801] pb-2'>Only official volunteers are allowed to feed the cats at the designated time and place.</label>
-                  <label className='leading-tight italic text-[#8f8f8f] text-[14px]'>Ang mga opisyal na voluteer lang ang puwedeng magpakain sa mga pusa sa tamang oras at lugar.</label>
+                <div className='flex flex-col items-start w-full gap-2'>
+                  <div className='flex flex-col pb-2 border-b-2 border-b-[#DC8801] leading-tight'>
+                    <label className='font-bold'>Please do not touch or pick up the cats.</label>
+                    <label htmlFor="">Cats are independent creatures who are easily startled. They will NOT hurt anyone unless they are provoked or have to defend themselves.</label>
+                  </div>
+                  <label className='leading-tight italic text-[#8f8f8f] text-[14px]'>Pakisuap huwag hawakan o buhatin ang mga pusa. Ang mga pusa ay mga independiyenteng nilalang na madaling magulat. HINDI nila sasaktan ang sinuman maliban kung sila ay magalit o kailangang ipagtanggol ang kanilang sarili.</label>
                 </div>
 
-              </div> */}
+              </div>
               
             </div>
           </div>
