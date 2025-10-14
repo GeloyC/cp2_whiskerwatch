@@ -188,10 +188,9 @@ const Profile = () => {
         const fetchApplications = async () => {
             if (!user?.user_id) return;
             try {
+                const token = Cookies.get('token');
                 console.log("Fetching applications for user_id:", user?.user_id);
-                const response = await axios.get(`${url}/user/show_application/${user?.user_id}`, {
-                    withCredentials: true, // Interceptor will add Authorization
-                });
+                const response = await axios.get(`${url}/user/show_application/${user?.user_id}`);
                 console.log('Applications fetched:', response.data);
                 setApplications(response.data);
             } catch (err) {
