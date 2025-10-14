@@ -184,15 +184,20 @@ const Profile = () => {
 
     useEffect(() => {
         const fetchApplications = async () => {
-            const token = Cookies.get('token');
-            const response = await axios.get(`${url}/user/show_application/${user.user_id}`, {
-                withCredentials: true,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            console.log('Applications: ', response.data)
-            setApplications(response.data);
+            if (!user?.user_id) return;
+            try {
+                const token = Cookies.get('token');
+                const response = await axios.get(`${url}/user/show_application/${user.user_id}`, {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                console.log('Applications: ', response.data)
+                setApplications(response.data);
+            } catch (err) {
+                console.error('Error fetching user application data: ', err);
+            }
         }
 
         fetchApplications();
