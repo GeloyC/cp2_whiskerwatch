@@ -191,7 +191,7 @@ const Profile = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            console.log(response.data)
+            console.log('Applications: ', response.data)
             setApplications(response.data);
         }
 
