@@ -184,19 +184,16 @@ const Profile = () => {
 
     useEffect(() => {
         const fetchApplications = async () => {
-            if (!user?.user_id) {
-            console.log("No user_id available, skipping fetch");
-            return;
-            }
+            if (!user?.user_id) return;
             try {
-            console.log("Fetching applications for user_id:", user.user_id);
-            const response = await axios.get(`${url}/user/show_application/${user.user_id}`, {
-                withCredentials: true, // Interceptor will add Authorization
-            });
-            console.log('Applications fetched:', response.data);
-            setApplications(response.data);
+                console.log("Fetching applications for user_id:", user?.user_id);
+                const response = await axios.get(`${url}/user/show_application/${user?.user_id}`, {
+                    withCredentials: true, // Interceptor will add Authorization
+                });
+                console.log('Applications fetched:', response.data);
+                setApplications(response.data);
             } catch (err) {
-            console.error('Error fetching user application data:', err.response?.status, err.response?.data || err.message);
+                console.error('Error fetching user application data:', err.response?.status, err.response?.data || err.message);
             }
         };
 
