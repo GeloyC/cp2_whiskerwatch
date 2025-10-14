@@ -186,7 +186,7 @@ const Profile = () => {
         const fetchApplications = async () => {
             if (!user?.user_id) return;
             try {
-                const token = Cookies.get('token');
+                const token = Cookies.get('token') || localStorage.getItem("jwt_token");
                 const response = await axios.get(`${url}/user/show_application/${user.user_id}`, {
                     withCredentials: true,
                     headers: {
