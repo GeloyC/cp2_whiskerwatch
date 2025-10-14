@@ -293,12 +293,12 @@ const Profile = () => {
                                                         <div className='flex flex-row items-center pt-2 pb-2'>
                                                             {userCertificates.length > 0 && (
                                                                 userCertificates.map((cert, index) => (
-                                                                    <div className={!cert.certificate ? 'flex flex-col w-full h-auto p-5 rounded-[10] border-dashed border-2 border-[#99A339] bg-[#FFF]' : 'hidden'}>
+                                                                    <div className={!cert.certificate ? 'flex flex-col w-full h-auto p-5 gap-2 rounded-[10] border-dashed border-2 border-[#99A339] bg-[#FFF]' : 'hidden'}>
                                                                         {/* Pending Application status provider 
                                                                             If adoption applciation is in review display this
                                                                         */}
                                                                         {applications.map((app) => (
-                                                                            <div className={!cert.certificate ? 'flex flex-col gap-2' : 'hidden'}>
+                                                                            <div className={!cert.certificate ? 'flex flex-col gap-1' : 'hidden'}>
                                                                                 <span className='flex flex-row w-full justify-between'>
                                                                                     <label className='font-bold text-lg text-[#2F2F2F]'>You submitted an adoption application</label>
                                                                                     <label className={`rounded-[10px] px-3 py-1 ${app.status === 'Pending' ? 'bg-[#F9F7DC] text-[#B67101]' : 'bg-[#e3e697] text-[#889132]'}`}>{app.status}</label>
