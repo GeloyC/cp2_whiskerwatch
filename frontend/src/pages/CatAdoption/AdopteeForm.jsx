@@ -133,7 +133,7 @@ const AdopteeForm = () => {
             <CatBot />
             <NavigationBar />
             <main className="flex-grow flex flex-col items-center py-0 xl:py-10 lg:py-10 w-full">
-                <div className="flex flex-col w-full max-w-[1200px] gap-5 px-4 sm:px-6 xl:px-0">
+                <div className="flex flex-col w-full max-w-[1200px] gap-5 sm:px-6 xl:px-0">
                     <div className="flex flex-col w-full xl:grid xl:grid-cols-[20%_80%] gap-2">
                         <div className="hidden xl:flex xl:flex-col lg:flex lg:flex-row md:flex md:hidden w-full xl:gap-10 lg:gap-2 md:gap-2">
                             <div className="flex flex-row justify-between items-center p-3 bg-[#FFF] rounded-[15px] w-full">
@@ -157,7 +157,7 @@ const AdopteeForm = () => {
                         </div> */}
 
                         {!submitMessage ? (
-                            <form ref={printRef} className=" xl:flex xl:flex-col lg:flex lg:flex-col items-start w-full gap-5 bg-[#FFF] xl:rounded-[15px] lg:rounded-[15px] md:rounded-[15px]">
+                            <form ref={printRef} className=" xl:flex xl:flex-col lg:flex p-5 lg:flex-col items-start w-full gap-5 bg-[#FFF] xl:rounded-[15px] lg:rounded-[15px] md:rounded-[15px]">
                                 <div className="flex flex-row gap-2 w-full justify-between">
                                     {catprofile && (
                                         <div className="flex gap-2">
