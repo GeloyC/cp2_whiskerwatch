@@ -184,7 +184,12 @@ const Profile = () => {
 
     useEffect(() => {
         const fetchApplications = async () => {
-            const response = await axios.get(`${url}/user/show_application/${user.user_id}`);
+            const response = await axios.get(`${url}/user/show_application/${user.user_id}`, {
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             console.log(response.data)
             setApplications(response.data);
         }
