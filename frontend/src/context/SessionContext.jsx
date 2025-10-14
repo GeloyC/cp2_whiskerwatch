@@ -26,26 +26,46 @@ export function SessionProvider({ children }) {
     useEffect(() => {
         const requestInterceptor = axios.interceptors.request.use(
         (config) => {
-            // Get token from localStorage
+            console.log("Interceptor triggered for:", config.url);
+            console.log("Current user state:", user ? "Authenticated" : "Not authenticated");
+            if (user) {
             const token = localStorage.getItem('jwt_token');
-            
-            // If token exists, add Authorization header
+            console.log("Token from localStorage:", token ? `${token.substring(0, 20)}...` : "No token");
             if (token) {
                 config.headers.Authorization = `Bearer ${token}`;
+                console.log("Added Authorization header to:", config.url);
+            } else {
+                console.warn("No token found in localStorage");
             }
-            
+            } else {
+            console.warn("No user in context, skipping Authorization");
+            }
             return config;
         },
+        (error) => Promise.reject(error)
+        );
+
+        return () => axios.interceptors.request.eject(requestInterceptor);
+    }, [user]);
+
+    
+
+    useEffect(() => {
+        const responseInterceptor = axios.interceptors.response.use(
+        (response) => response,
         (error) => {
+            if (error.response?.status === 401 && user) {
+            console.log("401 detected - logging out");
+            localStorage.removeItem('jwt_token');
+            setUser(null);
+            window.location.href = '/login';
+            }
             return Promise.reject(error);
         }
         );
 
-        // Cleanup interceptor on unmount
-        return () => {
-        axios.interceptors.request.eject(requestInterceptor);
-        };
-    }, []);
+        return () => axios.interceptors.response.eject(responseInterceptor);
+    }, [user]);
 
     const triggerWhiskerUpdate = () => setWhiskerUpdateTrigger(Date.now());
 
