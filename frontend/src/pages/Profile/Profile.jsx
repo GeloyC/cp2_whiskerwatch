@@ -301,10 +301,10 @@ const Profile = () => {
                                                                             <div className='flex flex-col gap-2'>
                                                                                 <span className='flex flex-row w-full justify-between'>
                                                                                     <label className='font-bold text-lg text-[#2F2F2F]'>You have a pending adoption application</label>
-                                                                                    <label className={app.status === 'Pending' ? 'bg-[#F9F7DC] text-[#B67101]' : 'bg-[#C2CB6A] text-[#889132]'}>{app.status}</label>
+                                                                                    <label className={`rounded-[10px] px-1 py-2 ${app.status === 'Pending' ? 'bg-[#F9F7DC] text-[#B67101]' : 'bg-[#e3e697] text-[#889132]'}`}>{app.status}</label>
                                                                                 </span>
                                                                                 <label className='font-bold text-lg text-[#2F2F2F]'></label>
-                                                                                    <div className='flex flex-row justify-between w-full'>
+                                                                                    <div className='flex flex-col justify-between gap-1 w-full'>
                                                                                         <span>{`You applied to adopt: ${app.cat_name}`}</span>
                                                                                         <span>{`View your application form ${<a href={app.application_form}>here</a>}.`}</span>
                                                                                         <span>{app.application_date}</span>
