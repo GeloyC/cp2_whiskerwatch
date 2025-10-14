@@ -165,7 +165,9 @@ const NavigationBar = () => {
                   </div>
 
                   {/* dropdown: Show User fullname, my profile page,  */}
-                  <div className={isVisible ? 'absolute -right-25  xl:top-10 xl:-right-25 lg:-right-25 md:-right-25 flex flex-col items-start xl:w-auto h-auto bg-[#FFF] border-2 border-[#DC8801] rounded-[10px] rounded-tr-[4px] overflow-hidden' : 'hidden'}>
+
+
+                  <div className={isVisible ? 'absolute -right-5  xl:top-10 xl:-right-5 lg:-right-20 md:-right-20 flex flex-col items-start xl:w-auto h-auto bg-[#FFF] border-2 border-[#DC8801] rounded-[10px] rounded-tr-[4px] overflow-hidden' : 'hidden'}>
                     <div className='flex flex-col'>
                       <Link to="/profile" className='whitespace-nowrap font-bold text-[#B67101] hover:bg-[#F9F7DC] p-2 px-4'>{`${user?.firstname} ${user?.lastname}`}</Link>
                     </div>
