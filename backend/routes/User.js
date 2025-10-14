@@ -1171,11 +1171,28 @@ UserRoute.get('/feeding_reports', async (req, res) => {
 });
 
 
-UserRoute.get(`/show_application/:user_id`, async (req, res) => {
+const authenticateToken = (req, res, next) => {
+  let token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ error: "Please login to view your profile." });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    if (req.user.user_id !== parseInt(req.params.user_id)) {
+      return res.status(403).json({ error: "Forbidden: Cannot access other users' data" });
+    }
+    next();
+  } catch (err) {
+    res.status(401).json({ error: "Invalid or expired token" });
+  }
+};
+
+UserRoute.get(`/show_application/:user_id`, authenticateToken,  async (req, res) => {
   const db = getDB();
   const { user_id } = req.params;
 
   try {
+    console.log("Processing request for user_id:", user_id);
     const [application] = await db.query(`
       SELECT 
         CONCAT(u.firstname, ' ', u.lastname) AS user_name,

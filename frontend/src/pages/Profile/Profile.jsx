@@ -184,23 +184,17 @@ const Profile = () => {
 
     useEffect(() => {
         const fetchApplications = async () => {
-            
+            if (!user?.user_id) {
+            console.log("No user_id available, skipping fetch");
+            return;
+            }
             try {
-                if (!user?.user_id) {
-                    console.log("No user_id available, skipping fetch");
-                    return;
-                }
-                const token = Cookies.get('token') || localStorage.getItem('jwt_token'); // Fallback to localStorage
-                console.log("Fetching applications for user_id:", user.user_id, "with token:", token ? `${token.substring(0, 20)}...` : "No token");
-            
-                const response = await axios.get(`${url}/user/show_application/${user.user_id}`, {
-                    withCredentials: true,
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                console.log('Applications fetched:', response.data);
-                setApplications(response.data);
+            console.log("Fetching applications for user_id:", user.user_id);
+            const response = await axios.get(`${url}/user/show_application/${user.user_id}`, {
+                withCredentials: true, // Interceptor will add Authorization
+            });
+            console.log('Applications fetched:', response.data);
+            setApplications(response.data);
             } catch (err) {
             console.error('Error fetching user application data:', err.response?.status, err.response?.data || err.message);
             }
@@ -301,7 +295,7 @@ const Profile = () => {
                                                         <div className='flex flex-row items-center gap-3 pt-2 pb-2'>
                                                             {userCertificates.length > 0 && (
                                                                 userCertificates.map((cert, index) => (
-                                                                    <div className='flex flex-col w-full h-auto p-10 rounded-[10] border-dashed border-2 border-[#99A339] bg-[#FFF]'>
+                                                                    <div className='flex flex-col w-full h-auto p-5 rounded-[10] border-dashed border-2 border-[#99A339] bg-[#FFF]'>
                                                                         {/* Pending Application status provider 
                                                                             If adoption applciation is in review display this
                                                                         */}
