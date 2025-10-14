@@ -433,10 +433,7 @@ UserRoute.post("/login", async (req, res) => {
       "https://www.whiskerwatch.site"
     ];
 
-    if (!allowedOrigins.includes(origin)) {
-      console.log("Login blocked from origin:", origin);
-      return res.status(403).json({ error: "Origin not allowed" });
-    }
+    console.log("Token generated and cookie attempted for origin:", req.headers.origin);
 
     // ... token generation ...
 
@@ -454,7 +451,7 @@ UserRoute.post("/login", async (req, res) => {
 
     res.status(200).json({
       message: "Login successful!",
-      token,
+      token: token,
       user: payload,
     });
   } catch (err) {
@@ -522,8 +519,8 @@ UserRoute.post("/login", async (req, res) => {
 UserRoute.post("/logout", (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? "none" : "lax",
+    secure: true,
+    sameSite: "none",
     path: "/",
   });
   res.status(200).json({ message: "Logout successful" });
@@ -603,14 +600,28 @@ UserRoute.post('/reset_password', async (req, res) => {
 
 
 UserRoute.get("/api/session", (req, res) => {
-  const token = req.cookies.token;
-  if (!token) return res.json({ loggedIn: false, user: null });
+  let token = req.cookies.token; // Try cookie first (more secure)
+  
+  // Fallback: Check Authorization header
+  if (!token) {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.substring(7);
+      console.log("Using token from Authorization header");
+    }
+  }
+  
+  if (!token) {
+    console.log("No token found in cookie or header");
+    return res.json({ loggedIn: false, user: null });
+  }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("Session valid, user_id:", decoded.user_id, "Source: cookie/header");
     res.json({ loggedIn: true, user: decoded });
   } catch (err) {
-    console.error("Session error:", err);
+    console.error("Token verification failed:", err.message);
     res.json({ loggedIn: false, user: null });
   }
 });
