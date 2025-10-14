@@ -999,8 +999,8 @@ const Login = () => {
         Cookies.set("token", token, {
           expires: 7,
           path: "/",
-          secure: process.env.NODE_ENV === "production",
-          sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+          secure: true,
+          sameSite: "none",
         });
         console.log("Token set:", Cookies.get("token"));
       }
