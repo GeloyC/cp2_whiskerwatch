@@ -993,23 +993,9 @@ const Login = () => {
       );
 
       
-      const token = response.data.token;
-
-      if (token) {
-        Cookies.set("token", token, {
-          expires: 7,
-          path: "/",
-          secure: true,
-          sameSite: "none",
-        });
-        console.log("Token set:", Cookies.get("token"));
-      }
-
       const user = response.data.user;
       if (!user) throw new Error("User data not received");
-
-      // Update Session Context
-      setUser(user);
+      
       login(user);
       await refreshSession();
 

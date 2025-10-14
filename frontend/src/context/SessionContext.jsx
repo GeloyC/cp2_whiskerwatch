@@ -27,22 +27,37 @@ export function SessionProvider({ children }) {
     const triggerWhiskerUpdate = () => setWhiskerUpdateTrigger(Date.now());
 
 
-    const refreshSession = async () => {
-        // const token = getCookie("token");
-        const token = Cookies.get("token");
-        if (!token) {
-            setUser(null);
-            setLoading(false);
+    // const refreshSession = async () => {
+    //     // const token = getCookie("token");
+    //     const token = Cookies.get("token");
+    //     if (!token) {
+    //         setUser(null);
+    //         setLoading(false);
 
-            return;
-        }
+    //         return;
+    //     }
         
+    //     try {
+    //         const response = await axios.get(`${url}/user/api/session`, { 
+    //             withCredentials: true,
+    //             headers: {
+    //                 Authorization: `Bearer ${token}`, // Send token in header
+    //             },
+    //         });
+    //         setUser(response.data.loggedIn ? response.data.user : null);
+    //         console.log("Session refreshed:", response.data);
+    //     } catch (err) {
+    //         console.error("Session refresh error:", err);
+    //         setUser(null);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
+
+    const refreshSession = async () => {
         try {
             const response = await axios.get(`${url}/user/api/session`, { 
-                withCredentials: true,
-                headers: {
-                    Authorization: `Bearer ${token}`, // Send token in header
-                },
+            withCredentials: true,  // Browser sends cookie automatically
             });
             setUser(response.data.loggedIn ? response.data.user : null);
             console.log("Session refreshed:", response.data);
