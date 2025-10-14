@@ -24,6 +24,31 @@ export function SessionProvider({ children }) {
 
     axios.defaults.withCredentials = true;
 
+    useEffect(() => {
+        const requestInterceptor = axios.interceptors.request.use(
+        (config) => {
+            // Get token from localStorage
+            const token = localStorage.getItem('jwt_token');
+            
+            // If token exists, add Authorization header
+            if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+            console.log("Added Authorization header to request:", config.url);
+            }
+            
+            return config;
+        },
+        (error) => {
+            return Promise.reject(error);
+        }
+        );
+
+        // Cleanup interceptor on unmount
+        return () => {
+        axios.interceptors.request.eject(requestInterceptor);
+        };
+    }, []);
+
     const triggerWhiskerUpdate = () => setWhiskerUpdateTrigger(Date.now());
 
 
@@ -75,14 +100,14 @@ export function SessionProvider({ children }) {
         try {
             // First attempt: Use cookies only (withCredentials)
             let response = await axios.get(`${url}/user/api/session`, { 
-            withCredentials: true 
+                withCredentials: true 
             });
             
             // If user is authenticated via cookie, we're good
             if (response.data.loggedIn) {
-            setUser(response.data.user);
-            console.log("Session refreshed via cookie:", response.data);
-            return;
+                setUser(response.data.user);
+                console.log("Session refreshed via cookie:", response.data);
+                return;
             }
             
             // Cookie failed - try localStorage token
@@ -90,26 +115,23 @@ export function SessionProvider({ children }) {
             const token = localStorage.getItem('jwt_token');
             
             if (!token) {
-            console.log("No token found in localStorage");
-            setUser(null);
-            return;
+                console.log("No token found in localStorage");
+                setUser(null);
+                return;
             }
             
-            // Second attempt: Use Authorization header
+            console.log("Cookie failed, using localStorage token (via interceptor)");
             response = await axios.get(`${url}/user/api/session`, {
-            headers: { 
-                Authorization: `Bearer ${token}`
-            },
-            withCredentials: true // Still include in case other cookies are needed
+                withCredentials: true // Still include in case other cookies are needed
             });
             
             if (response.data.loggedIn) {
-            setUser(response.data.user);
-            console.log("Session refreshed via Authorization header:", response.data);
+                setUser(response.data.user);
+                console.log("Session refreshed via Authorization header:", response.data);
             } else {
-            console.log("Both cookie and token authentication failed");
-            localStorage.removeItem('jwt_token'); // Clear invalid token
-            setUser(null);
+                console.log("Both cookie and token authentication failed");
+                localStorage.removeItem('jwt_token'); // Clear invalid token
+                setUser(null);
             }
             
         } catch (err) {
