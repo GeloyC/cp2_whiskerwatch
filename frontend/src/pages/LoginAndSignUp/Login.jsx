@@ -994,14 +994,12 @@ const Login = () => {
 
       
       const { token, user } = response.data;
-      console.log("Login response:", { hasToken: !!token, hasUser: !!user });
 
       if (!user) throw new Error("User data not received");
 
       // Store token in localStorage (works regardless of cookie blocking)
       if (token) {
         localStorage.setItem('jwt_token', token);
-        console.log("Token stored in localStorage successfully");
       } else {
         console.warn("No token received in login response");
       }

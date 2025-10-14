@@ -83,7 +83,7 @@ const Home = () => {
               </div>
             
 
-              <div className='flex flex-col items-center justify-center px-15 pb-10 xl:px-0 lg:px-0 md:px-0 sm:px-0 gap-4 bg-[#F9F7DC] bg-[url(src/assets/background-paws.png)] bg-cover bg-fit bg-repeat w-[500px] md::w-auto xl:px-20 lg:px-20 xl:w-auto lg:w-auto md:w-auto sm:w-full'>
+              <div className='flex flex-col items-center justify-center p-15 xl:px-0 lg:px-0 md:px-0 sm:px-0 gap-4 bg-[#F9F7DC] bg-[url(src/assets/background-paws.png)] bg-cover bg-fit bg-repeat w-[500px] md::w-auto xl:px-20 lg:px-20 xl:w-auto lg:w-auto md:w-auto sm:w-full'>
                 <div className='grid grid-cols-[auto_auto_auto_auto] scrollbar-thin overflow-x-scroll overflow-y-hidden w-full xl:w-full lg:w-full sm:grid-cols-4 md:w-full  sm:w-full xl:grid xl:grid-cols-[auto_auto_auto_auto] lg:grid-cols-[auto_auto_auto_auto] md:grid-cols-[auto_auto] sm:grid-cols-[auto_auto] gap-2 xl:px-[5%] lg:px-[5%]'>
                   {catList.map((cat) => (
                     <div key={cat.cat_id} onClick={() => navigate(`/catprofile/${cat.cat_id}`)}
