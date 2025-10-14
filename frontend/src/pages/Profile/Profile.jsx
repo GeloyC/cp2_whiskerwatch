@@ -304,7 +304,7 @@ const Profile = () => {
                                                                                     <label className={`rounded-[10px] px-3 py-1 ${app.status === 'Pending' ? 'bg-[#F9F7DC] text-[#B67101]' : 'bg-[#e3e697] text-[#889132]'}`}>{app.status}</label>
                                                                                 </span>
                                                                                 <label className='font-bold text-lg text-[#2F2F2F]'></label>
-                                                                                    <div className='flex flex-col justify-between gap-1 w-full text-sm'>
+                                                                                    <div className='flex flex-col justify-between gap-2 w-full text-sm'>
                                                                                         <span>{`You applied to adopt: `}
                                                                                             <span className='font-bold'>{app.cat_name}</span>
                                                                                         </span>
