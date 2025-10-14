@@ -54,20 +54,77 @@ export function SessionProvider({ children }) {
     //     }
     // };
 
+    // const refreshSession = async () => {
+    //     try {
+    //         const response = await axios.get(`${url}/user/api/session`, { 
+    //         withCredentials: true,  // Browser sends cookie automatically
+    //         });
+    //         setUser(response.data.loggedIn ? response.data.user : null);
+    //         console.log("Session refreshed:", response.data);
+    //     } catch (err) {
+    //         console.error("Session refresh error:", err);
+    //         setUser(null);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
+
     const refreshSession = async () => {
+        setLoading(true);
+        
         try {
-            const response = await axios.get(`${url}/user/api/session`, { 
-            withCredentials: true,  // Browser sends cookie automatically
+            // First attempt: Use cookies only (withCredentials)
+            let response = await axios.get(`${url}/user/api/session`, { 
+            withCredentials: true 
             });
-            setUser(response.data.loggedIn ? response.data.user : null);
-            console.log("Session refreshed:", response.data);
+            
+            // If user is authenticated via cookie, we're good
+            if (response.data.loggedIn) {
+            setUser(response.data.user);
+            console.log("Session refreshed via cookie:", response.data);
+            return;
+            }
+            
+            // Cookie failed - try localStorage token
+            console.log("Cookie authentication failed, trying localStorage token");
+            const token = localStorage.getItem('jwt_token');
+            
+            if (!token) {
+            console.log("No token found in localStorage");
+            setUser(null);
+            return;
+            }
+            
+            // Second attempt: Use Authorization header
+            response = await axios.get(`${url}/user/api/session`, {
+            headers: { 
+                Authorization: `Bearer ${token}`
+            },
+            withCredentials: true // Still include in case other cookies are needed
+            });
+            
+            if (response.data.loggedIn) {
+            setUser(response.data.user);
+            console.log("Session refreshed via Authorization header:", response.data);
+            } else {
+            console.log("Both cookie and token authentication failed");
+            localStorage.removeItem('jwt_token'); // Clear invalid token
+            setUser(null);
+            }
+            
         } catch (err) {
-            console.error("Session refresh error:", err);
+            console.error("Session refresh error:", err.response?.data || err.message);
+            
+            // If it's a 401, clear localStorage token
+            if (err.response?.status === 401) {
+            localStorage.removeItem('jwt_token');
+            }
+            
             setUser(null);
         } finally {
             setLoading(false);
         }
-    };
+        };
 
     const login = (userData) => setUser(userData);
 
