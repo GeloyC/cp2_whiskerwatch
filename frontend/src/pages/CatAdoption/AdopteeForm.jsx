@@ -172,7 +172,7 @@ const AdopteeForm = () => {
 
                                 <div className="flex flex-col gap-2 w-full">
                                     <span>2. Please let us know how you found out about the adoption opportunity:</span>
-                                    <div className="grid grid-cols-3 w-full gap-2">
+                                    <div className="flex flex-col w-full gap-2">
                                         <label htmlFor="radioFBPage" className="flex items-center gap-2 p-2 border border-[#252525] rounded-[8px]">
                                             <input
                                                 type="radio"
