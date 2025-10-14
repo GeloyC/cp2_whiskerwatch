@@ -427,14 +427,30 @@ UserRoute.post("/login", async (req, res) => {
     console.log("Generated token:", token);
 
 
-    const isProd = process.env.NODE_ENV === 'production';
+    const origin = req.headers.origin;
+    const allowedOrigins = [
+      "https://cp2-whiskerwatch.vercel.app",
+      "https://www.whiskerwatch.site"
+    ];
+
+    if (!allowedOrigins.includes(origin)) {
+      console.log("Login blocked from origin:", origin);
+      return res.status(403).json({ error: "Origin not allowed" });
+    }
+
+    // ... token generation ...
+
     res.cookie("token", token, {
       httpOnly: true,
-      secure: isProd, // required for sameSite:'none'
-      sameSite: isProd ? 'none' : 'lax',
+      secure: true,
+      sameSite: "none",
+      domain: '.onrender.com', // Try this - allows subdomains
       path: "/",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      priority: 'high'
     });
+
+    console.log("Cookie set for origin:", origin);
     
 
     res.status(200).json({

@@ -27,18 +27,52 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // ---------------- CORS ---------------- //
-app.use(
-  cors({
-    origin: [
-      "https://www.whiskerwatch.site",
-      "https://cp2-whiskerwatch.vercel.app",
-      "https://whiskerwatch-0j6g.onrender.com"
-    ],
-    credentials: true,
-    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+// app.use(
+//   cors({
+//     origin: [
+//       "https://www.whiskerwatch.site",
+//       "https://cp2-whiskerwatch.vercel.app",
+//       "https://whiskerwatch-0j6g.onrender.com"
+//     ],
+//     credentials: true,
+//     methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//   })
+// );
+
+app.use((req, res, next) => {
+  const allowedOrigins = [
+    "https://cp2-whiskerwatch.vercel.app",
+    "https://www.whiskerwatch.site",
+    "https://whiskerwatch-0j6g.onrender.com"
+  ];
+  
+  const origin = req.headers.origin;
+  
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PATCH,DELETE,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+    
+    // Handle preflight
+    if (req.method === 'OPTIONS') {
+      res.sendStatus(200);
+      return;
+    }
+  } else {
+    console.log(`Blocked origin: ${origin}`);
+  }
+  
+  next();
+});
+
+// Then add cors for non-cookie routes if needed
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: false, // Disable credentials for non-cookie routes
+  methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+}));
 
 
 app.use((req, res, next) => {
