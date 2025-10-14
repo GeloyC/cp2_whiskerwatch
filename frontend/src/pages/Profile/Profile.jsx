@@ -298,7 +298,7 @@ const Profile = () => {
                                                                             If adoption applciation is in review display this
                                                                         */}
                                                                         {applications.map((app) => (
-                                                                            <div className={!cert.certificate ? 'flex flex-col gap-2 p-5 gap-2 rounded-[10] border-dashed border-2 border-[#99A339] bg-[#FFF]' : 'hidden'}>
+                                                                            <div className={!cert.certificate && app.status ? 'flex flex-col gap-2 p-5 gap-2 rounded-[10] border-dashed border-2 border-[#99A339] bg-[#FFF]' : 'hidden'}>
                                                                                 <span className='flex flex-row w-full justify-between'>
                                                                                     <label className='font-bold text-lg text-[#2F2F2F]'>You submitted an adoption application</label>
                                                                                     <label className={`rounded-[10px] px-3 py-1 ${app.status === 'Pending' ? 'bg-[#F9F7DC] text-[#B67101]' : 'bg-[#e3e697] text-[#889132]'}`}>{app.status}</label>
