@@ -300,13 +300,17 @@ const Profile = () => {
                                                                         {applications.map((app) => (
                                                                             <div className='flex flex-col gap-2'>
                                                                                 <span className='flex flex-row w-full justify-between'>
-                                                                                    <label className='font-bold text-lg text-[#2F2F2F]'>You have a pending adoption application</label>
+                                                                                    <label className='font-bold text-lg text-[#2F2F2F]'>You submitted an adoption application</label>
                                                                                     <label className={`rounded-[10px] px-3 py-1 ${app.status === 'Pending' ? 'bg-[#F9F7DC] text-[#B67101]' : 'bg-[#e3e697] text-[#889132]'}`}>{app.status}</label>
                                                                                 </span>
                                                                                 <label className='font-bold text-lg text-[#2F2F2F]'></label>
-                                                                                    <div className='flex flex-col justify-between gap-1 w-full text-md'>
-                                                                                        <span>{`You applied to adopt: ${app.cat_name}`}</span>
-                                                                                        <span>{`View your application form ${<a href={`${app.application_form}`} target='_blank'>here</a>}.`}</span>
+                                                                                    <div className='flex flex-col justify-between gap-1 w-full text-sm'>
+                                                                                        <span>{`You applied to adopt: `}
+                                                                                            <span className='font-bold'>{app.cat_name}</span>
+                                                                                        </span>
+                                                                                        <span>{`Application form : `}
+                                                                                            <a href={app.application_form} target='_blank' className='underline'>View application</a>
+                                                                                        </span>
                                                                                         <span>{app.application_date}</span>
                                                                                     </div>
 
