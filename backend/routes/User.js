@@ -1171,6 +1171,31 @@ UserRoute.get('/feeding_reports', async (req, res) => {
 });
 
 
+UserRoute.get(`/show_application/:user_id`, async (req, res) => {
+  const db = getDB();
+  const { user_id } = req.params;
+
+  try {
+    const [application] = await db.query(`
+      SELECT 
+        CONCAT(u.firstname, ' ', u.lastname) AS user_name,
+        c.name AS cat_name,
+        aa.application_form,
+        aa.status,
+        aa.application_date
+      FROM adoption_application aa
+      JOIN users u ON aa.user_id = u.user_id
+      JOIN cat c ON aa.cat_id = c.cat_id
+      WHERE aa.user_id = ?
+      ORDER BY aa.application_date DESC;
+    `, [user_id]);
+
+    res.json(application);
+  } catch (err) {
+    res.status(404).json({ message: 'Error fetching application data'});
+  }
+});
+
 UserRoute.get('/has_report/:user_id', async (req, res) => {
   const db = getDB();
   const { user_id } = req.params;

@@ -24,6 +24,7 @@ const Profile = () => {
     const [updateProfile, setUpdateProfile] = useState(false);
     const [originalProfile, setOriginalProfile] = useState({});
     const [userCertificates, setUserCertificates] = useState([]);
+    const [applications, setApplications] = useState([]);
     const [error, setError] = useState('');
 
     const { user, whiskerUpdateTrigger } = useSession();
@@ -181,6 +182,16 @@ const Profile = () => {
         fetchWhiskerPoints();
     }, [user, whiskerUpdateTrigger]);
 
+    useEffect(() => {
+        const fetchApplications = async () => {
+            const response = await axios.get(`${url}/user/show_application/${user.user_id}`);
+            console.log(response.data)
+            setApplications(response.data);
+        }
+
+        fetchApplications();
+    }, []);
+
     
 
     return (
@@ -273,7 +284,7 @@ const Profile = () => {
                                                         <div className='flex flex-row items-center gap-3 pt-2 pb-2'>
                                                             {userCertificates.length > 0 && (
                                                                 userCertificates.map((cert, index) => (
-                                                                    <div className='flex flex-col w-full h-auto p-3 border-dashed border-[#99A339] bg-[#FFF]'>
+                                                                    <div className='flex flex-col w-full h-auto p-10 rounded-[10] border-dashed border-2 border-[#99A339] bg-[#FFF]'>
                                                                         {/* Pending Application status provider 
                                                                             If adoption applciation is in review display this
                                                                         */}
