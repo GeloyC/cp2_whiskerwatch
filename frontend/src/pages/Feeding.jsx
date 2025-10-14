@@ -735,12 +735,12 @@ const Feeding = () => {
               </div>
             )}
 
-            {!feedingDate && applicationStatus !== 'Pending' && (
+            {/* {!feedingDate && applicationStatus !== 'Pending' && (
               <div className="xl:hidden lg:hidden flex flex-col bg-[#FFF] w-screen h-screen items-center justify-center">
                 <label className="text-2xl text-[#2F2F2F] text-center">Unable to access the feeding form</label>
                 <label className="text-[#8f8f8f] text-center">You can access the form on larger screen size such as desktop/laptop screens</label>
               </div>
-            )}
+            )} */}
 
             {/* -------------------- CONTENT --------------------- */}
             {!feedingDate && applicationStatus !== 'Pending' ? (

@@ -149,12 +149,12 @@ const AdopteeForm = () => {
                             </div>
                         </div>
 
-                        <div className="xl:hidden lg:hidden flex flex-col justify-center items-center h-screen w-full gap-3 bg-[#FFF] rounded-[15px]">
+                        {/* <div className="xl:hidden lg:hidden flex flex-col justify-center items-center h-screen w-full gap-3 bg-[#FFF] rounded-[15px]">
                             <label className="text-2xl text-[#2F2F2F] text-center">Unable to access the adoption form</label>
                             <label className="text-[#8f8f8f] text-center">
                                 You can access the form on larger screen sizes such as desktop/laptop screens
                             </label>
-                        </div>
+                        </div> */}
 
                         {!submitMessage ? (
                             <form ref={printRef} className="hidden xl:flex xl:flex-col lg:flex lg:flex-col items-start w-full p-5 gap-5 bg-[#FFF] rounded-[15px]">
