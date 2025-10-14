@@ -443,8 +443,7 @@ UserRoute.post("/login", async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       secure: true,
-      sameSite: "none",
-      domain: '.onrender.com', // Try this - allows subdomains
+      sameSite: "none", // Try this - allows subdomains
       path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000,
       priority: 'high'
@@ -455,6 +454,7 @@ UserRoute.post("/login", async (req, res) => {
 
     res.status(200).json({
       message: "Login successful!",
+      token,
       user: payload,
     });
   } catch (err) {
@@ -518,6 +518,16 @@ UserRoute.post("/login", async (req, res) => {
 //   }
 // });
 
+
+UserRoute.post("/logout", (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? "none" : "lax",
+    path: "/",
+  });
+  res.status(200).json({ message: "Logout successful" });
+});
 
 
 UserRoute.post('/forgot_password', async (req, res) => {
@@ -785,15 +795,7 @@ UserRoute.get('/profile', async (req, res) => {
 });
 
 
-UserRoute.post("/logout", (req, res) => {
-  res.clearCookie("token", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? "none" : "lax",
-    path: "/",
-  });
-  res.status(200).json({ message: "Logout successful" });
-});
+
 
 
 UserRoute.patch('/profile/update', upload.single('profile_image'), async (req, res) => {
