@@ -141,7 +141,7 @@ const NavigationBar = () => {
                   </button>
 
                   {/* Dropdown for mobile view */}
-                  <div className={MenuVisible ? 'absolute top-1 right-8 w-auto h-auto flex flex-col xl:hidden lg:hidden md:hidden bg-[#FFF] rounded-[10px] rounded-tr-[0px] border-2 border-[#DC8801] overflow-hidden whitespace-nowrap' : 'hidden'}>
+                  <div className={MenuVisible ? 'absolute top-10 right-0 w-auto h-auto flex flex-col xl:hidden lg:hidden md:hidden bg-[#FFF] rounded-[10px] rounded-tr-[0px] border-2 border-[#DC8801] overflow-hidden whitespace-nowrap' : 'hidden'}>
                     <Link to='/home' className='p-2 px-4 active:bg-[#F9F7DC] cursor-pointer'>HOME</Link>
                     <Link to='/aboutus' className='p-2 px-4 active:bg-[#F9F7DC] cursor-pointer'>ABOUT US</Link>
                     <Link to='/catcareguides' className='p-2 px-4 active:bg-[#F9F7DC] cursor-pointer'>CAT CARE GUIDES</Link>
@@ -188,7 +188,7 @@ const NavigationBar = () => {
                   </button>
 
                   {/* Dropdown for mobile view */}
-                  <div className={MenuVisible ? 'absolute top-1 right-8 w-auto h-auto flex flex-col xl:hidden lg:hidden md:hidden bg-[#FFF] rounded-[10px] rounded-tr-[0px] border-2 border-[#DC8801] overflow-hidden whitespace-nowrap' : 'hidden'}>
+                  <div className={MenuVisible ? 'absolute top-12 -right-20 w-auto h-auto flex flex-col xl:hidden lg:hidden md:hidden bg-[#FFF] rounded-[10px] border-2 border-[#DC8801] overflow-hidden whitespace-nowrap' : 'hidden'}>
                     <Link to='/home' className='p-2 px-4 active:bg-[#F9F7DC] cursor-pointer'>HOME</Link>
                     <Link to='/aboutus' className='p-2 px-4 active:bg-[#F9F7DC] cursor-pointer'>ABOUT US</Link>
                     <Link to='/catcareguides' className='p-2 px-4 active:bg-[#F9F7DC] cursor-pointer'>CAT CARE GUIDES</Link>

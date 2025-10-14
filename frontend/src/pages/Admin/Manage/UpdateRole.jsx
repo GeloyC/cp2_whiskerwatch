@@ -179,7 +179,7 @@ const UpdateRole = () => {
         fetchUser();
     }, [user_id]);
 
-    // ✅ Handle role update
+    // Handle role update
     const handleRoleUpdate = async (event) => {
         event.preventDefault();
 

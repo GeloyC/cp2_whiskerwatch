@@ -59,8 +59,8 @@ const Home = () => {
             
             {/* MAIN CONTENT STARTS HERE */}
             <div className="relative w-full h-[500px] xl:h-[600px] bg-[url('/assets/cats/cat-donate-bg.jpg')] bg-center bg-cover bg-no-repeat border-b-2 border-b-[#DC8801]">
-              <div className='absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center w-[400px] xl:w-auto lg:w-auto md:w-auto gap-5'>
-                <img src="/assets/image/Slogan_image_outline.png" alt="stray-today-safe-tomorrow" className=''/>
+              <div className='absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center w-[400px] p-10 xl:w-auto lg:w-auto md:w-auto gap-5'>
+                <img src="/assets/image/Slogan_image_outline.png" alt="stray-today-safe-tomorrow" className='w-full h-full object-cover'/>
 
                 <div className='flex gap-1 items-center justify-center'>
                     <Link to={!user ? '/signup' : '/donate'} className='bg-[#B5C04A] p-2 px-4 rounded-[10px] font-bold text-[#FFF] hover:scale-105 active:scale-95 transition-all duration-100'>{!user ? 'JOIN US NOW' : 'DONATE'}</Link>
@@ -74,10 +74,10 @@ const Home = () => {
 
 
             <div className='flex flex-col items-center w-full'>
-              <div className='flex flex-col items-center gap-5 py-10 w-full bg-[#FFF] bg-[url(/assets/background-paws.png)] bg-cover bg-fit bg-repeat'>
+              <div className='flex flex-col items-center gap-5 px-5 py-10 w-full bg-[#FFF] bg-[url(/assets/background-paws.png)] bg-cover bg-fit bg-repeat'>
                 <label className='text-[#2F2F2F] text-[40px] text-center font-bold leading-tight'>From Stray to Stay: <br/> Caring for a Rescue Cat</label>
 
-                <div className='text-center text-[#2F2F2F] text-[20px] font-bold w-[400px] xl:w-[500px] lg:w-[500px] md:w-[500px]'>
+                <div className='text-center px-10 text-[#2F2F2F] text-[20px] font-bold w-[400px] xl:w-[500px] lg:w-[500px] md:w-[500px]'>
                   Adopting is a big responsibility as cats who once lived on the streets need time, patience and extra love to adjust to their new home.
                 </div>
               </div>
@@ -94,7 +94,7 @@ const Home = () => {
                 </div>
               </div>
 
-              <div className='flex flex-col items-center justify-center gap-4 bg-[#F9F7DC] bg-[url(src/assets/background-paws.png)] bg-cover bg-fit bg-repeat w-[500px] xl:px-20 lg:px-20 xl:w-auto lg:w-auto md:w-auto sm:w-full'>
+              <div className='flex flex-col items-center justify-center px-15 xl:px-0 lg:px-0 md:px-0 sm:px-0 gap-4 bg-[#F9F7DC] bg-[url(src/assets/background-paws.png)] bg-cover bg-fit bg-repeat w-[500px] xl:px-20 lg:px-20 xl:w-auto lg:w-auto md:w-auto sm:w-full'>
                 <div className='grid grid-cols-[auto_auto_auto_auto] overflow-y-auto w-full xl:w-full lg:w-auto px-10 sm:grid-cols-4 sm:w-full p-4 xl:grid xl:grid-cols-[auto_auto_auto_auto] lg:grid-cols-[auto_auto_auto_auto] md:grid-cols-[auto_auto] sm:grid-cols-[auto_auto] gap-2 xl:px-[5%] lg:px-[5%]'>
                   {catList.map((cat) => (
                     <div key={cat.cat_id} onClick={() => navigate(`/catprofile/${cat.cat_id}`)}
