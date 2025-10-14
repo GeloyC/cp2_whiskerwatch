@@ -234,7 +234,7 @@ const AdopteeForm = () => {
                                         <div className="flex items-center justify-center w-[400px] min-h-[200px] border-dashed border-2 border-[#898989] p-2 rounded-[15px]">
                                             <img src={imageSrc} alt="ID card" className="w-full h-full object-contain" />
                                         </div>
-                                        <div className="flex flex-col w-auto">
+                                        <div className={imageSrc === '/assets/icons/id-card.png' ? "flex flex-col w-auto" : "hidden"}>
                                             <label
                                                 htmlFor="idUpload"
                                                 className="bg-[#DC8801] p-2 rounded-[10px] text-[#FFF] hover:bg-[#B67101] active:scale-97"

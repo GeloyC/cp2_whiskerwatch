@@ -288,13 +288,21 @@ const Profile = () => {
                                                                 ))
                                                             )}
                                                         </div>
+
+                                                        {!cert.certificate && (
+                                                            <div className='flex flex-col w-full h-auto p-3 border-dashed border-[#99A339] bg-[#FFF]'>
+                                                                {/* Pending Application status provider 
+                                                                    If adoption applciation is in review display this
+                                                                */}
+                                                                <div className='flex flex-col gap-2'>
+                                                                    <label className='font-bold text-lg text-[#2F2F2F]'>You have an adoption application</label>
+                                                                    <span className='text-md text-[#2F2F2F]'>asdasdasd</span>
+                                                                </div>
+                                                                
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>  
-
-
-                                                <div>
-                                                    adasdasd
-                                                </div>
                                             </div> 
                                             
                                         )}
