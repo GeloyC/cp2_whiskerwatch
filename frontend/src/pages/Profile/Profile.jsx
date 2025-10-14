@@ -306,7 +306,7 @@ const Profile = () => {
                                                                                 <label className='font-bold text-lg text-[#2F2F2F]'></label>
                                                                                     <div className='flex flex-col justify-between gap-1 w-full text-md'>
                                                                                         <span>{`You applied to adopt: ${app.cat_name}`}</span>
-                                                                                        <span>{`View your application form ${<a href={app.application_form}>here</a>}.`}</span>
+                                                                                        <span>{`View your application form ${<a href={`${app.application_form}`} target='_blank'>here</a>}.`}</span>
                                                                                         <span>{app.application_date}</span>
                                                                                     </div>
 
