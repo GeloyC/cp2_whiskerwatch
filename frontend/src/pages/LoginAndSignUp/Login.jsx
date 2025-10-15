@@ -960,7 +960,6 @@ const Login = () => {
   const { user, setUser, login, refreshSession } = useSession();
 
   const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
   const [emailForgot, setEmailForgot] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -972,7 +971,7 @@ const Login = () => {
   const [otpStep, setOtpStep] = useState(false);
   const [otp, setOtp] = useState("");
 
-  // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   // ------------------- USER LOGIN -------------------
   const handleLogin = async (event) => {
@@ -980,11 +979,11 @@ const Login = () => {
     setError("");
     setLoading(true);
 
-    // if (!emailRegex.test(email)) {
-    //   setError("Please enter a valid email address");
-    //   setLoading(false);
-    //   return;
-    // }
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address");
+      setLoading(false);
+      return;
+    }
 
     try {
       const response = await axios.post(
@@ -1193,9 +1192,9 @@ const Login = () => {
             <input
               type="text"
               placeholder="Username"
-              value={username}
+              value={email}
               onChange={(e) => {
-                setUsername(e.target.value);
+                setEmail(e.target.value);
                 if (error) setError("");
               }}
               className="border-b-2 border-b-[#977655] p-2"
@@ -1363,7 +1362,7 @@ const Login = () => {
                 {loading ? "Resetting..." : "Reset Password"}
               </button>
               <button
-                type="button"
+                type="type"
                 onClick={() => {
                   setResetPassForm(false);
                   setError("");
