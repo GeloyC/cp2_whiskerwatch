@@ -19,7 +19,7 @@ export const connectDB = async () => {
   });
 
   try {
-    pool = mysql.connect({
+    pool = mysql.createPool({
       ...clientOpts,
       // instanceConnectionName: 'high-extension-474522-u0:asia-southeast1:whiskerwatch',
       driver: 'mysql2',
