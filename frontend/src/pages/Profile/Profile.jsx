@@ -223,7 +223,7 @@ const Profile = () => {
                                     <>
                                         {profile && (
                                             <div className='relative flex flex-col items-start justify-start p-[2%] xl:flex-row xl:items-start lg:flex-row gap-5'>
-                                                <div className='flex flex-row xl:flex-col lg:flex-col gap-3 justify-center'>
+                                                <div className='flex flex-row xl:flex-col lg:flex-col gap-3 justify-start'>
                                                     <div className='flex w-[250px] h-[250px] bg-[#B5C04A] rounded-sm p-2'>
                                                         <img
                                                             src={
