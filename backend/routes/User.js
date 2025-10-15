@@ -515,58 +515,58 @@ UserRoute.post("/login", async (req, res) => {
 
 
 // This route sends the JWT Token to the localStorage
-// UserRoute.post("/login", async (req, res) => {
-//   const db = getDB();
-//   try {
-//     const { email, password } = req.body;
+UserRoute.post("/login", async (req, res) => {
+  const db = getDB();
+  try {
+    const { email, password } = req.body;
 
-//     if (!email || !password) {
-//       return res.status(400).json({ error: "Email and password are required" });
-//     }
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and password are required" });
+    }
 
-//     const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
-//     if (rows.length === 0) {
-//       return res.status(401).json({ error: "Invalid email or password" });
-//     }
+    const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+    if (rows.length === 0) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
 
-//     const user = rows[0];
-//     const isMatch = await bcrypt.compare(password, user.password);
-//     if (!isMatch) {
-//       return res.status(401).json({ error: "Invalid email or password" });
-//     }
+    const user = rows[0];
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
 
-//     const payload = {
-//       user_id: user.user_id,
-//       role: user.role,
-//       firstname: user.firstname,
-//       lastname: user.lastname,
-//       email: user.email,
-//       username: user.username,
-//       profile_image: user.profile_image || null,
-//     };
+    const payload = {
+      user_id: user.user_id,
+      role: user.role,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      email: user.email,
+      username: user.username,
+      profile_image: user.profile_image || null,
+    };
 
-//     // 🔹 Generate JWT
-//     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
+    // 🔹 Generate JWT
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
 
-//     // ❌ Remove cookie logic
-//     // res.cookie("token", token, {
-//     //   httpOnly: true,
-//     //   secure: true,
-//     //   sameSite: "None",
-//     // });
+    // ❌ Remove cookie logic
+    // res.cookie("token", token, {
+    //   httpOnly: true,
+    //   secure: true,
+    //   sameSite: "None",
+    // });
 
-//     // ✅ Send token in response body
-//     res.status(200).json({
-//       message: "Login successful!",
-//       token,  // send JWT to frontend
-//       user: payload,
-//     });
+    // ✅ Send token in response body
+    res.status(200).json({
+      message: "Login successful!",
+      token,  // send JWT to frontend
+      user: payload,
+    });
 
-//   } catch (err) {
-//     console.error("Login error:", err);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// });
+  } catch (err) {
+    console.error("Login error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 
 UserRoute.post("/logout", (req, res) => {

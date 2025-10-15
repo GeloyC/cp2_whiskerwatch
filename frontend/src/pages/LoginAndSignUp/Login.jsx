@@ -988,7 +988,7 @@ const Login = () => {
     try {
       const response = await axios.post(
         `${url}/user/login`,
-        { username, password },
+        { email, password },
         { withCredentials: true }
       );
 
@@ -1190,8 +1190,8 @@ const Login = () => {
           <form onSubmit={handleLogin} className="flex flex-col items-center gap-8">
             <label className="text-[#2F2F2F] text-[24px] font-bold">User Login</label>
             <input
-              type="text"
-              placeholder="Username"
+              type="email"
+              placeholder="Email"
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
