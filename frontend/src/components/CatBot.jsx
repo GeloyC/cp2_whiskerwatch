@@ -4,7 +4,11 @@ import { useLocation } from 'react-router-dom';
 const CatBot = ({ message }) => {
    const [messageDisplay, setMessageDisplay] = useState('');
    const location = useLocation();
-
+   const [closeMessage, setCloseMessage] = useState(false);
+   
+   const handleCloseMessage = () => {
+      setCloseMessage((prev) => !prev);
+   }
 
    const showMessage = (delay = 0) => {
       clearTimeout(window.catBotShow);
@@ -31,16 +35,23 @@ const CatBot = ({ message }) => {
 
    return (
       <div className="fixed bottom-5 right-5 flex flex-col justify-end items-end gap-1 z-50">
-         {messageDisplay && (
-         <div className="relative right-9 flex flex-col items-center justify-center text-[#000] max-w-[275px] h-auto bg-[#B5C04A] p-4 rounded-[15px] rounded-br-[0px] transition-all duration-300">
-            <label className="text-left text-[#FFF] text-sm">
-               {messageDisplay}
-            </label>
-         </div>
-         )}
+         {closeMessage && (
+            messageDisplay && (
+            <div className="relative right-9 flex flex-col items-center justify-center text-[#000] max-w-[275px] h-auto bg-[#B5C04A] p-4 rounded-[15px] rounded-br-[0px] transition-all duration-300">
+               {/* <div onClick={handleCloseMessage} className='absolute top-3 right-3 flex w-full justify-end'>
+                  <div className='size-4 object-cover'>
+                     <img src="/assets/icons/add-white.png" alt="clos button" className='w-full h-full object-cover rotate-45'/>
+                  </div>
+               </div> */}
+               <label className="text-left text-[#FFF] text-sm">
+                  {messageDisplay}
+               </label>
+            </div>
+            ))
+         }
 
          <button
-         onClick={() => showMessage(0)} // 👈 show immediately on click
+         onClick={() => {showMessage(0); handleCloseMessage();}} // 👈 show immediately on click
          className="flex items-center justify-center bg-[#B5C04A] box-border max-w-[75px] h-auto rounded-full p-[12px] "
          >
          <img

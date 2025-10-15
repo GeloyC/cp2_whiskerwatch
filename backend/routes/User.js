@@ -379,30 +379,85 @@ UserRoute.post('/check_username', async (req, res) => {
   }
 });
 
-// Cleanup expired OTPs (run every 5 minutes)
-// setInterval(async () => {
+
+// UserRoute.post("/login", async (req, res) => {
 //   const db = getDB();
 //   try {
-//     await db.query(
-//       `DELETE FROM user_otp 
-//       WHERE expires_at < NOW() AND is_used = 0`
-//     );
+//     const { email, password } = req.body;
+
+//     if (!email || !password) {
+//       return res.status(400).json({ error: "Email and password are required" });
+//     }
+
+//     const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+//     if (rows.length === 0) {
+//       return res.status(401).json({ error: "Invalid email or password" });
+//     }
+
+//     const user = rows[0];
+//     const isMatch = await bcrypt.compare(password, user.password);
+//     if (!isMatch) {
+//       return res.status(401).json({ error: "Invalid email or password" });
+//     }
+
+//     const payload = {
+//       user_id: user.user_id,
+//       role: user.role,
+//       firstname: user.firstname,
+//       lastname: user.lastname,
+//       email: user.email,
+//       username: user.username,
+//       profile_image: user.profile_image || null,
+//     };
+
+//     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
+//     console.log("Generated token:", token);
+
+
+//     const origin = req.headers.origin;
+//     const allowedOrigins = [
+//       "https://cp2-whiskerwatch.vercel.app",
+//       "https://www.whiskerwatch.site"
+//     ];
+
+//     console.log("Token generated and cookie attempted for origin:", req.headers.origin);
+
+//     // ... token generation ...
+
+//     res.cookie("token", token, {
+//       httpOnly: true,
+//       secure: true,
+//       sameSite: "none", // Try this - allows subdomains
+//       path: "/",
+//       maxAge: 7 * 24 * 60 * 60 * 1000,
+//       priority: 'high'
+//     });
+
+//     console.log("Cookie set for origin:", origin);
+    
+
+//     res.status(200).json({
+//       message: "Login successful!",
+//       token: token,
+//       user: payload,
+//     });
 //   } catch (err) {
-//     console.error('Cleanup error:', err);
-//   } 
-// }, 5 * 60 * 1000);
+//     console.error("Login error:", err);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
 
 
 UserRoute.post("/login", async (req, res) => {
   const db = getDB();
   try {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ error: "Email and password are required" });
     }
 
-    const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+    const [rows] = await db.query("SELECT * FROM users WHERE username = ?", [username]);
     if (rows.length === 0) {
       return res.status(401).json({ error: "Invalid email or password" });
     }

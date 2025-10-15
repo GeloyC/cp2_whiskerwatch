@@ -30,7 +30,7 @@ const AboutUs = () => {
             <h1 className='font-bold text-3xl text-center'> About Siena Park Residences Cat Community </h1>
 
             <label className='flex flex-col xl:gap-4 lg:gap-4 md:gap-4 gap-2  text-justify'>
-              <span>The Sienna Park Cat Community is a volunteer group dedicated to the welfare of community cats within Sienna Park Residences. With the support of DMCI Homes, the group fosters compassion and shared resposibility among residents, creating a safe and caring environment where cats and people can coexist harmonously.</span>
+              <span>The Siena Park Cat Community is a volunteer group dedicated to the welfare of community cats within Sienna Park Residences. With the support of DMCI Homes, the group fosters compassion and shared resposibility among residents, creating a safe and caring environment where cats and people can coexist harmonously.</span>
 
               <span>The group works to humanely manage the community cat population through initiatives such as the Catch-Neuter-Vaccinate-Return (CNVR) Program, which improves health and well-being, and help rescued cats find loving, permanent homes.</span>
             </label>

@@ -960,6 +960,7 @@ const Login = () => {
   const { user, setUser, login, refreshSession } = useSession();
 
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [emailForgot, setEmailForgot] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -988,7 +989,7 @@ const Login = () => {
     try {
       const response = await axios.post(
         `${url}/user/login`,
-        { email, password },
+        { username, password },
         { withCredentials: true }
       );
 
@@ -1190,11 +1191,11 @@ const Login = () => {
           <form onSubmit={handleLogin} className="flex flex-col items-center gap-8">
             <label className="text-[#2F2F2F] text-[24px] font-bold">User Login</label>
             <input
-              type="email"
-              placeholder="Email"
-              value={email}
+              type="text"
+              placeholder="Username"
+              value={username}
               onChange={(e) => {
-                setEmail(e.target.value);
+                setUsername(e.target.value);
                 if (error) setError("");
               }}
               className="border-b-2 border-b-[#977655] p-2"

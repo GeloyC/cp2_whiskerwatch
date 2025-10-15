@@ -35,7 +35,8 @@ const ContactUs = () => {
                 </div>
                 <div className='flex flex-col'>
                   <label className='font-bold text-[#DC8801]'>Spr Community Cats</label>
-                  <label>facebook.com/sprcats</label>
+                  {/* <label>facebook.com/sprcats</label> */}
+                  <a href='https://www.facebook.com/sprcats' target='_blank' className='underline'>facebook.com/sprcats</a>
                 </div>
                 <div className='flex justify-center items-center gap-3'>
                   <div className='size-25 object-cover'>
@@ -76,7 +77,7 @@ const ContactUs = () => {
 
               <div className='flex flex-col bg-[#FDF5D8] p-3 drop-shadow-[0px_-12px_0px_rgba(181,192,74,1)] w-full rounded-[25px] gap-3'>
                 <div className='flex flex-row items-center justify-between border-b-2 border-b-[#B5C04A] pb-2'>
-                  <label className='font-bold text-[18px]'>Delivery Option</label>
+                  <label className='font-bold text-[18px]'>Recommended Pet Shops Near Siena Park Residences</label>
                   <div className='flex items-center justify-center h-auto w-[50px] p-2 bg-[#CFDA34] rounded-[25px]'>
                     <img src="/assets/icons/delivery.png" alt="box" className='max-w-full max-h-full object-contain'/>
                   </div>
@@ -121,10 +122,10 @@ const ContactUs = () => {
               <img src="/assets/cat-contacts.png" alt="" className='w-full h-full object-cover'/>
             </div>
 
-            <label className='leading-tight text-center'>
+            {/* <label className='leading-tight text-center'>
               Stay updated on pet care tips, events, and adorable cat pictures follow us at 
               <Link to="https://www.facebook.com/sprcats" target='_blank' className='text-[#DC8801]'> https://www.facbook.com/sprcats</Link> 
-            </label>
+            </label> */}
           </div>
         </div>
 
