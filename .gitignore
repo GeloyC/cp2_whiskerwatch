@@ -2,3 +2,11 @@
 .env
 backend/.env
 frontend/.env
+# Secrets and credentials
+*.json
+*.pem
+*.key
+*.p12
+service-account*.json
+.env.local
+.env.*.local
