@@ -1181,15 +1181,22 @@ UserRoute.get(`/show_application/:user_id`,  async (req, res) => {
     console.log("Processing request for user_id:", user_id);
     const [application] = await db.query(`
       SELECT 
-        CONCAT(u.firstname, ' ', u.lastname) AS user_name,
-        c.name AS cat_name,
-        aa.application_form,
-        aa.status,
-        aa.application_date
+          CONCAT(u.firstname, ' ', u.lastname) AS user_name,
+          c.name AS cat_name,
+          aa.application_form,
+          aa.status,
+          aa.application_date,
+          aa.application_id
       FROM adoption_application aa
       JOIN users u ON aa.user_id = u.user_id
       JOIN cat c ON aa.cat_id = c.cat_id
-      WHERE aa.user_id = ?
+      WHERE u.user_id = ?
+        AND aa.status = 'Pending'
+        AND NOT EXISTS (
+          SELECT 1 FROM adoption a 
+          WHERE a.adopter_id = u.user_id 
+          AND (a.certificate IS NOT NULL AND a.certificate != '')
+        )
       ORDER BY aa.application_date DESC;
     `, [user_id]);
 
