@@ -362,7 +362,7 @@ AdminRoute.patch('/form/status_update/:application_id', verifyUser, async (req, 
             }
 
             const fullName = `${firstname} ${lastname}`;
-            totalPointsEarned += 10;
+            totalPointsEarned += 15;
 
             // 2.2 Insert into volunteer table
             await db.query(`
@@ -758,7 +758,7 @@ AdminRoute.patch('/adoption_form/status_update/:application_id', verifyUser, asy
                 [application.cat_id]
             );
 
-            totalPointsEarned += 10;
+            totalPointsEarned += 30;
 
             // Notify user
             const statusMessage = `Your adoption application is now ${status}. Congratulations! Please wait for your adoption certificate which you can view on your Profile page.`;

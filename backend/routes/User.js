@@ -459,13 +459,13 @@ UserRoute.post("/login", async (req, res) => {
 
     const [rows] = await db.query("SELECT * FROM users WHERE username = ?", [username]);
     if (rows.length === 0) {
-      return res.status(401).json({ error: "Invalid email or password" });
+      return res.status(401).json({ error: "Invalid username or password" });
     }
 
     const user = rows[0];
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({ error: "Invalid email or password" });
+      return res.status(401).json({ error: "Invalid username or password" });
     }
 
     const payload = {
@@ -488,7 +488,6 @@ UserRoute.post("/login", async (req, res) => {
       "https://www.whiskerwatch.site"
     ];
 
-    console.log("Token generated and cookie attempted for origin:", req.headers.origin);
 
     // ... token generation ...
 
@@ -501,7 +500,6 @@ UserRoute.post("/login", async (req, res) => {
       priority: 'high'
     });
 
-    console.log("Cookie set for origin:", origin);
     
 
     res.status(200).json({

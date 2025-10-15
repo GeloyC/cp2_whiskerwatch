@@ -972,7 +972,7 @@ const Login = () => {
   const [otpStep, setOtpStep] = useState(false);
   const [otp, setOtp] = useState("");
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   // ------------------- USER LOGIN -------------------
   const handleLogin = async (event) => {
@@ -980,11 +980,11 @@ const Login = () => {
     setError("");
     setLoading(true);
 
-    if (!emailRegex.test(email)) {
-      setError("Please enter a valid email address");
-      setLoading(false);
-      return;
-    }
+    // if (!emailRegex.test(email)) {
+    //   setError("Please enter a valid email address");
+    //   setLoading(false);
+    //   return;
+    // }
 
     try {
       const response = await axios.post(
