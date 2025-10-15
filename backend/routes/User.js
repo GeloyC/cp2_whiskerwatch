@@ -453,7 +453,7 @@ UserRoute.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    if (!email || !password) {
+    if (!username || !password) {
       return res.status(400).json({ error: "Email and password are required" });
     }
 
