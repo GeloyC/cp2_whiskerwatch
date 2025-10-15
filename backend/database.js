@@ -1,4 +1,4 @@
-import { connect } from '@google-cloud/cloud-sql-connector';
+import CloudSQLConnector  from '@google-cloud/cloud-sql-connector';
 import mysql from "mysql2/promise";
 import fs from "fs";
 import path from "path";
@@ -11,9 +11,17 @@ let pool;
 export const connectDB = async () => {
   if (pool) return pool;
 
+  const connector = new CloudSQLConnector();
+
+  const clientOpts = await connector.getOptions({
+    instanceConnectionName: 'high-extension-474522-u0:asia-southeast1:whiskerwatch',
+    ipType: 'PUBLIC',
+  });
+
   try {
-    pool = mysql.createPool({
-      instanceConnectionName: 'high-extension-474522-u0:asia-southeast1:whiskerwatch',
+    pool = mysql.connect({
+      ...clientOpts,
+      // instanceConnectionName: 'high-extension-474522-u0:asia-southeast1:whiskerwatch',
       driver: 'mysql2',
       host: process.env.DB_HOST,
       user: process.env.DB_USER,
