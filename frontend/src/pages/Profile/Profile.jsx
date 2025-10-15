@@ -292,7 +292,7 @@ const Profile = () => {
                                                     
 
                                                     <div className='flex flex-col'>
-                                                        <div className='flex flex-row items-center pt-2 pb-2'>
+                                                        <div className='flex flex-row items-center pt-2 pb-2 gap-2'>
                                                             {/* Show certificates first if they exist */}
                                                             {userCertificates.length > 0 && userCertificates.map((cert, index) => (
                                                                 cert.certificate ? (
@@ -332,12 +332,12 @@ const Profile = () => {
                                                                             <span className='font-bold'>{app.cat_name}</span>
                                                                         </span>
                                                                         <span>
-                                                                            Application form: 
+                                                                            {`Application form:  `}
                                                                             <a href={app.application_form} target='_blank' className='underline'>
                                                                                 View application
                                                                             </a>
                                                                         </span>
-                                                                        <span>{new Date(app.application_date).toLocaleDateString()}</span>
+                                                                        <span>Date of Application: {new Date(app.application_date).toLocaleDateString()}</span>
                                                                     </div>
                                                                 </div>
                                                             ))}
