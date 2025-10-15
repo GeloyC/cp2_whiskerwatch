@@ -24,7 +24,12 @@ export const connectDB = async () => {
         ca: fs.readFileSync(path.join(process.cwd(), "config/server-ca.pem")),
         key: fs.readFileSync(path.join(process.cwd(), "config/client-key.pem")),
         cert: fs.readFileSync(path.join(process.cwd(), "config/client-cert.pem")),
+        servername: 'high-extension-474522-u0:asia-southeast1:whiskerwatch'
       },
+
+      acquireTimeout: 60000,
+      connectTimeout: 60000,
+      timeout: 60000,
     });
 
     console.log("Database connected successfully!");

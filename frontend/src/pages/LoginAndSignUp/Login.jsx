@@ -1363,7 +1363,7 @@ const Login = () => {
                 {loading ? "Resetting..." : "Reset Password"}
               </button>
               <button
-                type="type"
+                type="button"
                 onClick={() => {
                   setResetPassForm(false);
                   setError("");
