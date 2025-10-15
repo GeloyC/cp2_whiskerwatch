@@ -148,27 +148,15 @@ const Home = () => {
 
                   <div className='flex flex-row items-center justify-center'>
                     <div className='flex flex-col items-center gap-2 min-h-[300px] max-h-[500px]'>
-                      <div className='w-full max-h-[300px] object-cover rounded-[10px] overflow-hidden'>
+                      <div className='w-full max-h-[400px] object-cover rounded-[10px] overflow-hidden'>
                         <img src="/assets/image/who_are_we.jpg" alt="" className='w-full h-full object-cover' />
-                      </div>
-
-                      <div className='flex flex-row gap-2'>
-                        <div className='w-full max-h-[200px] object-cover rounded-[10px] overflow-hidden'>
-                          <img src="/assets/image/who_are_we.jpg" alt="" className='w-full h-full object-cover' />
-                        </div>
-                        <div className='w-full max-h-[200px] object-cover rounded-[10px] overflow-hidden'>
-                          <img src="/assets/image/who_are_we.jpg" alt="" className='w-full h-full object-cover' />
-                        </div>
-                        <div className='w-full max-h-[200px] object-cover rounded-[10px] overflow-hidden'>
-                          <img src="/assets/image/who_are_we.jpg" alt="" className='w-full h-full object-cover' />
-                        </div>
                       </div>
                     </div>
                   </div>
 
                   <div className='flex flex-col justify-center items-center h-full gap-5'>
                     <label className='font-bold xl:text-5xl lg:text-4xl text-3xl'>Get to Know us</label>
-                    <div className='text-center flex flex-col text-md xl:text-xl lg:text-xl md:text-xl gap-2 xl:gap-4 lg:gap-2 md:gap-2'>
+                    <div className='text-center flex flex-col items-center justify-center text-sm xl:text-[16px] lg:text-[14px] md:text-[14px] gap-2 xl:gap-4 lg:gap-2 md:gap-2'>
                       <span>The Sienna Park Cat Community is a volunteer group dedicated to the welfare of community cats within Sienna Park Residences.</span>
                       <span>With the support of DMCI Homes, the group fosters compassion and shared responsibility among residents, creating a safe and caring environment where cats and people can coexist harmoniously...</span>
                     </div>
