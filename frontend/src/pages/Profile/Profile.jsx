@@ -214,7 +214,7 @@ const Profile = () => {
                     {/* ALL CONTENTS HERE */}
                     <div className='flex flex-col  rounded-[12px] overflow-hidden w-auto xl:w-[1000px] lg:w-[1000px]'>
                         <div className='flex flex-col'>
-                            <div className='flex flex-col  gap-4  rounded-t-[10px] border-dashed border-b-2 border-b-[#8f8f8f]'>
+                            <div className='flex flex-col items-start gap-4  rounded-t-[10px] border-dashed border-b-2 border-b-[#8f8f8f]'>
                                 {/* MAIN PROFILE */}
                                 <div className='w-full text-center font-bold text-3xl text-[#889132]'>
                                     <span>MY PROFILE</span>
@@ -222,7 +222,7 @@ const Profile = () => {
                                 {!updateProfile && (
                                     <>
                                         {profile && (
-                                            <div className='relative flex flex-col p-[2%] xl:flex-row xl:items-start lg:flex-row gap-5'>
+                                            <div className='relative flex flex-col justify-start p-[2%] xl:flex-row xl:items-start lg:flex-row gap-5'>
                                                 <div className='flex flex-row xl:flex-col lg:flex-col gap-3 justify-center'>
                                                     <div className='flex w-[250px] h-[250px] bg-[#B5C04A] rounded-sm p-2'>
                                                         <img
@@ -292,7 +292,7 @@ const Profile = () => {
                                                     
 
                                                     <div className='flex flex-col'>
-                                                        <div className='flex flex-row items-center pt-2 pb-2 gap-2'>
+                                                        <div className='flex flex-row items-center pt-2 pb-2 gap-2 w-full'>
                                                             {/* Show certificates first if they exist */}
                                                             {userCertificates.length > 0 && userCertificates.map((cert, index) => (
                                                                 cert.certificate ? (
