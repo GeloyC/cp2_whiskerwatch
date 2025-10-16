@@ -299,7 +299,7 @@ const CatProfileProperty = () => {
                             <div className='hidden xl:flex lg:flex flex-col'>
                                 <label className='text-[#595959] font-bold'>Description</label>
                                 <textarea  rows={5} className='border-2 border-[#CFCFCF] resize-none rounded-[15px] p-2'
-                                value={catprofile.description} 
+                                value={catprofile.description || ''} 
                                 onChange={(e) => setCatprofile((prev) => ({...prev, description: e.target.value}))}
                                 placeholder='Describe the cat here'></textarea>
                             </div>
