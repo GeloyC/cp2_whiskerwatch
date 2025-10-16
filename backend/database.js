@@ -183,156 +183,156 @@
 
 
 
-// import mysql from "mysql2/promise";
-// import fs from "fs";
-// import path from "path";
-// import dotenv from "dotenv";
-
-// dotenv.config();
-
-// let pool;
-
-// export const connectDB = async () => {
-//   if (pool) return pool;
-
-//   try {
-//     pool = mysql.createPool({
-//       host: process.env.DB_HOST,
-//       user: process.env.DB_USER,
-//       password: process.env.DB_PASSWORD, // make sure you have this in your .env
-//       database: process.env.DB_NAME,
-//       port: process.env.DB_PORT,
-//       waitForConnections: true,
-//       connectionLimit: 10,
-//       queueLimit: 0,
-//       ssl: {
-//         ca: fs.readFileSync(path.join(process.cwd(), "config/server-ca.pem")),
-//         key: fs.readFileSync(path.join(process.cwd(), "config/client-key.pem")),
-//         cert: fs.readFileSync(path.join(process.cwd(), "config/client-cert.pem")),
-//       },
-//     });
-
-//     console.log("Database connected successfully!");
-//     return pool;
-//   } catch (err) {
-//     console.error("Database connection error:", err);
-//     throw err;
-//   }
-// };
-
-// export const getDB = () => {
-//   if (!pool) {
-//     throw new Error("Database not connected. Call connectDB() first.");
-//   }
-//   return pool;
-// };
-
-
 import mysql from "mysql2/promise";
-import { Connector } from "@google-cloud/cloud-sql-connector";
+import fs from "fs";
+import path from "path";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 let pool;
-let connectorInstance;
 
 export const connectDB = async () => {
   if (pool) return pool;
 
-  console.log("🌐 Initializing Cloud SQL Connector (Render Paid Plan)...");
-  
   try {
-    // Debug: Verify environment
-    console.log("🔍 Environment check:");
-    console.log("- Project:", process.env.GOOGLE_CLOUD_PROJECT);
-    console.log("- User:", process.env.DB_USER ? "Set" : "Missing");
-    console.log("- Database:", process.env.DB_NAME || "Missing");
-    console.log("- Credentials:", process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON ? "Set" : "Missing");
-
-    // Create connector instance
-    connectorInstance = new Connector();
-    
-    // Full instance connection name
-    const instanceConnectionName = `${process.env.GOOGLE_CLOUD_PROJECT}:asia-southeast1:whiskerwatch`;
-    console.log(`📍 Instance: ${instanceConnectionName}`);
-    
-    // Get secure Unix socket connection
-    const connectionOptions = connectorInstance.getOptions({
-      instanceConnectionName: instanceConnectionName
-    });
-
-    console.log("🔌 Unix socket:", connectionOptions.socketPath);
-
-    // Production-optimized connection pool
     pool = mysql.createPool({
-      socketPath: connectionOptions.socketPath,
+      host: process.env.DB_HOST,
       user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
+      password: process.env.DB_PASSWORD, // make sure you have this in your .env
       database: process.env.DB_NAME,
+      port: process.env.DB_PORT,
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0,
-      // Production timeouts
-      acquireTimeout: 60000,
-      timeout: 60000,
-      idleTimeout: 600000, // 10 minutes
-      // Reliability settings
-      reconnect: true,
-      charset: 'utf8mb4',
-      timezone: '+00:00',
-      // Security
-      ssl: undefined // Connector handles encryption
+      ssl: {
+        ca: fs.readFileSync(path.join(process.cwd(), "config/server-ca.pem")),
+        key: fs.readFileSync(path.join(process.cwd(), "config/client-key.pem")),
+        cert: fs.readFileSync(path.join(process.cwd(), "config/client-cert.pem")),
+      },
     });
 
-    // Test with real query
-    const [result] = await pool.query('SELECT DATABASE() as db, CONNECTION_ID() as conn_id');
-    console.log("✅ Cloud SQL Connector connected!");
-    console.log(`📊 DB: ${result[0].db}, Connection: ${result[0].conn_id}`);
-    
+    console.log("Database connected successfully!");
     return pool;
-  } catch (error) {
-    console.error("❌ Cloud SQL Connector failed:", error);
-    
-    // Emergency fallback to public IP
-    console.log("🔄 Emergency fallback to public IP...");
-    return createPublicFallback();
-  }
-};
-
-// Emergency public IP fallback
-const createPublicFallback = async () => {
-  const fallbackPool = mysql.createPool({
-    host: '35.240.135.236',
-    port: 3306,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    ssl: {
-      rejectUnauthorized: false,
-      checkServerIdentity: () => undefined
-    },
-    connectionLimit: 5,
-    connectTimeout: 30000
-  });
-
-  await fallbackPool.query('SELECT 1');
-  console.log("✅ Public IP fallback active!");
-  return fallbackPool;
-};
-
-export const closeDB = async () => {
-  if (pool) {
-    try {
-      await pool.end();
-      console.log("Database pool closed");
-    } catch (error) {
-      console.error("Error closing pool:", error);
-    }
+  } catch (err) {
+    console.error("Database connection error:", err);
+    throw err;
   }
 };
 
 export const getDB = () => {
-  if (!pool) throw new Error("Database not connected.");
+  if (!pool) {
+    throw new Error("Database not connected. Call connectDB() first.");
+  }
   return pool;
 };
+
+
+// import mysql from "mysql2/promise";
+// import { Connector } from "@google-cloud/cloud-sql-connector";
+// import dotenv from "dotenv";
+
+// dotenv.config();
+
+// let pool;
+// let connectorInstance;
+
+// export const connectDB = async () => {
+//   if (pool) return pool;
+
+//   console.log("🌐 Initializing Cloud SQL Connector (Render Paid Plan)...");
+  
+//   try {
+//     // Debug: Verify environment
+//     console.log("🔍 Environment check:");
+//     console.log("- Project:", process.env.GOOGLE_CLOUD_PROJECT);
+//     console.log("- User:", process.env.DB_USER ? "Set" : "Missing");
+//     console.log("- Database:", process.env.DB_NAME || "Missing");
+//     console.log("- Credentials:", process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON ? "Set" : "Missing");
+
+//     // Create connector instance
+//     connectorInstance = new Connector();
+    
+//     // Full instance connection name
+//     const instanceConnectionName = `${process.env.GOOGLE_CLOUD_PROJECT}:asia-southeast1:whiskerwatch`;
+//     console.log(`📍 Instance: ${instanceConnectionName}`);
+    
+//     // Get secure Unix socket connection
+//     const connectionOptions = connectorInstance.getOptions({
+//       instanceConnectionName: instanceConnectionName
+//     });
+
+//     console.log("🔌 Unix socket:", connectionOptions.socketPath);
+
+//     // Production-optimized connection pool
+//     pool = mysql.createPool({
+//       socketPath: connectionOptions.socketPath,
+//       user: process.env.DB_USER,
+//       password: process.env.DB_PASSWORD,
+//       database: process.env.DB_NAME,
+//       waitForConnections: true,
+//       connectionLimit: 10,
+//       queueLimit: 0,
+//       // Production timeouts
+//       acquireTimeout: 60000,
+//       timeout: 60000,
+//       idleTimeout: 600000, // 10 minutes
+//       // Reliability settings
+//       reconnect: true,
+//       charset: 'utf8mb4',
+//       timezone: '+00:00',
+//       // Security
+//       ssl: undefined // Connector handles encryption
+//     });
+
+//     // Test with real query
+//     const [result] = await pool.query('SELECT DATABASE() as db, CONNECTION_ID() as conn_id');
+//     console.log("✅ Cloud SQL Connector connected!");
+//     console.log(`📊 DB: ${result[0].db}, Connection: ${result[0].conn_id}`);
+    
+//     return pool;
+//   } catch (error) {
+//     console.error("❌ Cloud SQL Connector failed:", error);
+    
+//     // Emergency fallback to public IP
+//     console.log("🔄 Emergency fallback to public IP...");
+//     return createPublicFallback();
+//   }
+// };
+
+// // Emergency public IP fallback
+// const createPublicFallback = async () => {
+//   const fallbackPool = mysql.createPool({
+//     host: '35.240.135.236',
+//     port: 3306,
+//     user: process.env.DB_USER,
+//     password: process.env.DB_PASSWORD,
+//     database: process.env.DB_NAME,
+//     ssl: {
+//       rejectUnauthorized: false,
+//       checkServerIdentity: () => undefined
+//     },
+//     connectionLimit: 5,
+//     connectTimeout: 30000
+//   });
+
+//   await fallbackPool.query('SELECT 1');
+//   console.log("✅ Public IP fallback active!");
+//   return fallbackPool;
+// };
+
+// export const closeDB = async () => {
+//   if (pool) {
+//     try {
+//       await pool.end();
+//       console.log("Database pool closed");
+//     } catch (error) {
+//       console.error("Error closing pool:", error);
+//     }
+//   }
+// };
+
+// export const getDB = () => {
+//   if (!pool) throw new Error("Database not connected.");
+//   return pool;
+// };
