@@ -82,7 +82,7 @@ export const connectDB = async () => {
         instance: "whiskerwatch"
       });
       
-      await connector.connect();
+      await connectorInstance.connect();
       
       pool = mysql.createPool({
         socketPath: connectionOptions.socketPath,
@@ -106,9 +106,9 @@ export const connectDB = async () => {
     return pool;
   } catch (err) {
     console.error("❌ Database connection error:", err);
-    if (connector) {
+    if (connectorInstance) {
       try {
-        await connector.close();
+        await connectorInstance.close();
       } catch (closeErr) {
         console.error("Error closing connector:", closeErr);
       }
