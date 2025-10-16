@@ -48,6 +48,10 @@
 //   }
 //   return pool;
 // };
+
+
+
+
 import mysql from "mysql2/promise";
 import { Connector } from "@google-cloud/cloud-sql-connector";
 import dotenv from "dotenv";
@@ -63,36 +67,38 @@ export const connectDB = async () => {
   console.log("🌐 Initializing Cloud SQL Connector...");
   
   try {
-    // Create connector instance
+    // Create connector with explicit configuration
     connectorInstance = new Connector();
     
-    // Fix: Use full "PROJECT:REGION:INSTANCE" format
     const instanceConnectionName = `${process.env.GOOGLE_CLOUD_PROJECT}:asia-southeast1:whiskerwatch`;
+    console.log(`📍 Instance connection name: ${instanceConnectionName}`);
     
+    // Get connection options - this should start the proxy
     const connectionOptions = connectorInstance.getOptions({
-      instanceConnectionName: instanceConnectionName, // ✅ Full connection string
-      // Remove separate projectId, region, instance - use instanceConnectionName instead
+      instanceConnectionName: instanceConnectionName
     });
 
-    console.log(`📍 Using instance: ${instanceConnectionName}`);
+    console.log("🔌 Socket path:", connectionOptions.socketPath);
+    console.log("📡 Connection options:", JSON.stringify(connectionOptions, null, 2));
 
-    // Fix MySQL2 pool options - remove invalid options
+    // Verify socket path exists and is valid
+    if (!connectionOptions.socketPath) {
+      throw new Error("Connector failed to provide socket path - proxy not started");
+    }
+
+    // Create MySQL pool with Unix socket
     pool = mysql.createPool({
-      socketPath: connectionOptions.socketPath,
+      socketPath: connectionOptions.socketPath, // Unix socket, NOT TCP
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0,
-      // Remove invalid options: acquireTimeout, timeout, connectTimeout
-      // mysql2 handles these internally
-      charset: 'utf8mb4',
-      supportBigNumbers: true,
-      bigNumberStrings: true
+      charset: 'utf8mb4'
     });
 
-    // Test connection
+    // Test connection with longer timeout
     const connection = await pool.getConnection();
     console.log("✅ Database connected successfully via Cloud SQL Connector!");
     console.log(`📊 Connected to database: ${process.env.DB_NAME}`);
@@ -101,18 +107,13 @@ export const connectDB = async () => {
     return pool;
   } catch (err) {
     console.error("❌ Database connection error:", err);
-    throw err;
-  }
-};
-
-export const closeDB = async () => {
-  if (pool) {
-    try {
-      await pool.end();
-      console.log("Database pool closed");
-    } catch (error) {
-      console.error("Error closing pool:", error);
+    
+    // Debug: Check if connector started properly
+    if (connectorInstance) {
+      console.error("Connector instance:", connectorInstance);
     }
+    
+    throw err;
   }
 };
 
