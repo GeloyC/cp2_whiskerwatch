@@ -330,7 +330,6 @@
 // export default UpdateRole;
 
 
-
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -351,7 +350,6 @@ const UpdateRole = () => {
 
     const goBack = () => {
         navigate('/adminlist');
-        window.location.reload();
     };
 
     useEffect(() => {
@@ -368,26 +366,29 @@ const UpdateRole = () => {
                 setUpdateMessage('');
 
                 const response = await axios.get(`${url}/admin/manage/role/${user_id}`);
-                // Axios interceptor should handle auth token
-
                 console.log('User data fetched:', response.data);
 
-                if (response.data) {
+                if (response.data && (response.data.firstname || response.data.email)) {
                     setSelectedUser(response.data);
                     setRole(response.data.role || '');
                     setRoleOriginal(response.data.role || '');
                 } else {
-                    throw new Error('Invalid user data received');
+                    throw new Error('Invalid user data received - missing user details');
                 }
             } catch (err) {
-                console.error('Failed to fetch user:', err.response?.status, err.response?.data);
-                const errorMsg = err.response?.data?.message || err.response?.data?.error || 'Failed to fetch user';
-                setError(errorMsg);
+                console.error('Failed to fetch user:', err);
                 
-                if (err.response?.status === 404) {
-                    navigate('/adminlist');
-                } else if (err.response?.status === 401) {
-                    window.location.href = '/login';
+                if (err.response) {
+                    const errorMsg = err.response.data?.message || err.response.data?.error || 'Failed to fetch user';
+                    setError(errorMsg);
+                    
+                    if (err.response.status === 404) {
+                        navigate('/adminlist');
+                    } else if (err.response.status === 401) {
+                        window.location.href = '/login';
+                    }
+                } else {
+                    setError(err.message || 'Failed to fetch user');
                 }
             } finally {
                 setLoading(false);
@@ -395,17 +396,34 @@ const UpdateRole = () => {
         };
 
         fetchUser();
-    }, [user_id, navigate]);
+    }, [user_id, navigate, url]);
 
     const handleRoleUpdate = async (event) => {
         event.preventDefault();
+        event.stopPropagation();
 
         if (!selectedUser) {
             setError('User data not loaded');
             return;
         }
 
+        const loggedInUserId = user?.user_id;
+        const isEditingSelf = Number(user_id) === Number(loggedInUserId);
+        
+        if (isEditingSelf) {
+            setError("Cannot update your own role");
+            return;
+        }
+
+        if (role === roleOriginal) {
+            setError('No changes made');
+            return;
+        }
+
         try {
+            setUpdateMessage('');
+            setError('');
+
             const response = await axios.patch(`${url}/admin/manage/update/${user_id}`, {
                 firstname: selectedUser.firstname,
                 lastname: selectedUser.lastname,
@@ -414,51 +432,57 @@ const UpdateRole = () => {
 
             setRoleOriginal(role);
             setUpdateMessage(response.data.message || 'Role updated successfully');
-            setError('');
+            
+            // Refresh the user data after successful update
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+            
         } catch (err) {
             console.error('Update failed:', err.response?.data || err.message);
             setError(err.response?.data?.message || 'Failed to update role');
         }
     };
 
-    const isProfileModified = role !== roleOriginal;
-    const loggedInUser = user;
-    const loggedInUserId = loggedInUser?.user_id;
+    const isProfileModified = () => {
+        return role !== roleOriginal;
+    };
+
+    const loggedInUserId = user?.user_id;
     const isEditingSelf = Number(user_id) === Number(loggedInUserId);
 
-    // Show loading state
+    // Loading state
     if (loading || sessionLoading) {
         return (
-            <div className="absolute bottom-0 hidden xl:flex lg:flex flex-col w-full min-h-[250px] gap-5 bg-[#FFF] p-5 rounded-tr-[15px] rounded-tl-[15px] m-10 border-t-2 border-t-[#2F2F2F] border-r-2 border-r-[#2F2F2F] border-l-2 border-l-[#2F2F2F]">
-                <div className="flex justify-center items-center h-32">
-                    <span className="text-[#2F2F2F]">Loading user data...</span>
+            <div className='absolute bottom-0 hidden xl:flex lg:flex flex-col w-full min-h-[250px] gap-5 bg-[#FFF] p-5 rounded-tr-[15px] rounded-tl-[15px] m-10 border-t-2 border-t-[#2F2F2F] border-r-2 border-r-[#2F2F2F] border-l-2 border-l-[#2F2F2F]'>
+                <div className='flex justify-center items-center h-32'>
+                    <span className='text-[#2F2F2F]'>Loading user data...</span>
                 </div>
             </div>
         );
     }
 
-    // Show error state
-    if (error) {
+    // Error state
+    if (error && !selectedUser) {
         return (
-            <div className="absolute bottom-0 hidden xl:flex lg:flex flex-col w-full min-h-[250px] gap-5 bg-[#FFF] p-5 rounded-tr-[15px] rounded-tl-[15px] m-10 border-t-2 border-t-[#2F2F2F] border-r-2 border-r-[#2F2F2F] border-l-2 border-l-[#2F2F2F]">
-                <div className="flex flex-col gap-3">
-                    <label className="text-[24px] text-[#2F2F2F] font-bold">Update Role</label>
-                    <div className="text-red-500">{error}</div>
-                    <button 
-                        onClick={goBack} 
-                        type="button" 
-                        className="bg-gray-500 text-white p-2 rounded cursor-pointer"
-                    >
-                        Go Back
-                    </button>
+            <div className='absolute bottom-0 hidden xl:flex lg:flex flex-col w-full min-h-[250px] gap-5 bg-[#FFF] p-5 rounded-tr-[15px] rounded-tl-[15px] m-10 border-t-2 border-t-[#2F2F2F] border-r-2 border-r-[#2F2F2F] border-l-2 border-l-[#2F2F2F]'>
+                <div className='flex flex-col w-full gap-3 pb-3 border-b-1 border-b-[#CCCCCC]'>
+                    <div className='flex justify-between w-full'>
+                        <label className='self-start text-[24px] text-[#2F2F2F] font-bold'>Update Role</label>
+                        <button onClick={goBack} type="button" className='cursor-pointer'>Close</button>
+                    </div>
+                </div>
+                <div className='text-red-500 p-2'>{error}</div>
+                <div className='flex w-full justify-end'>
+                    <button onClick={goBack} type="button" className='bg-gray-500 text-white p-2 rounded cursor-pointer'>Go Back</button>
                 </div>
             </div>
         );
     }
 
-    // Only render form if we have selectedUser data
+    // Only render if we have selectedUser
     if (!selectedUser) {
-        return null; // or show error state
+        return null;
     }
 
     return (
@@ -466,7 +490,13 @@ const UpdateRole = () => {
             <div className='flex flex-col w-full gap-3 pb-3 border-b-1 border-b-[#CCCCCC]'>
                 <div className='flex justify-between w-full'>
                     <label className='self-start text-[24px] text-[#2F2F2F] font-bold'>Update Role</label>
-                    <button onClick={goBack} className='cursor-pointer'>Close</button>
+                    <button 
+                        type="button"
+                        onClick={goBack} 
+                        className='cursor-pointer'
+                    >
+                        Close
+                    </button>
                 </div>
             </div>
 
@@ -514,8 +544,8 @@ const UpdateRole = () => {
 
             <div className='flex w-full justify-end'>
                 <button 
-                    type='submit' 
-                    onClick={() => {window.location.reload()}}
+                    type='submit'
+                    disabled={!isProfileModified() || isEditingSelf}
                     className={isProfileModified() && !isEditingSelf 
                         ? 'bg-[#B5C04A] active:bg-[#CFDA34] p-2 pl-6 pr-6 text-[#FFF] font-bold rounded-[15px] cursor-pointer' 
                         : 'hidden'
