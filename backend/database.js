@@ -183,40 +183,144 @@
 
 
 
+// import mysql from "mysql2/promise";
+// import fs from "fs";
+// import path from "path";
+// import dotenv from "dotenv";
+
+// dotenv.config();
+
+// let pool;
+
+// export const connectDB = async () => {
+//   if (pool) return pool;
+
+//   try {
+//     pool = mysql.createPool({
+//       host: process.env.DB_HOST,
+//       user: process.env.DB_USER,
+//       password: process.env.DB_PASSWORD, // make sure you have this in your .env
+//       database: process.env.DB_NAME,
+//       port: process.env.DB_PORT,
+//       waitForConnections: true,
+//       connectionLimit: 10,
+//       queueLimit: 0,
+//       ssl: {
+//         ca: fs.readFileSync(path.join(process.cwd(), "config/server-ca.pem")),
+//         key: fs.readFileSync(path.join(process.cwd(), "config/client-key.pem")),
+//         cert: fs.readFileSync(path.join(process.cwd(), "config/client-cert.pem")),
+//       },
+//     });
+
+//     console.log("Database connected successfully!");
+//     return pool;
+//   } catch (err) {
+//     console.error("Database connection error:", err);
+//     throw err;
+//   }
+// };
+
+// export const getDB = () => {
+//   if (!pool) {
+//     throw new Error("Database not connected. Call connectDB() first.");
+//   }
+//   return pool;
+// };
+
+
+
 import mysql from "mysql2/promise";
-import fs from "fs";
-import path from "path";
+import { Connector } from "@google-cloud/cloud-sql-connector";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 let pool;
+let connectorInstance;
 
 export const connectDB = async () => {
   if (pool) return pool;
 
+  console.log("🌐 Initializing Cloud SQL Connector (Render Paid)...");
+  
   try {
+    // Create connector instance
+    connectorInstance = new Connector();
+    
+    // Full instance connection name
+    const instanceConnectionName = `${process.env.GOOGLE_CLOUD_PROJECT}:asia-southeast1:whiskerwatch`;
+    console.log(`📍 Connecting to: ${instanceConnectionName}`);
+    
+    // Get Unix socket options
+    const connectionOptions = connectorInstance.getOptions({
+      instanceConnectionName: instanceConnectionName
+    });
+
+    console.log("🔌 Using Unix socket:", connectionOptions.socketPath);
+
+    // Create MySQL connection pool with Unix socket
     pool = mysql.createPool({
-      host: process.env.DB_HOST,
+      socketPath: connectionOptions.socketPath, // Secure Unix socket
       user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD, // make sure you have this in your .env
+      password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      port: process.env.DB_PORT,
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0,
-      ssl: {
-        ca: fs.readFileSync(path.join(process.cwd(), "config/server-ca.pem")),
-        key: fs.readFileSync(path.join(process.cwd(), "config/client-key.pem")),
-        cert: fs.readFileSync(path.join(process.cwd(), "config/client-cert.pem")),
-      },
+      acquireTimeout: 60000,
+      timeout: 60000,
+      charset: 'utf8mb4',
+      // No SSL config needed - connector handles encryption
     });
 
-    console.log("Database connected successfully!");
+    // Test connection
+    const [result] = await pool.query('SELECT 1 as test, DATABASE() as db_name');
+    console.log("✅ Cloud SQL Connector connected successfully!");
+    console.log(`📊 Database: ${result[0].db_name}`);
+    
     return pool;
-  } catch (err) {
-    console.error("Database connection error:", err);
-    throw err;
+  } catch (error) {
+    console.error("❌ Cloud SQL Connector failed:", error);
+    
+    // Fallback: Public IP if connector fails
+    console.log("🔄 Falling back to public IP...");
+    return createPublicIPPool();
+  }
+};
+
+// Fallback public IP connection (if connector fails)
+const createPublicIPPool = async () => {
+  pool = mysql.createPool({
+    host: process.env.DB_HOST || '35.240.135.236',
+    port: parseInt(process.env.DB_PORT) || 3306,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    ssl: {
+      rejectUnauthorized: false,
+      checkServerIdentity: () => undefined
+    },
+    connectionLimit: 5,
+    connectTimeout: 30000
+  });
+
+  await pool.query('SELECT 1');
+  console.log("✅ Public IP fallback connected!");
+  return pool;
+};
+
+export const closeDB = async () => {
+  if (pool) {
+    try {
+      await pool.end();
+      console.log("Database pool closed");
+    } catch (error) {
+      console.error("Error closing pool:", error);
+    }
+  }
+  if (connectorInstance) {
+    // Connector manages its own lifecycle
+    connectorInstance = null;
   }
 };
 
