@@ -575,6 +575,26 @@ UserRoute.post("/login", async (req, res) => {
 
 
 
+UserRoute.post("/logout", async (req, res) => {
+  try {
+    // Clear any auth cookies if they exist
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+    });
+
+    // (Optional) Destroy session if you ever use sessions
+    // req.session?.destroy?.();
+
+    return res.status(200).json({ message: "Logout successful" });
+  } catch (err) {
+    console.error("Logout error:", err);
+    return res.status(500).json({ error: "Logout failed" });
+  }
+});
+
+
 
 UserRoute.post('/forgot_password', async (req, res) => {
   const db = getDB();

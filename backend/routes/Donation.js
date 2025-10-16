@@ -42,7 +42,7 @@ const storage = multer.diskStorage({
 const donationImageStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: 'donation_proofs', // folder in Cloudinary
+    folder: 'whiskerwatch/donation_proofs', // folder in Cloudinary
     allowed_formats: ['jpg', 'jpeg', 'png', 'pdf'],
     public_id: (req, file) => `proof_${Date.now()}_${file.originalname}`,
   },
