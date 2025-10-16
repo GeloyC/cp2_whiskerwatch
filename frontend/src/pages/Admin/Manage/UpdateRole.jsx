@@ -133,6 +133,7 @@
 
 // export default UpdateRole
 
+// ERROR: NOT DISPLAY SELECTED USER DETAIL
 
 
 import React, { useEffect, useState } from 'react';
@@ -144,61 +145,105 @@ const UpdateRole = () => {
     const url = `https://whiskerwatch-0j6g.onrender.com`;
 
     const navigate = useNavigate();
-    const { user } = useSession();
+    const { user, loading: sessionLoading } = useSession();
     const { user_id } = useParams();
 
     const [role, setRole] = useState('');
-    const [selectedUser, setSelectedUser] = useState('');
+    const [selectedUser, setSelectedUser] = useState(null);
     const [roleOriginal, setRoleOriginal] = useState('');
     const [updateMessage, setUpdateMessage] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
     const goBack = () => {navigate('/adminlist'); window.location.reload();};
 
     // ✅ Fetch user by ID (target user being updated)
+    // useEffect(() => {
+    //     const fetchUser = async () => {
+    //         try {
+    //             const response = await axios.get(`${url}/admin/manage/role/${user_id}`, {
+    //                 headers: { Authorization: `Bearer ${token}` },
+    //             });
+
+    //             console.log('User data fetched:', response.data);
+
+    //             setRole(response.data.role);
+    //             setSelectedUser(response.data)
+    //             setRoleOriginal(response.data.role);
+    //         } catch (err) {
+    //             console.error('Failed to fetch user:', err.response?.data || err.message);
+    //         }
+    //     };
+
+    //     fetchUser();
+    // }, [user_id]);
+
     useEffect(() => {
         const fetchUser = async () => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            console.warn('No token found in localStorage.');
-            return;
-        }
+            if (!user_id) {
+                setError('No user ID provided');
+                setLoading(false);
+                return;
+            }
 
-        try {
-            const response = await axios.get(`${url}/admin/manage/role/${user_id}`, {
-            headers: { Authorization: `Bearer ${token}` },
-            });
+            // Wait for session to load
+            if (sessionLoading) {
+                console.log('Waiting for session to load...');
+                return;
+            }
 
-            setRole(response.data.role);
-            setSelectedUser(response.data)
-            setRoleOriginal(response.data.role);
-        } catch (err) {
-            console.error('Failed to fetch user:', err.response?.data || err.message);
-        }
+            try {
+                setLoading(true);
+                setError('');
+
+                const response = await axios.get(
+                    `${url}/admin/manage/role/${user_id}`
+                    // Interceptor handles auth automatically
+                );
+
+                console.log('User data fetched:', response.data);
+
+                if (response.data && response.data.user_id) {
+                    setSelectedUser(response.data);
+                    setRole(response.data.role || '');
+                    setRoleOriginal(response.data.role || '');
+                } else {
+                    throw new Error('Invalid user data received');
+                }
+            } catch (err) {
+                console.error('Failed to fetch user:', err.response?.status, err.response?.data);
+                const errorMsg = err.response?.data?.message || err.response?.data?.error || 'Failed to fetch user';
+                setError(errorMsg);
+                
+                if (err.response?.status === 404) {
+                    navigate('/adminlist');
+                } else if (err.response?.status === 401) {
+                    // Session will handle redirect
+                    window.location.href = '/login';
+                }
+            } finally {
+                setLoading(false);
+            }
         };
 
         fetchUser();
-    }, [user_id]);
+    }, [user_id, navigate, sessionLoading]);
 
     // Handle role update
     const handleRoleUpdate = async (event) => {
         event.preventDefault();
 
-        const token = localStorage.getItem('token');
-        if (!token) {
-        console.warn('No token found. Cannot update role.');
-        return;
-        }
 
         try {
         const response = await axios.patch(
             `${url}/admin/manage/update/${user_id}`,
             {
-            firstname: selectedUser.firstname,
-            lastname: selectedUser.lastname,
-            role: role,
+                firstname: selectedUser.firstname || '',
+                lastname: selectedUser.lastname || '',
+                role: role,
             },
             {
-            headers: { Authorization: `Bearer ${token}` },
+                headers: { Authorization: `Bearer ${token}` },
             }
         );
 

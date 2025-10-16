@@ -185,6 +185,8 @@ AdminRoute.get('/manage/role/:user_id', async (req, res) => {
 });
 
 // PATCH REQUEST: UPDATE THE ROLE OF A USER INTO ADMIN/HEAD VOLUNTEER/REGULAR
+// FIX DISPLAY OF FIRST NAME 
+// FIX THIS
 AdminRoute.patch('/manage/update/:user_id', async (req, res) => {
     const db = getDB();
     const user_id = req.params.user_id;
