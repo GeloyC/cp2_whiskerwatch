@@ -35,18 +35,18 @@ const AboutUs = () => {
               <span>The group works to humanely manage the community cat population through initiatives such as the Catch-Neuter-Vaccinate-Return (CNVR) Program, which improves health and well-being, and help rescued cats find loving, permanent homes.</span>
             </label>
 
-            <div className='flex max-h-[250px] items-center w-auto overflow-hidden'>
-              <div>
-                <img src="/assets/image/who_are_we.jpg" alt="" />
+            <div className='flex max-h-[250px] items-center w-auto object-cover overflow-hidden'>
+              <div className='object-cover'>
+                <img src="/assets/image/who_are_we.jpg" alt="" className='object-cover'/>
               </div>
-              <div>
-                <img src="/assets/image/who_are_we_1.jpg" alt="" />
+              <div className='object-cover'>
+                <img src="/assets/image/who_are_we_1.jpg" alt="" className='object-cover' />
               </div>
-              <div>
-                <img src="/assets/image/who_are_we_2.jpg" alt="" />
+              <div className='object-cover'>
+                <img src="/assets/image/who_are_we_2.jpg" alt="" className='object-cover'/>
               </div>
-              <div>
-                <img src="/assets/image/who_are_we_3.jpg" alt="" />
+              <div className='object-cover'>
+                <img src="/assets/image/who_are_we_3.jpg" alt="" className='object-cover'/>
               </div>
             </div>
             

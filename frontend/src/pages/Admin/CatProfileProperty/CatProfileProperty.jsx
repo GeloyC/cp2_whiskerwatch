@@ -39,6 +39,7 @@ const CatProfileProperty = () => {
             
             try {
                 const response = await axios.get(`${url}/cat/catprofile/${cat_id}`);
+                console.log('Fetched data:', response.data);
                 setCatprofile(response.data)
                 setOriginalCatprofile(response.data)
                 setLoading(true)
@@ -297,7 +298,7 @@ const CatProfileProperty = () => {
                             {/* CAT DESCRIPTION */}
                             <div className='hidden xl:flex lg:flex flex-col'>
                                 <label className='text-[#595959] font-bold'>Description</label>
-                                <textarea name="" id="" rows={5} className='border-2 border-[#CFCFCF] resize-none rounded-[15px] p-2'
+                                <textarea  rows={5} className='border-2 border-[#CFCFCF] resize-none rounded-[15px] p-2'
                                 value={catprofile.description} 
                                 onChange={(e) => setCatprofile((prev) => ({...prev, description: e.target.value}))}
                                 placeholder='Describe the cat here'></textarea>
@@ -374,7 +375,7 @@ const CatProfileProperty = () => {
                                     {/* SAVE BUTTON */}
                                     <div className='hidden xl:flex lg:flex items-center justify-end gap-1 w-full'>
                                         <button type='button' onClick={() => handleUploadImages(cat_id)} className='flex items-center justify-center gap-2 bg-[#B5C04A] text-[#FFF]  font-bold p-2 pl-4 pr-4 min-w-[80px] rounded-[25px] cursor-pointer active:bg-[#595959]'>
-                                            {!loading ? 'Saving...' : 'Save'}
+                                            {loading ? 'Saving...' : 'Save'}
                                         </button>
                                         <button onClick={handleImageUploaderWindow} type='button' className='flex items-center gap-2 bg-[#2F2F2F] text-[#FFF] font-bold p-2 pl-4 pr-4 rounded-[25px] cursor-pointer active:bg-[#595959]'>
                                             Cancel

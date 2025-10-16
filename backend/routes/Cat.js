@@ -209,7 +209,7 @@ CatRoute.get('/adopted', async (req, res) => {
 
   try {
     const [adopted_cat] = await db.query(`
-      SELECT * FROM cat WHERE adoption_status = "Adopted";  
+      SELECT * FROM cat WHERE adoption_status = 'Adopted';  
     `);
 
     return res.json(adopted_cat);
@@ -426,47 +426,6 @@ CatRoute.get("/images", async (req, res) => {
 });
 
 
-// CatRoute.post('/uploadcatimages/:cat_id', upload.array('images'), async (req, res) => {
-//     console.log(req.files)
-//     const db = getDB();
-    
-//     if (req.invalidFiles) {
-//         return res.status(200).json({
-//             warning: true,
-//             message: 'Some documents did not upload due to invalid file type: ' + req.invalidFiles.join(', '),
-//         }) 
-//     }
-
-//     if (!req.files || req.files.length === 0) {
-//             return res.status(200).json({
-//                 warning: true,
-//                 message: 'No valid Images were uploaded.',
-//         });
-//     }
-
-//     const cat_id = req.params.cat_id
-//     try {
-
-//         for (const file of req.files) {
-//         const filename = file.filename;
-
-//         await db.query(
-//             `INSERT INTO cat_images (cat_id, image_filename) VALUES (?, ?)`, 
-//             [cat_id, filename]
-//         );
-//         }
-
-//         return res.status(200).json({ 
-//             warning: false, 
-//             message: 'Images uploaded succesfully!',
-//         })
-
-//     } catch(err) {
-//         console.error(err);
-//         return res.status(500).json({message: 'Database error while saving image info!'})
-//     }
-// });
-
 CatRoute.post('/uploadcatimages/:cat_id', upload.array('images'), async (req, res) => {
   const db = getDB();
   const { cat_id } = req.params;
@@ -566,25 +525,7 @@ CatRoute.patch('/update/:cat_id', async (req, res) => {
     }
 });
 
-// CatRoute.get('/image/:cat_id', async (req, res) => {
-//     const db = getDB();
-//     const cat_id = req.params.cat_id;
 
-//     try {
-//         const [images] = await db.query(
-//             `SELECT image_filename FROM cat_images WHERE cat_id = ?`,
-//             [cat_id]
-//         );  
-
-//         const filenames = images.map(img => img.image_filename)
-
-//         res.json(filenames);
-//         console.log(filenames)
-//     } catch(err) {
-//         console.error('Error fetching cat images: ', err);
-//         return res.status(500).json({error: 'Failed to fetch cat images'})
-//     }
-// })
 
 CatRoute.delete("/image/:id", async (req, res) => {
   const db = getDB();
