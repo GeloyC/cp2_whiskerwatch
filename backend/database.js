@@ -48,15 +48,9 @@
 //   }
 //   return pool;
 // };
-
 import mysql from "mysql2/promise";
 import { Connector } from "@google-cloud/cloud-sql-connector";
-import { fileURLToPath } from "url";
 import dotenv from "dotenv";
-import path from "path";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
@@ -66,58 +60,74 @@ let connectorInstance;
 export const connectDB = async () => {
   if (pool) return pool;
 
-  const isProduction = process.env.NODE_ENV === 'production' || 
-                      process.env.RENDER_EXTERNAL_HOSTNAME ||
-                      process.env.CLOUD_SQL_INSTANCE;
-
+  console.log("🌐 Initializing Cloud SQL Connector...");
+  
   try {
-    if (isProduction) {
-      console.log("🌐 Using Cloud SQL Connector (ES6)...");
-      
-      // Create connector instance
-      connectorInstance = new Connector();
-      const connectionOptions = connectorInstance.getOptions({
-        projectId: process.env.GOOGLE_CLOUD_PROJECT, // high-extension-474522-u0
-        region: "asia-southeast1",
-        instance: "whiskerwatch"
-      });
-      
-      await connectorInstance.connect();
-      
-      pool = mysql.createPool({
-        socketPath: connectionOptions.socketPath,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME,
-        waitForConnections: true,
-        connectionLimit: 10,
-        queueLimit: 0,
-        acquireTimeout: 60000,
-        timeout: 60000,
-        connectTimeout: 60000
-      });
-    }
+    // Create connector instance and get options
+    connectorInstance = new Connector();
+    
+    const connectionOptions = connectorInstance.getOptions({
+      projectId: process.env.GOOGLE_CLOUD_PROJECT, // high-extension-474522-u0
+      region: "asia-southeast1",
+      instance: "whiskerwatch"
+    });
 
-    // Test connection
+    // Create MySQL pool using the Unix socket path
+    // NO connectorInstance.connect() call needed!
+    pool = mysql.createPool({
+      socketPath: connectionOptions.socketPath,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      waitForConnections: true,
+      connectionLimit: 10,
+      queueLimit: 0,
+      acquireTimeout: 60000,
+      timeout: 60000,
+      connectTimeout: 60000,
+      // Optional: Add charset and timezone for consistency
+      charset: 'utf8mb4',
+      timezone: '+00:00'
+    });
+
+    // Test the connection
     const connection = await pool.getConnection();
-    console.log("Database connected successfully!");
+    console.log("✅ Database connected successfully via Cloud SQL Connector!");
     connection.release();
     
     return pool;
   } catch (err) {
     console.error("❌ Database connection error:", err);
+    
+    // Clean up connector if it exists
     if (connectorInstance) {
       try {
-        await connectorInstance.close();
+        // Connector cleanup (if needed)
+        connectorInstance = null;
       } catch (closeErr) {
-        console.error("Error closing connector:", closeErr);
+        console.error("Error cleaning up connector:", closeErr);
       }
     }
+    
     throw err;
   }
 };
 
+export const closeDB = async () => {
+  if (pool) {
+    try {
+      await pool.end();
+      console.log("Database pool closed");
+    } catch (error) {
+      console.error("Error closing pool:", error);
+    }
+  }
+  // Connector doesn't need explicit close - it manages its own lifecycle
+};
+
 export const getDB = () => {
-  if (!pool) throw new Error("Database not connected. Call connectDB() first.");
+  if (!pool) {
+    throw new Error("Database not connected. Call connectDB() first.");
+  }
   return pool;
 };
