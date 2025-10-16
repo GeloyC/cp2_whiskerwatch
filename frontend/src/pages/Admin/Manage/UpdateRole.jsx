@@ -372,7 +372,7 @@ const UpdateRole = () => {
 
                 console.log('User data fetched:', response.data);
 
-                if (response.data && response.data.user_id) {
+                if (response.data) {
                     setSelectedUser(response.data);
                     setRole(response.data.role || '');
                     setRoleOriginal(response.data.role || '');
@@ -462,42 +462,38 @@ const UpdateRole = () => {
     }
 
     return (
-        <form onSubmit={handleRoleUpdate} className="absolute bottom-0 hidden xl:flex lg:flex flex-col w-full min-h-[250px] gap-5 bg-[#FFF] p-5 rounded-tr-[15px] rounded-tl-[15px] m-10 border-t-2 border-t-[#2F2F2F] border-r-2 border-r-[#2F2F2F] border-l-2 border-l-[#2F2F2F]">
-            <div className="flex flex-col w-full gap-3 pb-3 border-b border-b-[#CCCCCC]">
-                <div className="flex justify-between w-full">
-                    <label className="self-start text-[24px] text-[#2F2F2F] font-bold">Update Role</label>
-                    <button onClick={goBack} type="button" className="cursor-pointer">Close</button>
+        <form onSubmit={handleRoleUpdate} className='absolute bottom-0 hidden xl:flex lg:flex flex-col w-full min-h-[250px] gap-5 bg-[#FFF] p-5 rounded-tr-[15px] rounded-tl-[15px] m-10 border-t-2 border-t-[#2F2F2F] border-r-2 border-r-[#2F2F2F] border-l-2 border-l-[#2F2F2F]'>
+            <div className='flex flex-col w-full gap-3 pb-3 border-b-1 border-b-[#CCCCCC]'>
+                <div className='flex justify-between w-full'>
+                    <label className='self-start text-[24px] text-[#2F2F2F] font-bold'>Update Role</label>
+                    <button onClick={goBack} className='cursor-pointer'>Close</button>
                 </div>
             </div>
 
-            {/* Render user details only when selectedUser is available */}
-            <div className="flex justify-between w-full gap-4">
-                <div className="flex flex-col w-full justify-start">
-                    <label className="text-[#595959] text-[14px]">Firstname</label>
-                    <label className="p-2 border border-[#CCCCCC] rounded-[10px] font-bold">
+            <div className='flex justify-between w-full gap-4'>
+                <div className='flex flex-col w-full justify-start'>
+                    <label className='text-[#595959] text-[14px]'>Firstname</label>
+                    <label className='p-2 border-1 border-[#CCCCCC] rounded-[10px] font-bold'>
                         {selectedUser.firstname || 'N/A'}
                     </label>
                 </div>
-
-                <div className="flex flex-col w-full justify-start">
-                    <label className="text-[#595959] text-[14px]">Lastname</label>
-                    <label className="p-2 border border-[#CCCCCC] rounded-[10px] font-bold">
+                <div className='flex flex-col w-full justify-start'>
+                    <label className='text-[#595959] text-[14px]'>Lastname</label>
+                    <label className='p-2 border-1 border-[#CCCCCC] rounded-[10px] font-bold'>
                         {selectedUser.lastname || 'N/A'}
                     </label>
                 </div>
-
-                <div className="flex flex-col w-full justify-start">
-                    <label className="text-[#595959] text-[14px]">
-                        {isEditingSelf ? "Role: Can't update role if currently logged in" : 'Role'}
+                <div className='flex flex-col w-full justify-start'>
+                    <label className='text-[#595959] text-[14px]'>
+                        {isEditingSelf ? "Role: Can't update role if currently logged In" : 'Role'}
                     </label>
-                    <select
-                        disabled={isEditingSelf}
-                        value={role}
+                    <select 
+                        disabled={isEditingSelf} 
+                        value={role} 
                         onChange={(e) => setRole(e.target.value)}
-                        className={
-                            isEditingSelf
-                                ? 'p-2 border border-[#CCCCCC] text-[#CCCCCC] rounded-[10px] font-bold bg-gray-100'
-                                : 'p-2 border border-[#DC8801] text-[#DC8801] rounded-[10px] font-bold'
+                        className={isEditingSelf 
+                            ? 'p-2 border-1 border-[#CCCCCC] text-[#CCCCCC] rounded-[10px] font-bold' 
+                            : 'p-2 border-1 border-[#DC8801] text-[#DC8801] rounded-[10px] font-bold'
                         }
                     >
                         <option value="" disabled hidden>Select a Role</option>
@@ -512,17 +508,21 @@ const UpdateRole = () => {
                 <label className="text-[#B5C04A]">{updateMessage}</label>
             )}
 
-            {error && <label className="text-red-500">{error}</label>}
+            {error && !updateMessage && (
+                <label className="text-red-500">{error}</label>
+            )}
 
-            <div className="flex w-full justify-end">
-                {isProfileModified && !isEditingSelf && (
-                    <button
-                        type="submit"
-                        className="bg-[#B5C04A] active:bg-[#CFDA34] p-2 pl-6 pr-6 text-[#FFF] font-bold rounded-[15px] cursor-pointer"
-                    >
-                        Save Changes
-                    </button>
-                )}
+            <div className='flex w-full justify-end'>
+                <button 
+                    type='submit' 
+                    onClick={() => {window.location.reload()}}
+                    className={isProfileModified() && !isEditingSelf 
+                        ? 'bg-[#B5C04A] active:bg-[#CFDA34] p-2 pl-6 pr-6 text-[#FFF] font-bold rounded-[15px] cursor-pointer' 
+                        : 'hidden'
+                    }
+                >
+                    Save Changes
+                </button>
             </div>
         </form>
     );
