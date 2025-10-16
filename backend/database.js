@@ -228,7 +228,6 @@
 // };
 
 
-
 import mysql from "mysql2/promise";
 import { Connector } from "@google-cloud/cloud-sql-connector";
 import dotenv from "dotenv";
@@ -241,58 +240,71 @@ let connectorInstance;
 export const connectDB = async () => {
   if (pool) return pool;
 
-  console.log("🌐 Initializing Cloud SQL Connector (Render Paid)...");
+  console.log("🌐 Initializing Cloud SQL Connector (Render Paid Plan)...");
   
   try {
+    // Debug: Verify environment
+    console.log("🔍 Environment check:");
+    console.log("- Project:", process.env.GOOGLE_CLOUD_PROJECT);
+    console.log("- User:", process.env.DB_USER ? "Set" : "Missing");
+    console.log("- Database:", process.env.DB_NAME || "Missing");
+    console.log("- Credentials:", process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON ? "Set" : "Missing");
+
     // Create connector instance
     connectorInstance = new Connector();
     
     // Full instance connection name
     const instanceConnectionName = `${process.env.GOOGLE_CLOUD_PROJECT}:asia-southeast1:whiskerwatch`;
-    console.log(`📍 Connecting to: ${instanceConnectionName}`);
+    console.log(`📍 Instance: ${instanceConnectionName}`);
     
-    // Get Unix socket options
+    // Get secure Unix socket connection
     const connectionOptions = connectorInstance.getOptions({
       instanceConnectionName: instanceConnectionName
     });
 
-    console.log("🔌 Using Unix socket:", connectionOptions.socketPath);
+    console.log("🔌 Unix socket:", connectionOptions.socketPath);
 
-    // Create MySQL connection pool with Unix socket
+    // Production-optimized connection pool
     pool = mysql.createPool({
-      socketPath: connectionOptions.socketPath, // Secure Unix socket
+      socketPath: connectionOptions.socketPath,
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0,
+      // Production timeouts
       acquireTimeout: 60000,
       timeout: 60000,
+      idleTimeout: 600000, // 10 minutes
+      // Reliability settings
+      reconnect: true,
       charset: 'utf8mb4',
-      // No SSL config needed - connector handles encryption
+      timezone: '+00:00',
+      // Security
+      ssl: undefined // Connector handles encryption
     });
 
-    // Test connection
-    const [result] = await pool.query('SELECT 1 as test, DATABASE() as db_name');
-    console.log("✅ Cloud SQL Connector connected successfully!");
-    console.log(`📊 Database: ${result[0].db_name}`);
+    // Test with real query
+    const [result] = await pool.query('SELECT DATABASE() as db, CONNECTION_ID() as conn_id');
+    console.log("✅ Cloud SQL Connector connected!");
+    console.log(`📊 DB: ${result[0].db}, Connection: ${result[0].conn_id}`);
     
     return pool;
   } catch (error) {
     console.error("❌ Cloud SQL Connector failed:", error);
     
-    // Fallback: Public IP if connector fails
-    console.log("🔄 Falling back to public IP...");
-    return createPublicIPPool();
+    // Emergency fallback to public IP
+    console.log("🔄 Emergency fallback to public IP...");
+    return createPublicFallback();
   }
 };
 
-// Fallback public IP connection (if connector fails)
-const createPublicIPPool = async () => {
-  pool = mysql.createPool({
-    host: process.env.DB_HOST || '35.240.135.236',
-    port: parseInt(process.env.DB_PORT) || 3306,
+// Emergency public IP fallback
+const createPublicFallback = async () => {
+  const fallbackPool = mysql.createPool({
+    host: '35.240.135.236',
+    port: 3306,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
@@ -304,9 +316,9 @@ const createPublicIPPool = async () => {
     connectTimeout: 30000
   });
 
-  await pool.query('SELECT 1');
-  console.log("✅ Public IP fallback connected!");
-  return pool;
+  await fallbackPool.query('SELECT 1');
+  console.log("✅ Public IP fallback active!");
+  return fallbackPool;
 };
 
 export const closeDB = async () => {
@@ -318,15 +330,9 @@ export const closeDB = async () => {
       console.error("Error closing pool:", error);
     }
   }
-  if (connectorInstance) {
-    // Connector manages its own lifecycle
-    connectorInstance = null;
-  }
 };
 
 export const getDB = () => {
-  if (!pool) {
-    throw new Error("Database not connected. Call connectDB() first.");
-  }
+  if (!pool) throw new Error("Database not connected.");
   return pool;
 };
