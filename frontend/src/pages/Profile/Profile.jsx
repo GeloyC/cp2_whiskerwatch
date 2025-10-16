@@ -292,7 +292,7 @@ const Profile = () => {
                                                     
 
                                                     <div className='flex flex-col w-full'>
-                                                        <div className='flex flex-row items-center pt-2 pb-2 gap-2 w-full'>
+                                                        <div className='flex flex-col items-center pt-2 pb-2 gap-2 w-full'>
                                                             {/* Show certificates first if they exist */}
                                                             {userCertificates.length > 0 && userCertificates.map((cert, index) => (
                                                                 cert.certificate ? (
