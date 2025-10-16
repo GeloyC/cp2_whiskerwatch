@@ -63,17 +63,20 @@ export const connectDB = async () => {
   console.log("🌐 Initializing Cloud SQL Connector...");
   
   try {
-    // Create connector instance and get options
+    // Create connector instance
     connectorInstance = new Connector();
     
+    // Fix: Use full "PROJECT:REGION:INSTANCE" format
+    const instanceConnectionName = `${process.env.GOOGLE_CLOUD_PROJECT}:asia-southeast1:whiskerwatch`;
+    
     const connectionOptions = connectorInstance.getOptions({
-      projectId: process.env.GOOGLE_CLOUD_PROJECT, // high-extension-474522-u0
-      region: "asia-southeast1",
-      instance: "whiskerwatch"
+      instanceConnectionName: instanceConnectionName, // ✅ Full connection string
+      // Remove separate projectId, region, instance - use instanceConnectionName instead
     });
 
-    // Create MySQL pool using the Unix socket path
-    // NO connectorInstance.connect() call needed!
+    console.log(`📍 Using instance: ${instanceConnectionName}`);
+
+    // Fix MySQL2 pool options - remove invalid options
     pool = mysql.createPool({
       socketPath: connectionOptions.socketPath,
       user: process.env.DB_USER,
@@ -82,33 +85,22 @@ export const connectDB = async () => {
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0,
-      acquireTimeout: 60000,
-      timeout: 60000,
-      connectTimeout: 60000,
-      // Optional: Add charset and timezone for consistency
+      // Remove invalid options: acquireTimeout, timeout, connectTimeout
+      // mysql2 handles these internally
       charset: 'utf8mb4',
-      timezone: '+00:00'
+      supportBigNumbers: true,
+      bigNumberStrings: true
     });
 
-    // Test the connection
+    // Test connection
     const connection = await pool.getConnection();
     console.log("✅ Database connected successfully via Cloud SQL Connector!");
+    console.log(`📊 Connected to database: ${process.env.DB_NAME}`);
     connection.release();
     
     return pool;
   } catch (err) {
     console.error("❌ Database connection error:", err);
-    
-    // Clean up connector if it exists
-    if (connectorInstance) {
-      try {
-        // Connector cleanup (if needed)
-        connectorInstance = null;
-      } catch (closeErr) {
-        console.error("Error cleaning up connector:", closeErr);
-      }
-    }
-    
     throw err;
   }
 };
@@ -122,7 +114,6 @@ export const closeDB = async () => {
       console.error("Error closing pool:", error);
     }
   }
-  // Connector doesn't need explicit close - it manages its own lifecycle
 };
 
 export const getDB = () => {
