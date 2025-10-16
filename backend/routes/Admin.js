@@ -204,10 +204,14 @@ AdminRoute.patch('/manage/update/:user_id', async (req, res) => {
                 role = ?,
                 updated_at = CURRENT_TIMESTAMP
             WHERE user_id = ?`,
-            [firstname, lastname, role, user_id]);
+            [firstname, lastname, role, user_id]
+        );
 
-            if (update.affectedRows === 0) {
-                return res.status(404).json({ message: 'User not found' });
+        const [rows] = await db.query('SELECT * FROM users WHERE user_id = ?', [user_id]);
+        const updatedUser = rows[0];
+
+        if (update.affectedRows === 0) {
+            return res.status(404).json({ message: 'User not found' });
         }
 
         let message = `Your role at WhiskerWatch is now updated to ${role}. Congratulations`;
@@ -217,7 +221,10 @@ AdminRoute.patch('/manage/update/:user_id', async (req, res) => {
             [user_id, message]
         );
 
-        res.status(200).json({ message: 'User role updated successfully!' });
+        res.status(200).json({ 
+            message: 'User role updated successfully!',
+            user: updatedUser 
+        });
 
         console.log(update)
     } catch (err) {
