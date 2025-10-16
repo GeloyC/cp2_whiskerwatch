@@ -143,7 +143,49 @@
 
 
 
+// import mysql from "mysql2/promise";
+// import dotenv from "dotenv";
+
+// dotenv.config();
+
+// let pool;
+
+// export const connectDB = async () => {
+//   if (pool) return pool;
+
+//   console.log("🌐 Connecting via Public IP (Render Free Tier)...");
+  
+//   pool = mysql.createPool({
+//     host: '35.240.135.236', // Your Cloud SQL public IP
+//     port: 3306,
+//     user: process.env.DB_USER,
+//     password: process.env.DB_PASSWORD,
+//     database: process.env.DB_NAME,
+//     ssl: {
+//       rejectUnauthorized: false // Bypasses SNI/TLS issues
+//     },
+//     connectionLimit: 5,
+//     connectTimeout: 10000
+//   });
+
+//   // Test connection
+//   await pool.query('SELECT 1');
+//   console.log("✅ Connected via public IP!");
+//   return pool;
+// };
+
+// export const getDB = () => {
+//   if (!pool) {
+//     throw new Error("Database not connected. Call connectDB() first.");
+//   }
+//   return pool;
+// };
+
+
+
 import mysql from "mysql2/promise";
+import fs from "fs";
+import path from "path";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -153,25 +195,29 @@ let pool;
 export const connectDB = async () => {
   if (pool) return pool;
 
-  console.log("🌐 Connecting via Public IP (Render Free Tier)...");
-  
-  pool = mysql.createPool({
-    host: '35.240.135.236', // Your Cloud SQL public IP
-    port: 3306,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    ssl: {
-      rejectUnauthorized: false // Bypasses SNI/TLS issues
-    },
-    connectionLimit: 5,
-    connectTimeout: 10000
-  });
+  try {
+    pool = mysql.createPool({
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD, // make sure you have this in your .env
+      database: process.env.DB_NAME,
+      port: process.env.DB_PORT,
+      waitForConnections: true,
+      connectionLimit: 10,
+      queueLimit: 0,
+      ssl: {
+        ca: fs.readFileSync(path.join(process.cwd(), "config/server-ca.pem")),
+        key: fs.readFileSync(path.join(process.cwd(), "config/client-key.pem")),
+        cert: fs.readFileSync(path.join(process.cwd(), "config/client-cert.pem")),
+      },
+    });
 
-  // Test connection
-  await pool.query('SELECT 1');
-  console.log("✅ Connected via public IP!");
-  return pool;
+    console.log("Database connected successfully!");
+    return pool;
+  } catch (err) {
+    console.error("Database connection error:", err);
+    throw err;
+  }
 };
 
 export const getDB = () => {
