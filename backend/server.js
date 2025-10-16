@@ -137,6 +137,27 @@ app.post("/upload/file", upload.single("document"), async (req, res) => {
 });
 
 
+app.get('/health', async (req, res) => {
+  try {
+    await connectDB();
+    const db = getDB();
+    const [result] = await db.query('SELECT 1 as healthy');
+    
+    res.status(200).json({
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV,
+      database: result[0].healthy === 1 ? 'connected' : 'disconnected'
+    });
+  } catch (error) {
+    console.error('Health check failed:', error);
+    res.status(503).json({
+      status: 'unhealthy',
+      error: error.message
+    });
+  }
+});
+
 
 
 // ---------------- ERROR HANDLER ---------------- //

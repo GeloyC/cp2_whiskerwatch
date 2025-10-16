@@ -49,10 +49,14 @@
 //   return pool;
 // };
 
-
 import mysql from "mysql2/promise";
-import { CloudSqlSocket } from "@google-cloud/cloud-sql-connector";
+import { Connector } from "@google-cloud/cloud-sql-connector";
+import { fileURLToPath } from "url";
 import dotenv from "dotenv";
+import path from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
@@ -62,17 +66,17 @@ let connector;
 export const connectDB = async () => {
   if (pool) return pool;
 
-  // Detect environments: Render, Cloud Run, or local proxy
   const isProduction = process.env.NODE_ENV === 'production' || 
-    process.env.RENDER || 
-    process.env.CLOUD_SQL_INSTANCE;
-  
+                      process.env.RENDER_EXTERNAL_HOSTNAME ||
+                      process.env.CLOUD_SQL_INSTANCE;
+
   try {
     if (isProduction) {
-      console.log("🌐 Using Cloud SQL Connector (Render/Production)...");
+      console.log("🌐 Using Cloud SQL Connector (ES6)...");
       
-      // Cloud SQL Connector for Render/Cloud Run
-      connector = new CloudSqlSocket({
+      // Create connector instance
+      connectorInstance = new Connector();
+      const connectionOptions = connectorInstance.getOptions({
         projectId: process.env.GOOGLE_CLOUD_PROJECT, // high-extension-474522-u0
         region: "asia-southeast1",
         instance: "whiskerwatch"
@@ -81,7 +85,7 @@ export const connectDB = async () => {
       await connector.connect();
       
       pool = mysql.createPool({
-        socketPath: connector.getUnixSocketPath(),
+        socketPath: connectionOptions.socketPath,
         user: process.env.DB_USER,
         password: process.env.DB_PASSWORD,
         database: process.env.DB_NAME,
@@ -89,44 +93,27 @@ export const connectDB = async () => {
         connectionLimit: 10,
         queueLimit: 0,
         acquireTimeout: 60000,
-        timeout: 60000
-      });
-    } else {
-      // Local development with proxy
-      console.log("🏠 Using local proxy (port 3307)...");
-      pool = mysql.createPool({
-        host: process.env.DB_HOST || '127.0.0.1',
-        port: parseInt(process.env.DB_PORT) || 3307,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME,
-        waitForConnections: true,
-        connectionLimit: 10,
-        queueLimit: 0
+        timeout: 60000,
+        connectTimeout: 60000
       });
     }
 
     // Test connection
     const connection = await pool.getConnection();
-    console.log("✅ Database connected successfully!");
+    console.log("Database connected successfully!");
     connection.release();
     
     return pool;
   } catch (err) {
     console.error("❌ Database connection error:", err);
-    if (connector) await connector.close();
+    if (connector) {
+      try {
+        await connector.close();
+      } catch (closeErr) {
+        console.error("Error closing connector:", closeErr);
+      }
+    }
     throw err;
-  }
-};
-
-export const closeDB = async () => {
-  if (pool) {
-    await pool.end();
-    console.log("Database pool closed");
-  }
-  if (connector) {
-    await connector.close();
-    console.log("Cloud SQL Connector closed");
   }
 };
 
