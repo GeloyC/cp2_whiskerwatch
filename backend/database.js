@@ -212,7 +212,7 @@ export const connectDB = async () => {
       },
     });
 
-    console.log("Database connected successfully!");
+    console.log("Database connected successfully and truthfully!");
     return pool;
   } catch (err) {
     console.error("Database connection error:", err);
