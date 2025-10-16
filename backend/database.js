@@ -104,6 +104,23 @@ export const connectDB = async () => {
     console.log(`📊 Connected to database: ${process.env.DB_NAME}`);
     connection.release();
     
+
+    console.log("🔑 Checking authentication...");
+    console.log("Project ID:", process.env.GOOGLE_CLOUD_PROJECT);
+    console.log("Credentials length:", process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON?.length || 0);
+    console.log("DB_USER:", process.env.DB_USER ? "Set" : "Missing");
+    console.log("DB_PASSWORD:", process.env.DB_PASSWORD ? "Set" : "Missing");
+    console.log("DB_NAME:", process.env.DB_NAME || "Missing");
+
+    try {
+      const { GoogleAuth } = await import('google-auth-library');
+      const auth = new GoogleAuth();
+      const projectId = await auth.getProjectId();
+      console.log("✅ Google Auth working, project:", projectId);
+    } catch (authError) {
+      console.error("❌ Google Auth failed:", authError.message);
+    }
+
     return pool;
   } catch (err) {
     console.error("❌ Database connection error:", err);
