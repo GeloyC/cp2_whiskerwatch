@@ -58,7 +58,7 @@ const Home = () => {
           <div className='flex flex-col box-border w-full'>
             
             {/* MAIN CONTENT STARTS HERE */}
-            <div className="relative w-full h-[500px] xl:h-[600px] bg-[url('/assets/cats/cat-donate-bg.jpg')] bg-center bg-cover bg-no-repeat border-b-2 border-b-[#DC8801]">
+            <div className="relative w-full h-[500px] xl:h-[600px] bg-[url('/assets/cats/Edited_Cat_Cover_Photo.png')] bg-center bg-cover bg-no-repeat border-b-2 border-b-[#DC8801]">
               <div className='absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center w-[400px] p-10 xl:w-auto lg:w-auto md:w-auto gap-5'>
                 <img src="/assets/image/Slogan_image_outline.png" alt="stray-today-safe-tomorrow" className='w-full h-full object-cover'/>
 
