@@ -206,11 +206,11 @@ export const connectDB = async () => {
       connectionLimit: 10,
       queueLimit: 0,
       ssl: {
-        // ca: fs.readFileSync(path.join(process.cwd(), "config/server-ca.pem")),
+        ca: fs.readFileSync(path.join(process.cwd(), "config/server-ca.pem")),
         // key: fs.readFileSync(path.join(process.cwd(), "config/client-key.pem")),
         // cert: fs.readFileSync(path.join(process.cwd(), "config/client-cert.pem")),
         rejectUnauthorized: true,
-        servername: "whiskerwatch.asia-southeast1.c.high-extension-474522-u0.internal"
+        servername: 'mysql.googleapis.com'
       },
     });
 
