@@ -173,3 +173,10 @@ export const connectDB = async () => {
   console.log("✅ Connected via public IP!");
   return pool;
 };
+
+export const getDB = () => {
+  if (!pool) {
+    throw new Error("Database not connected. Call connectDB() first.");
+  }
+  return pool;
+};
