@@ -61,7 +61,7 @@ const __dirname = path.dirname(__filename);
 dotenv.config();
 
 let pool;
-let connector;
+let connectorInstance;
 
 export const connectDB = async () => {
   if (pool) return pool;
