@@ -52,91 +52,124 @@
 
 
 
+// import mysql from "mysql2/promise";
+// import { Connector } from "@google-cloud/cloud-sql-connector";
+// import dotenv from "dotenv";
+
+// dotenv.config();
+
+// let pool;
+// let connectorInstance;
+
+// export const connectDB = async () => {
+//   if (pool) return pool;
+
+//   console.log("🌐 Initializing Cloud SQL Connector...");
+  
+//   try {
+//     // Create connector with explicit configuration
+//     connectorInstance = new Connector();
+    
+//     const instanceConnectionName = `${process.env.GOOGLE_CLOUD_PROJECT}:asia-southeast1:whiskerwatch`;
+//     console.log(`📍 Instance connection name: ${instanceConnectionName}`);
+    
+//     // Get connection options - this should start the proxy
+//     const connectionOptions = connectorInstance.getOptions({
+//       instanceConnectionName: instanceConnectionName
+//     });
+
+//     console.log("🔌 Socket path:", connectionOptions.socketPath);
+//     console.log("📡 Connection options:", JSON.stringify(connectionOptions, null, 2));
+
+//     // Verify socket path exists and is valid
+//     if (!connectionOptions.socketPath) {
+//       throw new Error("Connector failed to provide socket path - proxy not started");
+//     }
+
+//     // Create MySQL pool with Unix socket
+//     pool = mysql.createPool({
+//       socketPath: connectionOptions.socketPath, // Unix socket, NOT TCP
+//       user: process.env.DB_USER,
+//       password: process.env.DB_PASSWORD,
+//       database: process.env.DB_NAME,
+//       waitForConnections: true,
+//       connectionLimit: 10,
+//       queueLimit: 0,
+//       charset: 'utf8mb4'
+//     });
+
+//     // Test connection with longer timeout
+//     const connection = await pool.getConnection();
+//     console.log("✅ Database connected successfully via Cloud SQL Connector!");
+//     console.log(`📊 Connected to database: ${process.env.DB_NAME}`);
+//     connection.release();
+    
+
+//     console.log("🔑 Checking authentication...");
+//     console.log("Project ID:", process.env.GOOGLE_CLOUD_PROJECT);
+//     console.log("Credentials length:", process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON?.length || 0);
+//     console.log("DB_USER:", process.env.DB_USER ? "Set" : "Missing");
+//     console.log("DB_PASSWORD:", process.env.DB_PASSWORD ? "Set" : "Missing");
+//     console.log("DB_NAME:", process.env.DB_NAME || "Missing");
+
+//     try {
+//       const { GoogleAuth } = await import('google-auth-library');
+//       const auth = new GoogleAuth();
+//       const projectId = await auth.getProjectId();
+//       console.log("✅ Google Auth working, project:", projectId);
+//     } catch (authError) {
+//       console.error("❌ Google Auth failed:", authError.message);
+//     }
+
+//     return pool;
+//   } catch (err) {
+//     console.error("❌ Database connection error:", err);
+    
+//     // Debug: Check if connector started properly
+//     if (connectorInstance) {
+//       console.error("Connector instance:", connectorInstance);
+//     }
+    
+//     throw err;
+//   }
+// };
+
+// export const getDB = () => {
+//   if (!pool) {
+//     throw new Error("Database not connected. Call connectDB() first.");
+//   }
+//   return pool;
+// };
+
+
+
 import mysql from "mysql2/promise";
-import { Connector } from "@google-cloud/cloud-sql-connector";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 let pool;
-let connectorInstance;
 
 export const connectDB = async () => {
   if (pool) return pool;
 
-  console.log("🌐 Initializing Cloud SQL Connector...");
+  console.log("🌐 Connecting via Public IP (Render Free Tier)...");
   
-  try {
-    // Create connector with explicit configuration
-    connectorInstance = new Connector();
-    
-    const instanceConnectionName = `${process.env.GOOGLE_CLOUD_PROJECT}:asia-southeast1:whiskerwatch`;
-    console.log(`📍 Instance connection name: ${instanceConnectionName}`);
-    
-    // Get connection options - this should start the proxy
-    const connectionOptions = connectorInstance.getOptions({
-      instanceConnectionName: instanceConnectionName
-    });
+  pool = mysql.createPool({
+    host: '35.240.135.236', // Your Cloud SQL public IP
+    port: 3306,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    ssl: {
+      rejectUnauthorized: false // Bypasses SNI/TLS issues
+    },
+    connectionLimit: 5,
+    connectTimeout: 10000
+  });
 
-    console.log("🔌 Socket path:", connectionOptions.socketPath);
-    console.log("📡 Connection options:", JSON.stringify(connectionOptions, null, 2));
-
-    // Verify socket path exists and is valid
-    if (!connectionOptions.socketPath) {
-      throw new Error("Connector failed to provide socket path - proxy not started");
-    }
-
-    // Create MySQL pool with Unix socket
-    pool = mysql.createPool({
-      socketPath: connectionOptions.socketPath, // Unix socket, NOT TCP
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      waitForConnections: true,
-      connectionLimit: 10,
-      queueLimit: 0,
-      charset: 'utf8mb4'
-    });
-
-    // Test connection with longer timeout
-    const connection = await pool.getConnection();
-    console.log("✅ Database connected successfully via Cloud SQL Connector!");
-    console.log(`📊 Connected to database: ${process.env.DB_NAME}`);
-    connection.release();
-    
-
-    console.log("🔑 Checking authentication...");
-    console.log("Project ID:", process.env.GOOGLE_CLOUD_PROJECT);
-    console.log("Credentials length:", process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON?.length || 0);
-    console.log("DB_USER:", process.env.DB_USER ? "Set" : "Missing");
-    console.log("DB_PASSWORD:", process.env.DB_PASSWORD ? "Set" : "Missing");
-    console.log("DB_NAME:", process.env.DB_NAME || "Missing");
-
-    try {
-      const { GoogleAuth } = await import('google-auth-library');
-      const auth = new GoogleAuth();
-      const projectId = await auth.getProjectId();
-      console.log("✅ Google Auth working, project:", projectId);
-    } catch (authError) {
-      console.error("❌ Google Auth failed:", authError.message);
-    }
-
-    return pool;
-  } catch (err) {
-    console.error("❌ Database connection error:", err);
-    
-    // Debug: Check if connector started properly
-    if (connectorInstance) {
-      console.error("Connector instance:", connectorInstance);
-    }
-    
-    throw err;
-  }
-};
-
-export const getDB = () => {
-  if (!pool) {
-    throw new Error("Database not connected. Call connectDB() first.");
-  }
+  // Test connection
+  await pool.query('SELECT 1');
+  console.log("✅ Connected via public IP!");
   return pool;
 };
