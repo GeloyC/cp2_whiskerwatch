@@ -74,10 +74,10 @@ const certificateStorage = new CloudinaryStorage({
 const uploadCertificate = multer({
     storage: certificateStorage,
     fileFilter: (req, file, cb) => {
-        if (file.mimetype === "image/png") {
-        cb(null, true);
+        if (file.mimetype === "image/png" || file.mimetype === "image/jpeg" || file.mimetype === "image/jpg") {
+            cb(null, true);
         } else {
-        cb(new Error("Only PNG files are allowed!"), false);
+            cb(new Error("Only PNG/JPEG/JPG files are allowed!"), false);
         }
     },
 });
