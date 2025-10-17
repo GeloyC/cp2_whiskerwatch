@@ -905,7 +905,7 @@ const Feeding = () => {
                     </div>
                   ) : (
                     <div className="flex flex-col gap-4">
-                      {!hasSubmittedReport ? (
+                      {hasSubmittedReport ? (
                         <div className="flex flex-col justify-center w-fit gap-4 rounded-[10px]">
                           <p>
                             Thank you so much for submitting a report for your recent feeding schedule ({feedingDate}). We appreciate your feedback.
