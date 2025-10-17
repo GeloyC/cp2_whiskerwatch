@@ -218,12 +218,6 @@ const Profile = () => {
                                 {/* MAIN PROFILE */}
                                 <div className='flex items-center justify-between w-full text-center font-bold text-3xl text-[#889132]'>
                                     <span>{!updateProfile ? 'MY PROFILE' : 'EDIT PROFILE'}</span>
-                                    {!updateProfile && (
-                                        <Link to="/leaderboard" className='flex items-start gap-3 bg-[#B5C04A] px-1 py-3 rounded-[10px] hover:bg-[#C2CB6A] active:bg-[#B5C04A]'>
-                                            <span className='text-[#FFF] font-bold text-md'>Leaderboard</span>
-                                            <img src="/assets/icons/arrow-right-no-tail.png" alt="" className='size-3'/>
-                                        </Link>
-                                    )}
                                 </div>
                                 {!updateProfile && (
                                     <>
@@ -447,7 +441,15 @@ const Profile = () => {
 
                             <div className='flex flex-col gap-4 bg-[#ffdfab] bg-[url(/src/assets/background-paws.png)] w-full bg-cover bg-fit bg-repeat p-10 rounded-b-[10px]'>
                                 {/* WHISKER METER */}
-                                <label className='font-bold text-[#2F2F2F] text-2xl text-center'>WHISKERMETER TRACKER</label>
+                                <div className='flex flex-row items-center justify-between w-full'>
+                                    <label className='font-bold text-[#2F2F2F] text-2xl text-center'>WHISKERMETER TRACKER</label>
+                                    {!updateProfile && (
+                                        <Link to="/leaderboard" className='flex items-start gap-3 bg-[#B5C04A] px-3 py-1 rounded-[10px] hover:bg-[#C2CB6A] active:bg-[#B5C04A]'>
+                                            <span className='text-[#FFF] font-bold text-[14px]'>Leaderboard</span>
+                                            <img src="/assets/icons/arrow-right-no-tail.png" alt="" className='size-3'/>
+                                        </Link>
+                                    )}
+                                </div>
                                 <span className='w-fit self-center text-[#B67101] bg-[#FFF] p-1 rounded-[5px] '>{`You have ${points} points.`}</span>
                                 <div className='relative flex w-full'>
                                     <div className='absolute flex justify-evenly w-full'>
