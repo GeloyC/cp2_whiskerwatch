@@ -922,26 +922,26 @@ const Feeding = () => {
                           <label className="bg-[#E3E697] p-2 pl-4 pr-4 rounded-[10px] text-[#6b7228] border-dashed border-2 border-[#99A339]">
                             Please wait for your next feeding schedule.
                           </label>
-                        </div>
-                      )}
-                      {!hasSubmittedReport ? (
-                        <Link
-                          to={`/feeding/feedingreport/${user?.user_id}`}
-                          className="w-fit self-end bg-[#DC8801] text-[#FFF] font-bold p-2 rounded-[10px] cursor-pointer hover:scale-102 active:scale-98 transition-all duration-100"
-                        >
-                          Write a Feeding Report
-                        </Link>
-                      ) : (
-                        <div className="flex flex-col w-full justify-end">
-                          <button
-                            disabled
-                            className="w-fit self-end bg-[#2F2F2F] opacity-50 cursor-not-allowed text-[#FFF] font-bold p-2 rounded-[10px]"
-                          >
-                            Write a Feeding Report
-                          </button>
-                          <p className="text-[#8f8f8f] text-[12px] w-fit self-end">
-                            You've already submitted a report for your recent feeding.
-                          </p>
+                          {!hasSubmittedReport ? (
+                            <Link
+                              to={`/feeding/feedingreport/${user?.user_id}`}
+                              className="w-fit self-end bg-[#DC8801] text-[#FFF] font-bold p-2 rounded-[10px] cursor-pointer hover:scale-102 active:scale-98 transition-all duration-100"
+                            >
+                              Write a Feeding Report
+                            </Link>
+                          ) : (
+                            <div className="flex flex-col w-full justify-end">
+                              <button
+                                disabled
+                                className="w-fit self-end bg-[#2F2F2F] opacity-50 cursor-not-allowed text-[#FFF] font-bold p-2 rounded-[10px]"
+                              >
+                                Write a Feeding Report
+                              </button>
+                              <p className="text-[#8f8f8f] text-[12px] w-fit self-end">
+                                You've already submitted a report for your recent feeding.
+                              </p>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
