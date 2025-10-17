@@ -443,14 +443,13 @@ const Profile = () => {
                                 {/* WHISKER METER */}
                                 <div className='flex flex-row items-center justify-between w-full'>
                                     <label className='font-bold text-[#2F2F2F] text-2xl text-center'>WHISKERMETER TRACKER</label>
-                                    {!updateProfile && (
-                                        <Link to="/leaderboard" className='flex items-center gap-3 bg-[#B5C04A] px-3 py-1 rounded-[10px] hover:bg-[#C2CB6A] active:bg-[#B5C04A]'>
-                                            <span className='text-[#FFF] font-bold text-[14px]'>Leaderboard</span>
-                                            <div className='size-3 object-cover'>
-                                                <img src="/assets/icons/arrow-right-no-tail.png" alt="" className='w-full h-full object-cover'/>
-                                            </div>
-                                        </Link>
-                                    )}
+                                    
+                                    <Link to="/leaderboard" className='flex items-center gap-3 bg-[#B5C04A] px-3 py-1 rounded-[10px] hover:bg-[#C2CB6A] active:bg-[#B5C04A]'>
+                                        <span className='text-[#FFF] font-bold text-[14px]'>Leaderboard</span>
+                                        <div className='size-3 object-cover'>
+                                            <img src="/assets/icons/arrow-right-no-tail.png" alt="" className='w-full h-full object-cover'/>
+                                        </div>
+                                    </Link>
                                 </div>
                                 <span className='w-fit self-center text-[#B67101] bg-[#FFF] p-1 rounded-[5px] '>{`You have ${points} points.`}</span>
                                 <div className='relative flex w-full'>
