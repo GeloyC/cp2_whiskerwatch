@@ -634,7 +634,7 @@ const Feeding = () => {
         const feedingDateTime = new Date(`${feeding_date}T20:00:00+08:00`);
         const feedingDatePlusTwoHours = new Date(feedingDateTime.getTime() + 2 * 60 * 60 * 1000);
         const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Manila' }));
-        setIsFeedingDatePassed(now >= feedingDatePlusTwoHours);
+        setIsFeedingDatePassed(now <= feedingDatePlusTwoHours);
       }
     } catch (err) {
       console.error('Failed to fetch feeding date:', err);
