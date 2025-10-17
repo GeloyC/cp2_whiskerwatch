@@ -216,8 +216,14 @@ const Profile = () => {
                         <div className='flex flex-col'>
                             <div className='flex flex-col items-start gap-4  rounded-t-[10px] border-dashed border-b-2 border-b-[#8f8f8f]'>
                                 {/* MAIN PROFILE */}
-                                <div className='w-full text-center font-bold text-3xl text-[#889132]'>
+                                <div className='flex items-center justify-between w-full text-center font-bold text-3xl text-[#889132]'>
                                     <span>{!updateProfile ? 'MY PROFILE' : 'EDIT PROFILE'}</span>
+                                    {!updateProfile && (
+                                        <Link to="/leaderboard" className='flex items-start gap-3 bg-[#B5C04A] px-1 py-3 rounded-[10px] hover:bg-[#C2CB6A] active:bg-[#B5C04A]'>
+                                            <span className='text-[#FFF] font-bold text-md'>Leaderboard</span>
+                                            <img src="/assets/icons/arrow-right-no-tail.png" alt="" className='size-3'/>
+                                        </Link>
+                                    )}
                                 </div>
                                 {!updateProfile && (
                                     <>
