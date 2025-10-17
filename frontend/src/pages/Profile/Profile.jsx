@@ -3,7 +3,7 @@ import Cookies from 'js-cookie'
 import { useState } from 'react'
 import { useEffect } from 'react'
 import axios from 'axios'
-import { useLocation, useParams } from 'react-router-dom'
+import { useLocation, Link } from 'react-router-dom'
 
 import NavigationBar from '../../components/NavigationBar'
 import Footer from '../../components/Footer'
