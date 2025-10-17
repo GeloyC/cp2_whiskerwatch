@@ -11,6 +11,7 @@ const FeedingApplications = () => {
     
   const { user, logout, loading: sessionLoading } = useSession();
   const [applicant, setApplicant] = useState([]);
+    const [searchInput, setSearchInput] = useState('');
 
   useEffect(() => {
     const fetchApplications = async () => {
@@ -24,6 +25,16 @@ const FeedingApplications = () => {
 
     fetchApplications()
   }, []);
+
+
+  const filterFeedingApplication = applicant.filter((app) => {
+    const firstnameMatch = app.firstname?.toLowerCase().includes(searchInput.toLowerCase());
+    const lastnameMatch = app.lastname?.toLowerCase().includes(searchInput.toLowerCase());
+
+    return firstnameMatch && lastnameMatch;
+  });
+
+
 
   if (sessionLoading) return <div className="p-10">Loading session...</div>;
   if (!user) return <div className="p-10">No active session.</div>;
@@ -48,7 +59,8 @@ const FeedingApplications = () => {
             {/* FILTERS */}
             <div className='hidden xl:flex lg:flex flex-row justify-between w-full'>
               <form className='flex gap-2'>
-                <input type="search" placeholder='Search' className='bg-[#FFF] p-2 min-w-[400px] border-1 border-[#595959] rounded-[15px]'/>
+                <input type="search" placeholder='Search' value={searchInput} onChange={(e) => setSearchInput(e.target.value)}
+                className='bg-[#FFF] p-2 min-w-[400px] border-1 border-[#595959] rounded-[15px]'/>
               </form>
 
               {/* Search by date */}
@@ -74,7 +86,7 @@ const FeedingApplications = () => {
                 </tr>
               </thead>
               <tbody className='flex flex-col w-full overflow-y-scroll scrollbar-thin min-h-[600px]'>
-                {applicant.map((application) => (
+                {filterFeedingApplication.map((application) => (
                   <tr key={application.application_number} className='grid grid-cols-5 justify-items-start place-items-center w-full bg-[#FFF] p-3 rounded-[15px] text-[#2F2F2F] border-b-1 border-b-[#595959]'>
                     <td>{application.application_number}</td>
                     <td>{`${application.firstname} ${application.lastname}`}</td>
