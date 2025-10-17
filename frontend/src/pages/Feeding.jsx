@@ -914,7 +914,7 @@ const Feeding = () => {
                             We're looking forward to another feeding session with you, just wait for your next feeding schedule to be updated. Thank you!
                           </label>
 
-                          <div className={`flex flex-col w-full justify-end`}>
+                          {/* <div className={`flex flex-col w-full justify-end`}>
                             <button
                               disabled
                               className={`w-fit self-end bg-[#2F2F2F] opacity-50 ${hasSubmittedReport ? 'cursor-not-allowed' : 'cursor-pointer'} text-[#FFF] font-bold p-2 rounded-[10px]`}
@@ -924,7 +924,7 @@ const Feeding = () => {
                             <p className="text-[#8f8f8f] text-[12px] w-fit self-end">
                               {hasSubmittedReport ? `You've already submitted a report for your recent feeding.` : `You've submitted a report from your recent feeding schedule.`}
                             </p>
-                          </div>
+                          </div> */}
                         </div>
                       ) : (
                         <div className="flex flex-col justify-center w-fit gap-4 rounded-[10px]">
@@ -934,7 +934,7 @@ const Feeding = () => {
                           <label className="bg-[#E3E697] p-2 pl-4 pr-4 rounded-[10px] text-[#6b7228] border-dashed border-2 border-[#99A339]">
                             Please wait for your next feeding schedule.
                           </label>
-                          {/* {!hasSubmittedReport ? (
+                          {!hasSubmittedReport ? (
                             <Link
                               to={`/feeding/feedingreport/${user?.user_id}`}
                               className="w-fit self-end bg-[#DC8801] text-[#FFF] font-bold p-2 rounded-[10px] cursor-pointer hover:scale-102 active:scale-98 transition-all duration-100"
@@ -953,9 +953,9 @@ const Feeding = () => {
                                 You've already submitted a report for your recent feeding.
                               </p>
                             </div>
-                          )} */}
+                          )}
 
-                            <div className={`flex flex-col w-full justify-end`}>
+                            {/* <div className={`flex flex-col w-full justify-end`}>
                               <button
                                 disabled
                                 className={`w-fit self-end bg-[#2F2F2F] opacity-50 ${hasSubmittedReport ? 'cursor-not-allowed' : 'cursor-pointer'} text-[#FFF] font-bold p-2 rounded-[10px]`}
@@ -965,7 +965,7 @@ const Feeding = () => {
                               <p className="text-[#8f8f8f] text-[12px] w-fit self-end">
                                 {hasSubmittedReport ? `You've already submitted a report for your recent feeding.` : `You've submitted a report from your recent feeding schedule.`}
                               </p>
-                            </div>
+                            </div> */}
                           </div>
                         )}
                     </div>
