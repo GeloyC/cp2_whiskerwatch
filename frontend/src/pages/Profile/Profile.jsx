@@ -217,7 +217,7 @@ const Profile = () => {
                             <div className='flex flex-col items-start gap-4  rounded-t-[10px] border-dashed border-b-2 border-b-[#8f8f8f]'>
                                 {/* MAIN PROFILE */}
                                 <div className='w-full text-center font-bold text-3xl text-[#889132]'>
-                                    <span>{updateProfile ? 'MY PROFILE' : 'EDIT PROFILE'}</span>
+                                    <span>{!updateProfile ? 'MY PROFILE' : 'EDIT PROFILE'}</span>
                                 </div>
                                 {!updateProfile && (
                                     <>
