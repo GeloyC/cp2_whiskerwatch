@@ -917,12 +917,12 @@ const Feeding = () => {
                           <div className={`flex flex-col w-full justify-end`}>
                             <button
                               disabled
-                              className={`w-fit self-end bg-[#2F2F2F] opacity-50 ${!hasSubmittedReport ? 'cursor-not-allowed' : 'cursor-pointer'} text-[#FFF] font-bold p-2 rounded-[10px]`}
+                              className={`w-fit self-end bg-[#2F2F2F] opacity-50 ${hasSubmittedReport ? 'cursor-not-allowed' : 'cursor-pointer'} text-[#FFF] font-bold p-2 rounded-[10px]`}
                             >
                               Write a Feeding Report
                             </button>
                             <p className="text-[#8f8f8f] text-[12px] w-fit self-end">
-                              {!hasSubmittedReport ? `You've already submitted a report for your recent feeding.` : `You've submitted a report from your recent feeding schedule.`}
+                              {hasSubmittedReport ? `You've already submitted a report for your recent feeding.` : `You've submitted a report from your recent feeding schedule.`}
                             </p>
                           </div>
                         </div>
@@ -958,12 +958,12 @@ const Feeding = () => {
                             <div className={`flex flex-col w-full justify-end`}>
                               <button
                                 disabled
-                                className={`w-fit self-end bg-[#2F2F2F] opacity-50 ${!hasSubmittedReport ? 'cursor-not-allowed' : 'cursor-pointer'} text-[#FFF] font-bold p-2 rounded-[10px]`}
+                                className={`w-fit self-end bg-[#2F2F2F] opacity-50 ${hasSubmittedReport ? 'cursor-not-allowed' : 'cursor-pointer'} text-[#FFF] font-bold p-2 rounded-[10px]`}
                               >
                                 Write a Feeding Report
                               </button>
                               <p className="text-[#8f8f8f] text-[12px] w-fit self-end">
-                                {!hasSubmittedReport ? `You've already submitted a report for your recent feeding.` : `You've submitted a report from your recent feeding schedule.`}
+                                {hasSubmittedReport ? `You've already submitted a report for your recent feeding.` : `You've submitted a report from your recent feeding schedule.`}
                               </p>
                             </div>
                           </div>
