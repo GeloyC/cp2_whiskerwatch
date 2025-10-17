@@ -147,8 +147,8 @@ const AdoptersList = () => {
       return;
     }
 
-    if (file.type !== "image/png") {
-      alert("Only PNG files are allowed!");
+    if (file.type !== "image/png" || file.type !== "image/jpeg" || file.type !== "image/jpg") {
+      alert("Only PNG/JPG/JPEG files are allowed!");
       return;
     }
 
