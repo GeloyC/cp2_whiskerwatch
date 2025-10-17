@@ -168,7 +168,7 @@ const UserProfile = () => {
                                         userCertificates.map((cert, index) => (
                                             <a
                                                 key={index}
-                                                href={`${url}/FileUploads/certificate/${cert.certificate}`}
+                                                href={`${cert.certificate}`}
                                                 target='_blank'
                                                 rel='noopener noreferrer'
                                                 className='flex items-center justify-between self-start min-w-[300px] gap-3 p-2 pl-4 pr-4 bg-[#FDF5D8] text-[#2F2F2F] rounded-[10px] hover:underline border-dashed border-2 border-[#595959]'
