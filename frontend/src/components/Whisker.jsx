@@ -135,14 +135,14 @@ const Whisker = () => {
             </div>
           </div>
         ) : (
-          <div className='flex flex-col gap-2 h-auto w-auto'>
+          <div className='flex flex-col justify-end gap-2 h-auto w-auto'>
             <Link to="/leaderboard" className={`${whiskerVisible ? "h-0 hidden" : "min-h-aut flex"} w-fit justify-end gap-2 items-center bg-[#B5C04A] hover:bg-[#C2CB6A] active:bg-[#889132] rounded-[10px] px-3 py-1`}>
               <span className='text-[#FFF] text-[12px] whitespace-nowrap font-bold'>Leaderboards</span>
               <div className='size-2 object-cover flex items-center justify-center'>
                 <img src="/assets/icons/arrow-right-no-tail.png" alt="arrow to leaderboard" className='w-full h-full object-cover'/>
               </div>
             </Link>
-            <div className='flex flex-row h-full gap-2'>
+            <div className='flex flex-row h-full gap-4'>
               <div className={`flex relative min-w-3 h-60 bg-[#FFF] border-4 border-[#FFF] rounded-full overflow-hidden ${whiskerVisible ? 'h-0 hidden' : 'min-h-auto flex'} shadow-lg`}>
                 <div className='flex flex-col items-center justify-evenly h-full'>
                   <div className='w-[15px] object-fit'>

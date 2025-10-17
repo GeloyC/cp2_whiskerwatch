@@ -34,9 +34,21 @@ const WhiskerLeaderboard = () => {
             <NavigationBar />
                 <div className='flex flex-col items-center justify-start gap-2 h-full p-10'> 
                     <div className='flex flex-col items-center w-[1000px] p-5 bg-[#FFFCF6] rounded-[10px] gap-4'>
-                        <label className='text-3xl text-[#2F2F2F] font-bold'>WHISKMETER LEADERBOARD</label>
+                        <div className='flex items-center justify-between w-full'>
+                            <div className='size-15'>
+                                <img src="/assets/icons/medal.png" alt="" />
+                            </div>
 
-                        <div className='flex flex-col gap-2 w-full items-start py-3 border-t-2 border-dashed border-[#CCCCCC]'>
+                            <label className='text-3xl text-[#889132] font-bold'>
+                                WHISKMETER LEADERBOARD
+                            </label>
+
+                            <div className='size-15'>
+                                <img src="/assets/icons/medal.png" alt="" />
+                            </div>
+                        </div>
+
+                        <div className='flex flex-col gap-2 w-full items-start py-3'>
                             <table className='flex flex-col w-full'>
                                 <thead>
                                     <tr className='grid grid-cols-3 w-full place-items-start p-2'>
@@ -45,12 +57,12 @@ const WhiskerLeaderboard = () => {
                                         <th>Points</th>
                                     </tr>
                                 </thead>
-                                <tbody className='max-h-[400px] overflow-y-scroll scrollbar-thin gap-1'>
+                                <tbody className='max-h-[400px] overflow-y-scroll scrollbar-thin flex flex-col gap-1'>
                                     {whiskerLeaders.map((leaders, index) => (
-                                        <tr className='grid grid-cols-3 w-full place-items-start bg-[#C2CB6A] p-2 rounded-[5px]'>
-                                            <td>{index + 1}</td>
+                                        <tr className='grid grid-cols-3 w-full place-items-center justify-items-start p-2 rounded-[5px] bg-[#F9F7DC] border-1 border-dashed border-[#8f8f8f]'>
+                                            <td className='font-bold'>{index + 1}</td>
                                             <td>{`${leaders.firstname} ${leaders.lastname}`}</td>
-                                            <td className='font-bold'>{`${leaders.points} points`}</td>
+                                            <td className='font-bold bg-[#94b946] py-1 px-3 rounded-[10px]'>{`${leaders.points} points`}</td>
                                         </tr>
                                     ))}
                                 </tbody>
