@@ -40,7 +40,7 @@ const WhiskerLeaderboard = () => {
                             </div>
 
                             <label className='text-3xl text-center text-[#889132] font-bold'>
-                                WHISKMETER LEADERBOARD
+                                WHISKERMETER LEADERBOARD
                             </label>
 
                             <div className='size-15'>
