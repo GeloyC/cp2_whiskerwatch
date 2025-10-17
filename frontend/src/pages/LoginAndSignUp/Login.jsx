@@ -972,7 +972,11 @@ const Login = () => {
   const [otpStep, setOtpStep] = useState(false);
   const [otp, setOtp] = useState("");
 
-  // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const [showPassword, setShowPassword] = useState(false);
+  const [showResetPassword, setShowResetPassword] = useState(false);
+
+  const handleShowPass = () => { setShowPassword((prev) => !prev); }
+  const handleShowResetPass = () => { setShowResetPassword((prev) => !prev); }
 
   // ------------------- USER LOGIN -------------------
   const handleLogin = async (event) => {
@@ -980,11 +984,7 @@ const Login = () => {
     setError("");
     setLoading(true);
 
-    // if (!emailRegex.test(email)) {
-    //   setError("Please enter a valid email address");
-    //   setLoading(false);
-    //   return;
-    // }
+    
 
     try {
       const response = await axios.post(
@@ -1201,17 +1201,25 @@ const Login = () => {
               className="border-b-2 border-b-[#977655] p-2"
               required
             />
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                if (error) setError("");
-              }}
-              className="border-b-2 border-b-[#977655] p-2"
-              required
-            />
+            <div className="flex flex-col items-start w-full gap-1">
+              <input
+                type={showPassword ? "text" :"password"}
+                placeholder="Password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (error) setError("");
+                }}
+                className="border-b-2 border-b-[#977655] p-2"
+                required
+              />
+
+              <label htmlFor="show_password" className="text-sm flex items-center gap-1">
+                <input type="checkbox" onChange={handleShowPass} id="show_password" />
+                Show password
+              </label>
+            </div>
+            
             <div className="flex flex-col items-center gap-2 w-full">
               <button
                 type="submit"
@@ -1339,21 +1347,28 @@ const Login = () => {
           <form onSubmit={handleResetPassword} className="flex flex-col items-center gap-8">
             <label className="text-[#2F2F2F] text-[24px] font-bold">Reset Password</label>
             <input
-              type="password"
+              type={showResetPassword ? "text" : "password"}
               placeholder="New Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="border-b-2 border-b-[#977655] p-2"
               required
             />
-            <input
-              type="password"
-              placeholder="Confirm Password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="border-b-2 border-b-[#977655] p-2"
-              required
-            />
+            <div className="flex flex-col gap-2 w-full items-start">
+              <input
+                type={showResetPassword ? "text" : "password"}
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="border-b-2 border-b-[#977655] p-2"
+                required
+              />
+
+              <label htmlFor="show_resetpassword" className="flex items-center gap-1">
+                <input type="checkbox" onChange={handleShowResetPass} id="show_resetpassword" />
+                Show password
+              </label>
+            </div>
             <div className="flex gap-3">
               <button
                 type="submit"
