@@ -45,7 +45,7 @@ const WhiskerLeaderboard = () => {
                                         <th>Points</th>
                                     </tr>
                                 </thead>
-                                <tbody className='max-h-[400px] overflow-y-scroll scrollbar-thin'>
+                                <tbody className='max-h-[400px] overflow-y-scroll scrollbar-thin gap-1'>
                                     {whiskerLeaders.map((leaders, index) => (
                                         <tr className='grid grid-cols-3 w-full place-items-start bg-[#C2CB6A] p-2 rounded-[5px]'>
                                             <td>{index + 1}</td>
