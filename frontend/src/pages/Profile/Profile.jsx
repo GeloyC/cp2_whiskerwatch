@@ -216,7 +216,7 @@ const Profile = () => {
                         <div className='flex flex-col'>
                             <div className='flex flex-col items-start gap-4  rounded-t-[10px] border-dashed border-b-2 border-b-[#8f8f8f]'>
                                 {/* MAIN PROFILE */}
-                                <div className='flex items-center justify-between w-full text-center font-bold text-3xl text-[#889132]'>
+                                <div className='flex items-center justify-center w-full text-center font-bold text-3xl text-[#889132]'>
                                     <span>{!updateProfile ? 'MY PROFILE' : 'EDIT PROFILE'}</span>
                                 </div>
                                 {!updateProfile && (
@@ -444,9 +444,11 @@ const Profile = () => {
                                 <div className='flex flex-row items-center justify-between w-full'>
                                     <label className='font-bold text-[#2F2F2F] text-2xl text-center'>WHISKERMETER TRACKER</label>
                                     {!updateProfile && (
-                                        <Link to="/leaderboard" className='flex items-start gap-3 bg-[#B5C04A] px-3 py-1 rounded-[10px] hover:bg-[#C2CB6A] active:bg-[#B5C04A]'>
+                                        <Link to="/leaderboard" className='flex items-center gap-3 bg-[#B5C04A] px-3 py-1 rounded-[10px] hover:bg-[#C2CB6A] active:bg-[#B5C04A]'>
                                             <span className='text-[#FFF] font-bold text-[14px]'>Leaderboard</span>
-                                            <img src="/assets/icons/arrow-right-no-tail.png" alt="" className='size-3'/>
+                                            <div className='size-3 object-cover'>
+                                                <img src="/assets/icons/arrow-right-no-tail.png" alt="" className='w-full h-full object-cover'/>
+                                            </div>
                                         </Link>
                                     )}
                                 </div>
