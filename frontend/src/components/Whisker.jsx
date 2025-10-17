@@ -135,13 +135,13 @@ const Whisker = () => {
             </div>
           </div>
         ) : (
-          <>
-            <div className='flex w-full gap-2 justify-end items-center bg-[#889132] rounded-[10px] px-3 py-1'>
+          <div className='flex flex-col gap-2 h-auto w-auto'>
+            <Link to="/leaderboard" className='flex w-full gap-2 justify-end items-center bg-[#889132] rounded-[10px] px-3 py-1'>
               <span className='text-[#FFF] font-bold'>WhiskerMeter Leaderboards</span>
               <div className='size-4 object-cover flex items-center justify-center'>
                 <img src="/assets/icons/arrow-right-no-tail.png" alt="arrow to leaderboard" className='w-full h-full object-cover'/>
               </div>
-            </div>
+            </Link>
             <div className={`flex relative min-w-3 h-60 bg-[#FFF] border-4 border-[#FFF] rounded-full overflow-hidden ${whiskerVisible ? 'h-0 hidden' : 'min-h-auto flex'} shadow-lg`}>
               <div className='flex flex-col items-center justify-evenly h-full'>
                 <div className='w-[15px] object-fit'>
@@ -199,7 +199,7 @@ const Whisker = () => {
                 </label>
               </div>
             )}
-          </>
+          </div>
         )}
         {/* Progress Bar */}
       </div>
