@@ -29,14 +29,11 @@ export function SessionProvider({ children }) {
             if (user) {
                 const token = localStorage.getItem('jwt_token');
 
-            if (token) {
-                config.headers.Authorization = `Bearer ${token}`;
-            } else {
-                console.warn("No token found in localStorage");
-            }
-            } else {
-                console.warn("No user in context, skipping Authorization");
-            }
+                if (token) {
+                    config.headers.Authorization = `Bearer ${token}`;
+                } 
+            } 
+            
             return config;
         },
             (error) => Promise.reject(error)
