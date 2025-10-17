@@ -11,9 +11,13 @@ const WhiskerLeaderboard = () => {
 
     useEffect(() => {
         const fetchLeaderboard = async () => {
-            const response = await axios.get(`${url}/whisker/leaderboard`)
-            setWhiskerleader(response.data)
-            console.log('WhiskerMeter Leaderboard data: ', response.data)
+            try {
+                const response = await axios.get(`${url}/whisker/leaderboard`)
+                setWhiskerleader(response.data)
+                console.log('WhiskerMeter Leaderboard data: ', response.data)
+            } catch(err) {
+                console.error('Failed to fetch leaderboard data: ', err);
+            }
         }
 
         fetchLeaderboard();

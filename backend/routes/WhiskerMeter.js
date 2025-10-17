@@ -93,7 +93,7 @@ WhiskerMeterRoute.get("/whiskermeter/:user_id", async (req, res) => {
 // });
 
 
-WhiskerMeterRoute.get('leaderboard', async (req, res) => {
+WhiskerMeterRoute.get('/leaderboard', async (req, res) => {
     const db = getDB();
 
     try {
