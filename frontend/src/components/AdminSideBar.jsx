@@ -88,8 +88,8 @@ const AdminSideBar = ({ className, numAdoptionApplication, numFeedingApplication
   const sideItemStyle = 'flex flex-col items-start w-full gap-2 h-auto p-2 cursor-pointer bg-white border-2 border-white';
   const sideItemStyleCurrent = 'flex flex-col items-start gap-2 w-full h-auto p-2 cursor-pointer border-2 border-white text-[#DC8801] bg-[#FDF5D8]';
   const sideItemDownCurrent = 'flex flex-col items-start gap-2 w-full h-auto p-2 cursor-pointer border-2 border-white';
-  const pageActive = 'flex w-full pl-20 pt-3 pb-2 gap-2 hover:bg-[#FDF5D8] hover:text-[#DC8801] text-[#DC8801] bg-[#FDF5D8]';
-  const pageInactive = 'bg-[#FFF] w-full pl-20 gap-2 pt-3 pb-2 hover:text-[#DC8801]';
+  const pageActive = 'flex w-full justify-center pl-20 pt-3 pb-2 gap-2 hover:bg-[#FDF5D8] hover:text-[#DC8801] text-[#DC8801] bg-[#FDF5D8]';
+  const pageInactive = 'flex justify-center bg-[#FFF] w-full pl-20 gap-2 pt-3 pb-2 hover:text-[#DC8801]';
 
   return (
     <div className={`relative flex flex-col duration-300 w-auto h-screen bg-[#FFF] z-50 ${className}`}>
@@ -170,7 +170,7 @@ const AdminSideBar = ({ className, numAdoptionApplication, numFeedingApplication
                   className={sidebarShow ? (location.pathname === '/adopterapplication' || location.pathname === '/adopterapplication/adopterapplicationview' ? pageActive : pageInactive) : 'hidden'}
                 >
                   Adoption Applications List
-                  <div className='size-8 bg-[#DC8801] text-[#FFF] font-bold rounded-full'>
+                  <div className='flex items-center justify-center size-5 bg-[#DC8801] text-[#FFF] font-bold rounded-full'>
                     {numAdoptionApplication}
                   </div>
                 </Link>
@@ -216,7 +216,7 @@ const AdminSideBar = ({ className, numAdoptionApplication, numFeedingApplication
                   className={sidebarShow ? (location.pathname === '/feedingapplications' || location.pathname === '/feedingapplications/feedingapplicationview' ? pageActive : pageInactive) : 'hidden'}
                 >
                   Feeding Applications List
-                  <div className='size-8 bg-[#DC8801] text-[#FFF] font-bold rounded-full'>
+                  <div className='flex items-center justify-center size-5 bg-[#DC8801] text-[#FFF] font-bold rounded-full'>
                     {numFeedingApplication}
                   </div>
                 </Link>
