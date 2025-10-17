@@ -136,8 +136,8 @@ const Whisker = () => {
           </div>
         ) : (
           <div className='flex flex-col gap-2 h-auto w-auto'>
-            <Link to="/leaderboard" className={`${whiskerVisible ? "hidden" : "flex"} w-full gap-2 justify-end items-center bg-[#889132] rounded-[10px] px-3 py-1`}>
-              <span className='text-[#FFF] text-[14px] whitespace-nowrap font-bold'>WhiskerMeter Leaderboards</span>
+            <Link to="/leaderboard" className={`${whiskerVisible ? "hidden" : "flex"} w-full gap-2 justify-end items-center bg-[#889132] hover:bg-[#C2CB6A] active:bg-[#889132] rounded-[10px] px-3 py-1`}>
+              <span className='text-[#FFF] text-[10px] whitespace-nowrap font-bold'>WhiskerMeter Leaderboards</span>
               <div className='size-3 object-cover flex items-center justify-center'>
                 <img src="/assets/icons/arrow-right-no-tail.png" alt="arrow to leaderboard" className='w-full h-full object-cover'/>
               </div>
