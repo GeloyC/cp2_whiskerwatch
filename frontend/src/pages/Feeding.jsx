@@ -631,10 +631,10 @@ const Feeding = () => {
       setHasSubmittedReport(has_report || false);
 
       if (feeding_date) {
-        const feedingDateTime = new Date(`${feeding_date}T20:00:00+08:00`);
+        const feedingDateTime = new Date(`${feeding_date}`);
         const feedingDatePlusTwoHours = new Date(feedingDateTime.getTime() + 2 * 60 * 60 * 1000);
         const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Manila' }));
-        setIsFeedingDatePassed(now <= feedingDatePlusTwoHours);
+        setIsFeedingDatePassed(now > feedingDatePlusTwoHours);
       }
     } catch (err) {
       console.error('Failed to fetch feeding date:', err);
@@ -917,12 +917,12 @@ const Feeding = () => {
                           <div className={`flex flex-col w-full justify-end`}>
                             <button
                               disabled
-                              className={`w-fit self-end bg-[#2F2F2F] opacity-50 ${hasSubmittedReport ? 'cursor-not-allowed' : 'cursor-pointer'} text-[#FFF] font-bold p-2 rounded-[10px]`}
+                              className={`w-fit self-end bg-[#2F2F2F] opacity-50 ${!hasSubmittedReport ? 'cursor-not-allowed' : 'cursor-pointer'} text-[#FFF] font-bold p-2 rounded-[10px]`}
                             >
                               Write a Feeding Report
                             </button>
                             <p className="text-[#8f8f8f] text-[12px] w-fit self-end">
-                              {hasSubmittedReport ? `You've already submitted a report for your recent feeding.` : `You've submitted a report from your recent feeding schedule.`}
+                              {!hasSubmittedReport ? `You've already submitted a report for your recent feeding.` : `You've submitted a report from your recent feeding schedule.`}
                             </p>
                           </div>
                         </div>
@@ -958,12 +958,12 @@ const Feeding = () => {
                             <div className={`flex flex-col w-full justify-end`}>
                               <button
                                 disabled
-                                className={`w-fit self-end bg-[#2F2F2F] opacity-50 ${hasSubmittedReport ? 'cursor-not-allowed' : 'cursor-pointer'} text-[#FFF] font-bold p-2 rounded-[10px]`}
+                                className={`w-fit self-end bg-[#2F2F2F] opacity-50 ${!hasSubmittedReport ? 'cursor-not-allowed' : 'cursor-pointer'} text-[#FFF] font-bold p-2 rounded-[10px]`}
                               >
                                 Write a Feeding Report
                               </button>
                               <p className="text-[#8f8f8f] text-[12px] w-fit self-end">
-                                {hasSubmittedReport ? `You've already submitted a report for your recent feeding.` : `You've submitted a report from your recent feeding schedule.`}
+                                {!hasSubmittedReport ? `You've already submitted a report for your recent feeding.` : `You've submitted a report from your recent feeding schedule.`}
                               </p>
                             </div>
                           </div>
