@@ -93,6 +93,23 @@ WhiskerMeterRoute.get("/whiskermeter/:user_id", async (req, res) => {
 // });
 
 
+WhiskerMeterRoute.get('leaderboard', async (req, res) => {
+    const db = getDB();
+
+    try {
+        const [leaders] = await db.query(`
+            SELECT w.user_id, w.points, u.firstname, u.lastname
+            FROM whiskermeter w
+            JOIN users u ON u.user_id = w.user_id
+            ORDER BY w.points DESC;
+        `);
+
+        res.json(leaders)
+    } catch (err) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 
 
 export default WhiskerMeterRoute;
