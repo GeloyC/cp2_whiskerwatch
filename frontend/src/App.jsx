@@ -55,6 +55,7 @@ import CatProfileProperty from './pages/Admin/CatProfileProperty/CatProfilePrope
 import CatProfileCreate from './pages/Admin/CatProfileProperty/CatProfileCreate';
 import FeedingReport from './pages/Feeding/FeedingReport';
 import TermsCondition from './layout/TermsCondition';
+import WhiskerLeaderboard from './pages/WhiskerLeaderboard';
 
 const App = () => {
   const router = createBrowserRouter(
@@ -121,6 +122,7 @@ const App = () => {
         </Route>
         <Route path="allusers" element={<AllUsers />} />
         <Route path="userprofile/:user_id" element={<UserProfile />} />
+        <Route path="leaderboard" element={<WhiskerLeaderboard />}/>
 
         {/* Head Volunteer */}
         {/* <Route path="hvdashboard" element={<HeadVolunteerDashboard />}/>

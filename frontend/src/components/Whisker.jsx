@@ -36,6 +36,7 @@ const Whisker = () => {
 
   const progressHeightPercent = Math.min((points / MAX_POINTS) * 100, 100);
 
+
   return (
     <div
       onClick={handleWhiskerVisibility}
@@ -44,159 +45,164 @@ const Whisker = () => {
     >
       
         {/* Content of WhiskerMeter */}
-        <div className={`flex w-full rounded-br-[25px]  gap-4 ${whiskerVisible ? 'h-[0px]' : 'flex h-auto p-3'} transition-all duration-200`}> 
-          { points == 0 && user ? (
-            <div className={`flex flex-col relative gap-2 h-60 overflow-hidden text-md leading-tight ${whiskerVisible ? 'h-0 hidden' : 'min-h-[300px] flex'} `}>
-              <span className='font-bold whitespace-nowrap'>How the WhiskerMeter works</span>
+      <div className={`flex w-full rounded-br-[25px]  gap-4 ${whiskerVisible ? 'h-[0px]' : 'flex h-auto p-3'} transition-all duration-200`}> 
+        { points == 0 && user ? (
+          <div className={`flex flex-col relative gap-2 h-60 overflow-hidden text-md leading-tight ${whiskerVisible ? 'h-0 hidden' : 'min-h-[300px] flex'} `}>
+            <span className='font-bold whitespace-nowrap'>How the WhiskerMeter works</span>
 
-              <div className='flex flex-col h-full gap-3 justify-start'>
-                <div className='flex flex-col text-sm gap-1'>
-                  <div className='flex flex-row gap-2 items-start'>
-                    <span className='size-5 text-center rounded-full bg-[#DC8801] text-[#FFF] font-bold'>1</span>
-                    <span className='font-bold whitespace-nowrap'>Engage with the community</span>
-                  </div>
-
-                  <span className='pl-7 leading-tight'>
-                    You can do this through donating, becoming a feeder, submitting a feeding report and adopting a cat.
-                  </span>
+            <div className='flex flex-col h-full gap-3 justify-start'>
+              <div className='flex flex-col text-sm gap-1'>
+                <div className='flex flex-row gap-2 items-start'>
+                  <span className='size-5 text-center rounded-full bg-[#DC8801] text-[#FFF] font-bold'>1</span>
+                  <span className='font-bold whitespace-nowrap'>Engage with the community</span>
                 </div>
 
-                <div className='flex flex-col text-sm gap-1'>
-                  <div className='flex flex-row gap-2 items-start'>
-                    <span className='size-5 text-center rounded-full bg-[#DC8801] text-[#FFF] font-bold'>2</span>
-                    <span className='font-bold whitespace-nowrap'>Earn WhiskerPoints</span>
-                  </div>
+                <span className='pl-7 leading-tight'>
+                  You can do this through donating, becoming a feeder, submitting a feeding report and adopting a cat.
+                </span>
+              </div>
 
-                  <span className='pl-7 leading-tight'>
-                    Each verified activity adds to your total WhiskerPoints.
-                  </span>
+              <div className='flex flex-col text-sm gap-1'>
+                <div className='flex flex-row gap-2 items-start'>
+                  <span className='size-5 text-center rounded-full bg-[#DC8801] text-[#FFF] font-bold'>2</span>
+                  <span className='font-bold whitespace-nowrap'>Earn WhiskerPoints</span>
                 </div>
 
-                <div className='flex flex-col text-sm gap-1'>
-                  <div className='flex flex-row gap-2 items-start'>
-                    <span className='size-5 text-center rounded-full bg-[#DC8801] text-[#FFF] font-bold'>3</span>
-                    <span className='font-bold whitespace-nowrap'>Earn WhiskerPoints</span>
-                  </div>
+                <span className='pl-7 leading-tight'>
+                  Each verified activity adds to your total WhiskerPoints.
+                </span>
+              </div>
 
-                  <span className='pl-7 leading-tight'>
-                    As your points grow, you'll unlock new WhiskerMeter tiers that is visible on your <Link to='/profile' className='underline font-bold text-[#DC8801]'>Profile</Link>
-                  </span>
+              <div className='flex flex-col text-sm gap-1'>
+                <div className='flex flex-row gap-2 items-start'>
+                  <span className='size-5 text-center rounded-full bg-[#DC8801] text-[#FFF] font-bold'>3</span>
+                  <span className='font-bold whitespace-nowrap'>Earn WhiskerPoints</span>
                 </div>
+
+                <span className='pl-7 leading-tight'>
+                  As your points grow, you'll unlock new WhiskerMeter tiers that is visible on your <Link to='/profile' className='underline font-bold text-[#DC8801]'>Profile</Link>
+                </span>
               </div>
             </div>
-          ) : points === 0 && !user  ? (
-            <div className={`flex flex-col relative gap-2 h-60 overflow-hidden text-md leading-tight ${whiskerVisible ? 'h-0 hidden' : !user ? 'min-h-[400px]' : 'min-h-[300px] flex'} `}>
-              <span className='font-bold whitespace-nowrap'>How the WhiskerMeter works</span>
+          </div>
+        ) : points === 0 && !user  ? (
+          <div className={`flex flex-col relative gap-2 h-60 overflow-hidden text-md leading-tight ${whiskerVisible ? 'h-0 hidden' : !user ? 'min-h-[400px]' : 'min-h-[300px] flex'} `}>
+            <span className='font-bold whitespace-nowrap'>How the WhiskerMeter works</span>
 
-              <div className='flex flex-col h-full gap-3 justify-start'>
-                <div className='flex flex-col text-sm gap-1'>
-                  <div className='flex flex-row gap-2 items-start'>
-                    <span className='size-5 text-center rounded-full bg-[#DC8801] text-[#FFF] font-bold'>1</span>
-                    <span className='font-bold whitespace-nowrap'>Create your profile</span>
-                  </div>
-
-                  <span className='pl-7 leading-tight'>
-                    <Link to='/signup' className='font-bold text-[#DC8801] underline'>Sign up</Link> or <Link to='/login' className='font-bold text-[#DC8801] underline'>Log in</Link>
-                    <span> to WhiskerWatch to activate your WhiskerMeter</span>
-                  </span>
+            <div className='flex flex-col h-full gap-3 justify-start'>
+              <div className='flex flex-col text-sm gap-1'>
+                <div className='flex flex-row gap-2 items-start'>
+                  <span className='size-5 text-center rounded-full bg-[#DC8801] text-[#FFF] font-bold'>1</span>
+                  <span className='font-bold whitespace-nowrap'>Create your profile</span>
                 </div>
-                <div className='flex flex-col text-sm gap-1'>
-                  <div className='flex flex-row gap-2 items-start'>
-                    <span className='size-5 text-center rounded-full bg-[#DC8801] text-[#FFF] font-bold'>2</span>
-                    <span className='font-bold whitespace-nowrap'>Engage with the community</span>
-                  </div>
-
-                  <span className='pl-7 leading-tight'>
-                    You can do this through donating, becoming a feeder, submitting a feeding report and adopting a cat.
-                  </span>
+                <span className='pl-7 leading-tight'>
+                  <Link to='/signup' className='font-bold text-[#DC8801] underline'>Sign up</Link> or <Link to='/login' className='font-bold text-[#DC8801] underline'>Log in</Link>
+                  <span> to WhiskerWatch to activate your WhiskerMeter</span>
+                </span>
+              </div>
+              <div className='flex flex-col text-sm gap-1'>
+                <div className='flex flex-row gap-2 items-start'>
+                  <span className='size-5 text-center rounded-full bg-[#DC8801] text-[#FFF] font-bold'>2</span>
+                  <span className='font-bold whitespace-nowrap'>Engage with the community</span>
                 </div>
 
-                <div className='flex flex-col text-sm gap-1'>
-                  <div className='flex flex-row gap-2 items-start'>
-                    <span className='size-5 text-center rounded-full bg-[#DC8801] text-[#FFF] font-bold'>3</span>
-                    <span className='font-bold whitespace-nowrap'>Earn WhiskerPoints</span>
-                  </div>
+                <span className='pl-7 leading-tight'>
+                  You can do this through donating, becoming a feeder, submitting a feeding report and adopting a cat.
+                </span>
+              </div>
 
-                  <span className='pl-7 leading-tight'>
-                    Each verified activity adds to your total WhiskerPoints.
-                  </span>
+              <div className='flex flex-col text-sm gap-1'>
+                <div className='flex flex-row gap-2 items-start'>
+                  <span className='size-5 text-center rounded-full bg-[#DC8801] text-[#FFF] font-bold'>3</span>
+                  <span className='font-bold whitespace-nowrap'>Earn WhiskerPoints</span>
                 </div>
 
-                <div className='flex flex-col text-sm gap-1'>
-                  <div className='flex flex-row gap-2 items-start'>
-                    <span className='size-5 text-center rounded-full bg-[#DC8801] text-[#FFF] font-bold'>4</span>
-                    <span className='font-bold whitespace-nowrap'>Earn WhiskerPoints</span>
-                  </div>
+                <span className='pl-7 leading-tight'>
+                  Each verified activity adds to your total WhiskerPoints.
+                </span>
+              </div>
 
-                  <span className='pl-7 leading-tight'>
-                    As your points grow, you'll unlock new WhiskerMeter tiers that is visible on your profile
-                  </span>
+              <div className='flex flex-col text-sm gap-1'>
+                <div className='flex flex-row gap-2 items-start'>
+                  <span className='size-5 text-center rounded-full bg-[#DC8801] text-[#FFF] font-bold'>4</span>
+                  <span className='font-bold whitespace-nowrap'>Earn WhiskerPoints</span>
                 </div>
+
+                <span className='pl-7 leading-tight'>
+                  As your points grow, you'll unlock new WhiskerMeter tiers that is visible on your profile
+                </span>
               </div>
             </div>
-          ) : (
-            <>
-              <div className={`flex relative min-w-3 h-60 bg-[#FFF] border-4 border-[#FFF] rounded-full overflow-hidden ${whiskerVisible ? 'h-0 hidden' : 'min-h-auto flex'} shadow-lg`}>
-                <div className='flex flex-col items-center justify-evenly h-full'>
-                  <div className='w-[15px] object-fit'>
-                    <img src="/assets/icons/divider_line.png" alt="" className='w-full object-cover'/>
-                  </div>
-                  <div className='w-[15px] object-fit'>
-                    <img src="/assets/icons/divider_line.png" alt="" className='w-full object-cover'/>
-                  </div>
-                  <div className='w-[15px] object-fit'>
-                    <img src="/assets/icons/divider_line.png" alt="" className='w-full object-cover'/>
-                  </div>
-                  <div className='w-[15px] object-fit'>
-                    <img src="/assets/icons/divider_line.png" alt="" className='w-full object-cover'/>
-                  </div>
-                </div>
-
-                <div
-                  className={`absolute bottom-0 w-full bg-[#B5C04A] rounded-full ${whiskerVisible ? 'hidden' : 'flex'}`}
-                  style={{ height: `${progressHeightPercent}%` }}
-                ></div>
+          </div>
+        ) : (
+          <>
+            <div className='flex w-full gap-2 justify-end items-center bg-[#889132] rounded-[10px] px-3 py-1'>
+              <span className='text-[#FFF] font-bold'>WhiskerMeter Leaderboards</span>
+              <div className='size-4 object-cover flex items-center justify-center'>
+                <img src="/assets/icons/arrow-right-no-tail.png" alt="arrow to leaderboard" className='w-full h-full object-cover'/>
               </div>
-              
-              {/* Badge labal */}
-              {!whiskerVisible && (
-                <div className={"grid grid-rows-5 justiy-items-start w-full text-[#2F2F2F] text-[14px] font-bold overflow-hidden whitespace-nowrap"}>
-                  <label className={`flex items-center gap-5 `}>
-                      <div className="w-[15px] h-[15px] object-contain">
-                          <img src="/assets/icons/whisker_arrow.png" alt="Arrow icon" className="w-full h-full object-cover rotate-180" />
-                      </div>
-                      The Catnip Captain
-                  </label>
-                  <label className={`flex items-center gap-5 `}>
-                      <div className="w-[15px] h-[15px] object-contain">
-                          <img src="/assets/icons/whisker_arrow.png" alt="Arrow icon" className="w-full h-full object-cover rotate-180" />
-                      </div>
-                      Meowtain Mover
-                  </label>
-                  <label className={`flex items-center gap-5`}>
-                      <div className="w-[15px] h-[15px] object-contain">
-                          <img src="/assets/icons/whisker_arrow.png" alt="Arrow icon" className="w-full h-full object-cover rotate-180" />
-                      </div>
-                      Furmidable Friend
-                  </label>
-                  <label className={`flex items-center gap-5`}>
-                      <div className="w-[15px] h-[15px] object-contain">
-                          <img src="/assets/icons/whisker_arrow.png" alt="Arrow icon" className="w-full h-full object-cover rotate-180" />
-                      </div>
-                      Snuggle Scout
-                  </label>
-                  <label className={`flex items-center gap-5`}>
-                      <div className="w-[15px] h-[15px] object-contain">
-                          <img src="/assets/icons/whisker_arrow.png" alt="Arrow icon" className="w-full h-full object-cover rotate-180" />
-                      </div>
-                      Toe Bean Trainee
-                  </label>
+            </div>
+            <div className={`flex relative min-w-3 h-60 bg-[#FFF] border-4 border-[#FFF] rounded-full overflow-hidden ${whiskerVisible ? 'h-0 hidden' : 'min-h-auto flex'} shadow-lg`}>
+              <div className='flex flex-col items-center justify-evenly h-full'>
+                <div className='w-[15px] object-fit'>
+                  <img src="/assets/icons/divider_line.png" alt="" className='w-full object-cover'/>
                 </div>
-              )}
-            </>
-          )}
-          {/* Progress Bar */}
-        </div>
+                <div className='w-[15px] object-fit'>
+                  <img src="/assets/icons/divider_line.png" alt="" className='w-full object-cover'/>
+                </div>
+                <div className='w-[15px] object-fit'>
+                  <img src="/assets/icons/divider_line.png" alt="" className='w-full object-cover'/>
+                </div>
+                <div className='w-[15px] object-fit'>
+                  <img src="/assets/icons/divider_line.png" alt="" className='w-full object-cover'/>
+                </div>
+              </div>
+
+              <div
+                className={`absolute bottom-0 w-full bg-[#B5C04A] rounded-full ${whiskerVisible ? 'hidden' : 'flex'}`}
+                style={{ height: `${progressHeightPercent}%` }}
+              ></div>
+            </div>
+            
+            {/* Badge labal */}
+            {!whiskerVisible && (
+              <div className={"grid grid-rows-5 justiy-items-start w-full text-[#2F2F2F] text-[14px] font-bold overflow-hidden whitespace-nowrap"}>
+                <label className={`flex items-center gap-5 `}>
+                    <div className="w-[15px] h-[15px] object-contain">
+                        <img src="/assets/icons/whisker_arrow.png" alt="Arrow icon" className="w-full h-full object-cover rotate-180" />
+                    </div>
+                    The Catnip Captain
+                </label>
+                <label className={`flex items-center gap-5 `}>
+                    <div className="w-[15px] h-[15px] object-contain">
+                        <img src="/assets/icons/whisker_arrow.png" alt="Arrow icon" className="w-full h-full object-cover rotate-180" />
+                    </div>
+                    Meowtain Mover
+                </label>
+                <label className={`flex items-center gap-5`}>
+                    <div className="w-[15px] h-[15px] object-contain">
+                        <img src="/assets/icons/whisker_arrow.png" alt="Arrow icon" className="w-full h-full object-cover rotate-180" />
+                    </div>
+                    Furmidable Friend
+                </label>
+                <label className={`flex items-center gap-5`}>
+                    <div className="w-[15px] h-[15px] object-contain">
+                        <img src="/assets/icons/whisker_arrow.png" alt="Arrow icon" className="w-full h-full object-cover rotate-180" />
+                    </div>
+                    Snuggle Scout
+                </label>
+                <label className={`flex items-center gap-5`}>
+                    <div className="w-[15px] h-[15px] object-contain">
+                        <img src="/assets/icons/whisker_arrow.png" alt="Arrow icon" className="w-full h-full object-cover rotate-180" />
+                    </div>
+                    Toe Bean Trainee
+                </label>
+              </div>
+            )}
+          </>
+        )}
+        {/* Progress Bar */}
+      </div>
     
 
       <div className={`flex items-center justify-between bg-[#DC8801] p-2 h-auto rounded-[50px] transition-all duration-200 overflow-hidden
@@ -205,7 +211,7 @@ const Whisker = () => {
           <label  className={`font-bold text-[14px] pl-2 text-[#FFF] overflow-hidden whitespace-nowrap ${whiskerVisible ? 'opacity-0 hidden' : 'opacity-100'}`}>
             The WhiskerMeter
           </label>
-          <span className={!whiskerVisible ? 'text-[#FFF] text-[13px] leading-tight pl-2' : 'hidden'}>
+          <span className={!whiskerVisible && !points ? 'text-[#FFF] text-[13px] leading-tight pl-2' : 'hidden'}>
             You have {points} points. 
           </span>
         </div>
