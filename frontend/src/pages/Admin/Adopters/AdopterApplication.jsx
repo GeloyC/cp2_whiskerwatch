@@ -36,7 +36,7 @@ const AdopterApplication = () => {
   return (
     <div className='relative flex flex-col h-screen w-auto overflow-x-hidden'>
         <div className='flex flex-row w-full'>
-          <AdminSideBar className='max-w-[400px]' numAdoptionApplication={applicant.length} />
+          <AdminSideBar className='max-w-[400px]' />
 
           <div className='flex flex-col items-center xl:p-10 lg:p-10 h-screen w-full gap-5 mx-auto'>
             <div className='xl:hidden lg:hidden flex flex-col justify-center items-center h-screen w-full gap-3 rounded-[15px]'>
