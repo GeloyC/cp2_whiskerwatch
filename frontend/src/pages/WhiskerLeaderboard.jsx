@@ -51,17 +51,19 @@ const WhiskerLeaderboard = () => {
                         <div className='flex flex-col gap-2 w-full items-start py-3'>
                             <table className='flex flex-col w-full'>
                                 <thead>
-                                    <tr className='grid grid-cols-3 w-full place-items-start p-2'>
+                                    <tr className='grid grid-cols-4 w-full place-items-start p-2'>
                                         <th>Rank</th>
                                         <th>Name</th>
+                                        <th>Badge</th>
                                         <th>Points</th>
                                     </tr>
                                 </thead>
                                 <tbody className='max-h-[400px] overflow-y-scroll scrollbar-thin flex flex-col gap-1'>
                                     {whiskerLeaders.map((leaders, index) => (
-                                        <tr className='grid grid-cols-3 w-full place-items-center justify-items-start p-2 rounded-[5px] bg-[#F9F7DC] border-1 border-dashed border-[#8f8f8f]'>
+                                        <tr className='grid grid-cols-4 w-full place-items-center justify-items-start p-2 rounded-[5px] bg-[#F9F7DC] border-1 border-dashed border-[#8f8f8f]'>
                                             <td className='font-bold'>{index + 1}</td>
                                             <td>{`${leaders.firstname} ${leaders.lastname}`}</td>
+                                            <td>{leaders.badge}</td>
                                             <td className='font-bold bg-[#94b946] py-1 px-3 rounded-[10px]'>{`${leaders.points} points`}</td>
                                         </tr>
                                     ))}

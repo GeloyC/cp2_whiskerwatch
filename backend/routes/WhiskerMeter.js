@@ -98,7 +98,7 @@ WhiskerMeterRoute.get('/leaderboard', async (req, res) => {
 
     try {
         const [leaders] = await db.query(`
-            SELECT w.user_id, w.points, u.firstname, u.lastname
+            SELECT w.user_id, w.points, u.firstname, u.lastname, u.badge
             FROM whiskermeter w
             JOIN users u ON u.user_id = w.user_id
             ORDER BY w.points DESC;
