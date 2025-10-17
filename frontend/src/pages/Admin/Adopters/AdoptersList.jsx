@@ -147,11 +147,6 @@ const AdoptersList = () => {
       return;
     }
 
-    if (file.type !== "image/png" || file.type !== "image/jpeg" || file.type !== "image/jpg") {
-      alert("Only PNG/JPG/JPEG files are allowed!");
-      return;
-    }
-
     const filename = `Certificate_${
       adoptee.adopter ? adoptee.adopter.replace(/\s+/g, '_') : 'unknown'
     }_${adoptee.adoption_id}.png`;
