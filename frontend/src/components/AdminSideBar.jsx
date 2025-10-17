@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useSession } from '../context/SessionContext';
 
-const AdminSideBar = ({ className }) => {
+const AdminSideBar = ({ className, numAdoptionApplication, numFeedingApplication}) => {
   const url = `https://whiskerwatch-0j6g.onrender.com`;
 
   const location = useLocation();
@@ -14,6 +14,9 @@ const AdminSideBar = ({ className }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const menuRef = useRef(null);
+
+  // const [adoptionApplicationNum, setAdoptionApplicationNum] = useState(0);
+  // const [feedingApplicationNum, setFeedingApplicationNum] = useState(0);
 
   const [sidebarShow, setSidebarShow] = useState(false);
   const sidebarRef = useRef(null);
@@ -82,11 +85,11 @@ const AdminSideBar = ({ className }) => {
 
   const handleShowSidebar = () => setSidebarShow((prev) => !prev);
 
-  const sideItemStyle = 'flex flex-col items-start w-full h-auto p-2 cursor-pointer bg-white border-2 border-white';
-  const sideItemStyleCurrent = 'flex flex-col items-start w-full h-auto p-2 cursor-pointer border-2 border-white text-[#DC8801] bg-[#FDF5D8]';
-  const sideItemDownCurrent = 'flex flex-col items-start w-full h-auto p-2 cursor-pointer border-2 border-white';
-  const pageActive = 'flex w-full pl-20 pt-3 pb-2 hover:bg-[#FDF5D8] hover:text-[#DC8801] text-[#DC8801] bg-[#FDF5D8]';
-  const pageInactive = 'bg-[#FFF] w-full pl-20 pt-3 pb-2 hover:text-[#DC8801]';
+  const sideItemStyle = 'flex flex-col items-start w-full gap-2 h-auto p-2 cursor-pointer bg-white border-2 border-white';
+  const sideItemStyleCurrent = 'flex flex-col items-start gap-2 w-full h-auto p-2 cursor-pointer border-2 border-white text-[#DC8801] bg-[#FDF5D8]';
+  const sideItemDownCurrent = 'flex flex-col items-start gap-2 w-full h-auto p-2 cursor-pointer border-2 border-white';
+  const pageActive = 'flex w-full pl-20 pt-3 pb-2 gap-2 hover:bg-[#FDF5D8] hover:text-[#DC8801] text-[#DC8801] bg-[#FDF5D8]';
+  const pageInactive = 'bg-[#FFF] w-full pl-20 gap-2 pt-3 pb-2 hover:text-[#DC8801]';
 
   return (
     <div className={`relative flex flex-col duration-300 w-auto h-screen bg-[#FFF] z-50 ${className}`}>
@@ -167,6 +170,9 @@ const AdminSideBar = ({ className }) => {
                   className={sidebarShow ? (location.pathname === '/adopterapplication' || location.pathname === '/adopterapplication/adopterapplicationview' ? pageActive : pageInactive) : 'hidden'}
                 >
                   Adoption Applications List
+                  <div className='size-8 bg-[#DC8801] text-[#FFF] font-bold rounded-full'>
+                    {numAdoptionApplication}
+                  </div>
                 </Link>
               </>
             )}
@@ -210,6 +216,9 @@ const AdminSideBar = ({ className }) => {
                   className={sidebarShow ? (location.pathname === '/feedingapplications' || location.pathname === '/feedingapplications/feedingapplicationview' ? pageActive : pageInactive) : 'hidden'}
                 >
                   Feeding Applications List
+                  <div className='size-8 bg-[#DC8801] text-[#FFF] font-bold rounded-full'>
+                    {numFeedingApplication}
+                  </div>
                 </Link>
                 <Link
                   to="/donationadmin"

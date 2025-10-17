@@ -32,7 +32,7 @@ const FeedingApplications = () => {
   return (
     <div className='relative flex flex-col h-screen overflow-hidden'>
         <div className='flex flex-row w-full'> 
-          <AdminSideBar className='max-w-[400px]'/>
+          <AdminSideBar className='max-w-[400px]' numFeedingApplication={applicant.length}/>
 
           <div className='flex flex-col items-center xl:p-10 lg:p-10 min-h-screen w-full gap-5 mx-auto'>
             <div className='xl:hidden lg:hidden flex flex-col justify-center items-center h-screen w-screen gap-3 rounded-[15px]'>

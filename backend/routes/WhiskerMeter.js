@@ -12,6 +12,12 @@ const WhiskerMeterRoute = Router();
 WhiskerMeterRoute.use(express.json());
 
 
+// TODO IF THERE IS TIME:
+// LEADERBOARD for WHISKER POINTS
+// MONTH AND ALL TIME
+// DISPLAY ON USER SIDE & ADMIN (Overview/dashboard page)
+
+
 WhiskerMeterRoute.get("/whiskermeter/:user_id", async (req, res) => {
     const db = getDB();
     const  user_id  = req.params.user_id;

@@ -60,7 +60,8 @@ const uploadProfile = multer({
     },
 });
 
-
+// TODO: FIX FILE VALIDATION FOR CERFTIFICATE FILE FORMAT 
+// Alow JPEG/JPG files
 const certificateStorage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
