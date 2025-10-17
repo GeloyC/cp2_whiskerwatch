@@ -40,7 +40,7 @@ const Whisker = () => {
   return (
     <div
       onClick={handleWhiskerVisibility}
-      className={`flex fixed left-5 bottom-5 z-999 flex-col ${whiskerVisible ? 'items-start' : 'items-center'}  bg-[#F9F7DC] p-3 border-dashed border-2 border-[#DC8801] rounded-[30px] transition-all duration-300
+      className={`flex fixed left-5 bottom-5 z-999 flex-col ${whiskerVisible ? 'items-start' : 'items-center'}  bg-[#F9F7DC] p-3 border-dashed border-2 border-[#DC8801] rounded-[30px] transition-all duration-300 overflow-hidden
         ${whiskerVisible ? 'w-[70px]' : `${points === 0 ? 'w-[300px]' : 'w-[250px]'} `} `}
     >
       
