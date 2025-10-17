@@ -749,7 +749,7 @@ const Feeding = () => {
               !submitMessage ? (
                 <form
                   ref={printRef}
-                  className="xl:flex xl:flex-col lg:flex lg:flex-col justify-center gap-8 p-5 bg-[#FFF] rounded-[15px] xl:w-[875px] lg:w-[875px] md:hidden sm:hidden h-fit"
+                  className="xl:flex xl:flex-col lg:flex lg:flex-col justify-center gap-8 p-5 bg-[#FFF] rounded-[15px] xl:w-[875px] lg:w-[875px] h-fit"
                 >
                   <div className="flex flex-col gap-2">
                     <label>1. Why are you interested in becoming a feeder for the Siera Park Residences Cat Community?</label>
