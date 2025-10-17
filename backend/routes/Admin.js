@@ -65,7 +65,7 @@ const certificateStorage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
         folder: "whiskerwatch/certificates",
-        allowed_formats: ["png", "png"], // ONLY PNG
+        allowed_formats: ["png", "jpeg", "jpg"], // ONLY PNG
         public_id: (req, file) =>
         `certificate_${req.body.adoption_id}_${Date.now()}`,
     },

@@ -636,7 +636,7 @@ const Feeding = () => {
         const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Manila' }));
         setIsFeedingDatePassed(now > feedingDatePlusTwoHours);
 
-        console.log("Its passed your feeding schedule: ", isFeedingDatePassed)
+        console.log("Its passed your feeding schedule: ", isFeedingDatePassed);
       }
     } catch (err) {
       console.error('Failed to fetch feeding date:', err);

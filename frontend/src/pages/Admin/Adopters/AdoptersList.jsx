@@ -247,7 +247,7 @@ const AdoptersList = () => {
                       >
                         <input
                           type="file"
-                          accept="image/png"
+                          accept="image/png, image/jpeg, .jpg"
                           id={`adoption_certificate_${adoptee.adoption_id}`}
                           hidden
                           onChange={(e) => handleUploadCertificate(e, adoptee)}
