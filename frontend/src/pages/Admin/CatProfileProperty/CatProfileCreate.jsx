@@ -142,15 +142,6 @@ const CatProfileCreate = () => {
                                         <option value="Spayed">Spayed</option>
                                     </select>
                                 </div>
-
-                                {/* <div className='flex flex-col gap-1 w-full'>
-                                    <label className='text-[16px] text-[#595959]'>Adoption Status</label>
-                                    <select  value={adoption_status} onChange={(e) => setAdoptionStatus(e.target.value)}
-                                    className='p-[10px] text-[#2F2F2F] rounded-[10px] border-2 border-[#CFCFCF] font-bold text-[#2F2F2F]'>
-                                        <option hidden>Select status</option>
-                                        <option value="Pending">Pending</option>
-                                    </select>
-                                </div> */}
                             </div>
 
                             {/* CAT DESCRIPTION */}

@@ -38,11 +38,6 @@ const CatBot = ({ message }) => {
          {closeMessage && (
             messageDisplay && (
             <div className="relative right-9 flex flex-col items-center justify-center text-[#000] max-w-[275px] h-auto bg-[#B5C04A] p-4 rounded-[15px] rounded-br-[0px] transition-all duration-300">
-               {/* <div onClick={handleCloseMessage} className='absolute top-3 right-3 flex w-full justify-end'>
-                  <div className='size-4 object-cover'>
-                     <img src="/assets/icons/add-white.png" alt="clos button" className='w-full h-full object-cover rotate-45'/>
-                  </div>
-               </div> */}
                <label className="text-left text-[#FFF] text-sm">
                   {messageDisplay}
                </label>

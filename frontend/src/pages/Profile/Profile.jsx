@@ -13,9 +13,6 @@ import CatBot from '../../components/CatBot'
 import { useSession } from '../../context/SessionContext'
 
 
-// TODO: Add certificate view 
-// Certicate to be emailed upon successful adoption
-
 const Profile = () => {
     const url = `https://whiskerwatch-0j6g.onrender.com`;
 
@@ -62,21 +59,6 @@ const Profile = () => {
         fetchProfile();
     }, []);
 
-
-    // const handleImageChange = async (e) => {
-    //     const file = e.target.files[0];
-    //     if (!file) return;
-
-    //     const previewUrl = URL.createObjectURL(file);
-
-    //     // Sets temporary preview and store file
-    //     setProfile(prev => ({
-    //         ...prev,
-    //         profile_image: previewUrl, 
-    //         _newFile: file,             
-    //         old_image: prev.profile_image 
-    //     }));
-    // };
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];

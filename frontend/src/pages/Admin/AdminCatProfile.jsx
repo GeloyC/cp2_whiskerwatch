@@ -25,15 +25,6 @@ const AdminCatProfile = () => {
     return cat.name.toLowerCase().includes(searchInput.toLowerCase())
   });
 
-  // const handleDeleteCatProfile = async (cat_id) => {
-  //   try {
-  //     await axios.delete(`${url}/cat/delete_cat/${cat_id}`);
-
-  //     fetchCat();
-  //   } catch (err) {
-  //     console.error('Failed to delete cat profile: ', err);
-  //   }
-  // };
 
   const handleDeleteCatProfile = async (cat) => {
     if (cat.adoption_status !== "Available") {

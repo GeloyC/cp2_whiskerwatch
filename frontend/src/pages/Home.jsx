@@ -136,15 +136,6 @@ const Home = () => {
               </div>
 
               <div className='grid grid-rows-1 xl:grid-cols-2 lg:grid-rows-1 md:grid-rows-1 xl:flex-row w-full h-full xl:p-10 xl:px-50 lg:p-10 lg:px-50 md:p-10 md:px-15  gap-2 p-5 justify-between items-center leading-tight bg-[#FFF] bg-[url(/assets/background-paws.png)] bg-cover bg-fit bg-repeat'>
-                {/* <div className='flex flex-col items-center justify-center rounded-[15px] p-4'>
-                  <div className='text-[60px] text-[#FFF] text-center font-bold w-[350px]'>10, 000</div>
-                  <div className='font-bold text-[20px] text-[#2F2F2F]'>Total Cats Adopted</div>
-                </div>
-
-                <div className='flex flex-col items-center justify-center rounded-[15px] p-4'>
-                  <div className='text-[60px] text-[#FFF] text-center font-bold min-w-[350px]'>₱10, 000</div>
-                  <div className='font-bold text-[20px] text-[#2F2F2F]'>Total Donations Received</div>
-                </div> */}
 
                   <div className='flex flex-row items-center justify-center'>
                       <div className='w-full max-h-[400px] object-cover rounded-[10px] overflow-hidden'>
@@ -164,37 +155,7 @@ const Home = () => {
                     </div>
                   </div>
               </div>
-              
             </div>
-
-            {/* <div className='flex flex-col items-center justify-center p-5  w-full'>
-              <label className='font-bold text-[#2F2F2F] text-[50px]'>WHO ARE WE</label>
-
-              <div className='grid grid-rows-1 w-[400px] xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-2 xl:w-auto lg:w-auto md:w-auto sm:w-auto gap-5 place-items-center rounded-[15px] bg-[#DC8801] p-5'>
-                <div className='rounded-[15px] overflow-hidden'>
-                  <img src="/src/assets/image/who_are_we.jpg" alt="" />
-                </div>
-                <div className='flex flex-col items-center font-bold text-center text-[#FFF] text-[16px] gap-10'>
-                  <div className='flex flex-col gap-3'>
-                    <div className='text-[30px] leading-tight'>
-                      Siena Park Residences Cat Community
-                    </div>
-                    The Siena Park Cat Community is a dedicated group focused on the welfare of stray cats in Siena Park Residences. Supported by DMCI Homes, the group advocates for responsible pet ownership through a shared vision of reducing the stray cat population and finding forever homes for these cats.
-                  </div>
-
-                  <div className='flex gap-2 items-center'>
-                    <Link to="/aboutus" className='w-fit bg-[#FFF] text-[#DC8801] font-bold p-3 rounded-[15px] hover:scale-105 active:scale-95 transition-all duration-100'>JOINS US NOW</Link>
-
-                    <label htmlFor="">OR</label>
-
-                    <a href="https://www.facebook.com/sprcats" target="_blank" className="w-[15px] h-[15px] object-fit hover:scale-105 active:scale-95 transition-all duration-100">
-                      <img src="/src/assets/icons/facebook.png" alt="facebook logo" className="w-full h-full object cover"/>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div> */}
-            {/* CONTENT ENDS HERE */}
           </div>
 
       </div>
