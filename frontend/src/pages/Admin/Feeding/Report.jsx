@@ -10,6 +10,7 @@ const Report = () => {
     
     const { user } = useSession();
     const [searchInput, setSearchInput] = useState('');
+    const [searchFilter, setSearchFilter] = useState('');
 
     const [reports, setReports] = useState([]);
 
@@ -26,6 +27,16 @@ const Report = () => {
 
         fetchReport();
     }, []);
+
+
+    const reportFilter = reports.filter((report) => {
+        const firstname = report.firstname?.toLowerCase().includes(searchInput.toLowerCase());
+        const lastname = report.lastname?.toLowerCase().includes(searchInput.toLowerCase());
+
+        return firstname && lastname;
+    });
+
+
 
     return (
         <div className='relative flex flex-col h-screen overflow-x-hidden'>
@@ -54,7 +65,7 @@ const Report = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {reports.map((report) => (
+                            {reportFilter.map((report) => (
                                 <tr key={report.report_id} className='grid grid-cols-[15%_20%_45%_20%] justify-items-start place-items-center w-full bg-[#FFF] p-3 rounded-[15px] text-[#2F2F2F] border-b-1 border-b-[#595959]'>
                                     <td>{report.report_id}</td>
                                     <td>{`${report.firstname} ${report.lastname}`}</td>
