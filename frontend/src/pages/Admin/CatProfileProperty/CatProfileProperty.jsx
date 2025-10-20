@@ -227,7 +227,7 @@ const CatProfileProperty = () => {
                                     <label className='text-[16px] text-[#595959]'>Birthday</label>
                                     <input type="date" placeholder='Input Age here'
                                     value={catprofile.birthday}
-                                    // onChange={(e) => setCatprofile(prev => ({...prev, birthday: e.target.value}))} 
+                                    onChange={(e) => setCatprofile(prev => ({...prev, birthday: e.target.value}))} 
                                     className='appearance-none p-2 text-[#2F2F2F] rounded-[10px] border-2 border-[#CFCFCF] font-bold'/>
                                 </div>
                                 <div className='flex flex-col gap-1 w-full'>

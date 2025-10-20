@@ -301,8 +301,7 @@ CatRoute.get('/catprofile/:cat_id', async (req, res) => {
     const db = getDB()
     const [rows] = await db.query(
       `SELECT 
-        cat_id, name, age, gender, sterilization_status, adoption_status, description,
-        DATE_FORMAT(birthday, '%Y-%m-%d') AS birthday,
+        cat_id, name, DATE_FORMAT(birthday, '%Y-%m-%d') AS birthday, gender, sterilization_status, adoption_status, description,
         DATE_FORMAT(date_created, '%Y-%m-%d') AS date_created,
         DATE_FORMAT(date_updated, '%Y-%m-%d') AS date_updated
         FROM cat WHERE cat_id = ?`,
