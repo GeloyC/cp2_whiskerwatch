@@ -22,14 +22,28 @@ const CatAdoption = () => {
     const fetchCats = async () => {
       try {
         const response = await axios.get(`${url}/cat/catlist`);
-        const formattedCats = response.data.map(cat => ({
-          ...cat,
-          thumbnail: cat.cloudinary_id
-          ? cat.cloudinary_id.startsWith('http')
-            ? cat.cloudinary_id
-            : `https://res.cloudinary.com/dop5djsfg/image/upload/${cat.cloudinary_id}.jpg`
-          : '/assets/default-cat.jpg',
-        }));
+        // const formattedCats = response.data.map(cat => ({
+        //   ...cat,
+        //   thumbnail: cat.cloudinary_id
+        //   ? cat.cloudinary_id.startsWith('http')
+        //     ? cat.cloudinary_id
+        //     : `https://res.cloudinary.com/dop5djsfg/image/upload/${cat.cloudinary_id}.jpg`
+        //   : '/assets/default-cat.jpg',
+        // }));
+
+        const formattedCats = response.data.map(cat => {
+          const ageData = calculateCatAgeFromBirthDate(cat.birthday);
+          return {
+            ...cat,
+            thumbnail: cat.cloudinary_id
+              ? cat.cloudinary_id.startsWith('http')
+                ? cat.cloudinary_id
+                : `https://res.cloudinary.com/dop5djsfg/image/upload/${cat.cloudinary_id}.jpg`
+              : '/assets/default-cat.jpg',
+            formattedCatAge: ageData.formattedCatAge,
+            formattedHumanAge: ageData.formattedHumanAge,
+          };
+        });
         setCats(formattedCats);
       } catch (err) {
         console.error('Error fetching cat:', err);
@@ -78,7 +92,7 @@ const CatAdoption = () => {
     const humanMonths = Math.round((humanAgeInYears - humanYears) * 12);
 
     // -------------------------------
-    // 🎯 Final output (formatted)
+    // 🎯 Final output (formatted)a
     // -------------------------------
     return {
       formattedCatAge: `${catYears} year${catYears !== 1 ? "s" : ""} and ${catMonths} month${catMonths !== 1 ? "s" : ""}`,
@@ -171,7 +185,7 @@ const CatAdoption = () => {
                             <img src="/assets/icons/hourglass.png" alt="hourglass" />
                           </div>
                           {cat.age} years old
-                          {calculateCatAgeFromBirthDate(cats.birthday)}
+                          {cat.formattedCatAge}
                         </label>
                       </div>
                     </div>
