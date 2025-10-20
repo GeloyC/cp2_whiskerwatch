@@ -61,7 +61,7 @@ const Donation = () => {
               </div>
 
 
-              {/* <table className='hidden xl:flex lg:flex flex-col w-full gap-2'> 
+              <table className='hidden xl:flex lg:flex flex-col w-full gap-2'> 
                 <thead className='flex w-full'>
                   <tr className='grid grid-cols-[15%_15%_30%_20%_20%] justify-items-start place-items-start w-full bg-[#DC8801] p-3 rounded-[15px] text-[#FFF]'>
                     <th>Donation Type</th>
@@ -86,7 +86,7 @@ const Donation = () => {
                     </tr>
                   ))}
                 </tbody>
-              </table> */}
+              </table>
             </div>
         </div>
 
