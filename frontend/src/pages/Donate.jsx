@@ -403,7 +403,6 @@
 // }
 
 // export default Donate
-
 import React, { useState } from 'react';
 import NavigationBar from '../components/NavigationBar';
 import SideNavigation from '../components/SideNavigation';
@@ -541,15 +540,15 @@ const Donate = () => {
 
     if (donateItem.money) {
       donationItems.push({
-        donation_type: 'Money',
+        item_type: 'Money',
         amount: moneyAmount,
-        proofImage: screenshotName,
+        proof_image: screenshotName,
       });
     }
 
     if (donateItem.food) {
       donationItems.push({
-        donation_type: 'Food',
+        item_type: 'Food',
         food_type: foodType,
         quantity: foodQuantity,
         description: foodDescription,
@@ -558,7 +557,7 @@ const Donate = () => {
 
     if (donateItem.item) {
       donationItems.push({
-        donation_type: 'Item',
+        item_type: 'Item',
         quantity: itemQuantity,
         description: itemDescription,
       });
@@ -566,17 +565,30 @@ const Donate = () => {
 
     if (donateItem.other) {
       donationItems.push({
-        donation_type: 'Other',
+        item_type: 'Other',
         quantity: otherQuantity,
         description: othersDescription,
       });
     }
 
-    const description = anonymous ? 'Anonymous donation' : 'Awaiting admin review';
+    // Construct description based on donation type and anonymous status
+    let description = '';
+    if (donateItem.money) {
+      description = screenshotName; // Use proof_image for Money donations
+    } else if (anonymous) {
+      // For anonymous donations, concatenate descriptions of non-Money donations
+      const descriptions = [];
+      if (donateItem.food) descriptions.push(foodDescription);
+      if (donateItem.item) descriptions.push(itemDescription);
+      if (donateItem.other) descriptions.push(othersDescription);
+      description = descriptions.join('; ');
+    } else {
+      description = 'Awaiting admin review'; // Default for logged-in users
+    }
 
     const donationPayload = {
       donator_id: anonymous ? null : user?.user_id,
-      proofImage: screenshotName,
+      proof_image: screenshotName,
       description,
       items: donationItems,
     };
@@ -597,7 +609,9 @@ const Donate = () => {
       });
 
       setSuccessMessage(
-        `Thank you for donating! Your support keeps our cats safe, healthy, and loved while they wait for their forever families. We couldn't do this without you! \n\n Our head volunteers will reach out for the process of shipping the donated items for SPR Cats.`
+        anonymous
+          ? `Thank you for your anonymous donation! Your support keeps our cats safe, healthy, and loved while they wait for their forever families. We couldn't do this without you! \n\n Our head volunteers will arrange for the process of shipping the donated items for SPR Cats.`
+          : `Thank you for donating! Your support keeps our cats safe, healthy, and loved while they wait for their forever families. We couldn't do this without you! \n\n Our head volunteers will reach out to the contact number associated with your account for the process of shipping the donated items for SPR Cats.`
       );
       if (!anonymous && user?.user_id) {
         await fetchNotifications(user.user_id);
