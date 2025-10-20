@@ -405,7 +405,6 @@
 // export default Donate
 
 
-
 import React, { useState } from 'react';
 import NavigationBar from '../components/NavigationBar';
 import Footer from '../components/Footer';
@@ -450,7 +449,6 @@ const Donate = () => {
     const file = e.target.files[0];
     if (file) {
       if (file.size > 10 * 1024 * 1024) {
-        // 10MB limit
         setError('File size exceeds 10MB limit. Please upload a file of 10MB or smaller.');
         return;
       }
@@ -466,20 +464,22 @@ const Donate = () => {
   // Handle numeric input (only positive integers or empty)
   const handleNumericChange = (setter) => (e) => {
     const value = e.target.value;
-
-    // Allow only positive integers or empty
-    if (/^\d*\.?\d*$/.test(value) || value === "") {
+    if (/^\d*$/.test(value) || value === '') {
       setter(value);
     }
   };
 
   // Form validation
   const validateForm = () => {
+    setError('');
+
+    // Check if at least one donation type is selected
     if (!donateItem.money && !donateItem.food && !donateItem.item) {
       setError('Please select at least one donation type.');
       return false;
     }
 
+    // Validate Money donation fields only if selected
     if (donateItem.money) {
       if (!moneyAmount || isNaN(moneyAmount) || parseFloat(moneyAmount) <= 0) {
         setError('Please enter a valid amount of money to donate.');
@@ -491,6 +491,7 @@ const Donate = () => {
       }
     }
 
+    // Validate Food donation fields only if selected
     if (donateItem.food) {
       if (!foodType) {
         setError('Please select a type of food (Wet or Dry).');
@@ -506,6 +507,7 @@ const Donate = () => {
       }
     }
 
+    // Validate Item donation fields only if selected
     if (donateItem.item) {
       if (!itemQuantity || parseInt(itemQuantity) <= 0) {
         setError('Please provide a valid quantity for the item donation.');
@@ -517,7 +519,6 @@ const Donate = () => {
       }
     }
 
-    setError('');
     return true;
   };
 
@@ -733,7 +734,7 @@ const Donate = () => {
                                 <option value="Dry">Dry</option>
                               </select>
                             </div>
-                            {/* <div className="flex flex-col w-full">
+                            <div className="flex flex-col w-full">
                               <label className="text-[#595959] text-[14px] leading-tight">
                                 Quantity (please specify how much food you're donating)
                               </label>
@@ -746,19 +747,6 @@ const Donate = () => {
                                 className="p-2 border-1 border-[#A3A3A3] rounded-[5px] w-full"
                                 required
                               />
-                            </div> */}
-
-                            <div className='flex flex-col w-full'>
-                              <label className='text-[#595959] text-[14px] leading-tight'>Quantity (please specify how much food you're donating)</label>
-                              <div className='flex gap-2 items-center w-full'> 
-                                <input type="text" placeholder='Quantity' value={foodQuantity} onChange={handleNumericChange(setFoodQuantity)} className='p-2 border-1 border-[#A3A3A3] rounded-[5px] w-full'/>
-
-                                <select name="" id="" className='p-2 border-1 border-[#A3A3A3] rounded-[5px]'>
-                                  <option hidden>Select a unit of measurement (kg/g)</option>
-                                  <option value="kilograms">kilograms (kg)</option>
-                                  <option value="grams">grams (g)</option>
-                                </select>
-                              </div>
                             </div>
                           </div>
                           <div className="flex flex-col w-full">
