@@ -219,38 +219,21 @@ const AdoptersList = () => {
                   <td>{adoptee.adoption_date}</td>
                   <td>{adoptee.contactnumber}</td>
                   <td className='flex items-center justify-start gap-2'>
-                    {adoptee.certificate ? (
-                      <a
-                        href={adoptee.certificate}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        className='flex items-center justify-between self-start gap-3 p-1 pl-4 pr-4 bg-[#FDF5D8] text-[#2F2F2F] rounded-[10px] hover:underline border-dashed border-2 border-[#595959]'
-                      >
-                        View Certificate
-                        <div className='w-[25px] h-auto'>
-                          <img src="/assets/icons/document-black.png" alt="" />
-                        </div>
-                      </a>
-                    ) : (
-                      <label className='p-1 pl-4 pr-4 bg-[#FDF5D8] text-[#DC8801] rounded-[10px]'>No Certificate</label>
-                    )}
+                    <Link className='flex items-center justify-between self-start gap-3 p-1 pl-4 pr-4 bg-[#FDF5D8] text-[#2F2F2F] rounded-[10px] hover:underline border-dashed border-2 border-[#595959]'>
+                      View Certificate
+                    </Link>
 
-                    {!adoptee.certificate && (
-                      <label
-                        htmlFor={`adoption_certificate_${adoptee.adoption_id}`}
-                        className='w-[25px] h-[25px] p-2 bg-[#2F2F2F] rounded-[15px] cursor-pointer hover:bg-[#595959]'
-                      >
-                        <input
-                          type="file"
-                          accept="image/png, image/jpeg, .jpg"
-                          id={`adoption_certificate_${adoptee.adoption_id}`}
-                          hidden
-                          onChange={(e) => handleUploadCertificate(e, adoptee)}
-                        />
-                        <img src="/assets/icons/add-white.png" alt="" className="w-full h-full" />
-                      </label>
-                    )}
-
+                    {/* CERTIFICATE */}
+                    <div className='absolute inset-0 flex flex-col items-center justify-center p-10'> 
+                      <div>
+                        adas
+                      </div>
+                      <div className='flex flex-col items-center bg-[#FFF] bg-[url(/assets/AdoptionCertificate/Signed_Adoption_Certificate.png)] bg-cover bg-fit bg-repeat w-[1020px] h-[650px]'>
+                        <label className='fixed top-97 font-bold text-4xl'>{adoptee.cat_name}</label>
+                        <label className='fixed top-119 right-127 font-bold text-2xl'>{adoptee.adopter}</label>
+                        <label className='fixed top-127 right-200 font-bold text-xl'>{adoptee.adoption_date}</label>
+                      </div>
+                    </div>
                   </td>
                 </tr>
               ))}
