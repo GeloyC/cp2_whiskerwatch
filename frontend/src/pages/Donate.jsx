@@ -530,7 +530,7 @@ const Donate = () => {
 
     if (donateItem.money) {
       donationItems.push({
-        donation_type: 'Money',
+        item_type: 'Money',
         amount: parseFloat(moneyAmount),
         proof_image: screenshotName,
       });
@@ -538,7 +538,7 @@ const Donate = () => {
 
     if (donateItem.food) {
       donationItems.push({
-        donation_type: 'Food',
+        item_type: 'Food',
         food_type: foodType,
         quantity: parseInt(foodQuantity),
         description: foodDescription,
@@ -547,7 +547,7 @@ const Donate = () => {
 
     if (donateItem.item) {
       donationItems.push({
-        donation_type: 'Item',
+        item_type: 'Item',
         quantity: parseInt(itemQuantity),
         description: itemDescription,
       });
@@ -558,6 +558,12 @@ const Donate = () => {
     formData.append('is_anonymous', isAnonymous ? '1' : '0');
     if (screenshotFile) formData.append('proof_image', screenshotFile);
     formData.append('items', JSON.stringify(donationItems));
+
+    // Debug: Log FormData contents
+    console.log('FormData contents:');
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}: ${typeof value === 'object' ? value.name || value : value}`);
+    }
 
     try {
       const response = await axios.post(`${url}/donate/donation_application`, formData, {
