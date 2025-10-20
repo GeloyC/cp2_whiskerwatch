@@ -149,9 +149,9 @@ const AdminSideBar = ({ className }) => {
         </button>
       </div>
 
-      <div className={`flex flex-col ${!sidebarShow ? 'items-start justify-start' : ''} justify-between h-full p-1`}>
-        <div className='flex h-full overflow-y-scroll scrollbar-thin'>
-          <div className="flex flex-col justify-start">
+      <div className={`flex flex-col ${!sidebarShow ? 'items-start justify-start' : ''} justify-between h-full overflow-hidden w-full p-1`}>
+        <div className='flex h-full overflow-y-scroll overflow-x-hidden scrollbar-thin w-full h-[900px]'>
+          <div className="flex flex-col justify-start w-full">
             <Link to="/dashboard" className={location.pathname === '/dashboard' ? sideItemStyleCurrent : sideItemStyle}>
               <div className="flex flex-row items-center gap-4">
                 <div className="flex justify-center items-center w-[30px] h-auto">
@@ -217,7 +217,7 @@ const AdminSideBar = ({ className }) => {
               <div className="flex flex-row items-center justify-between w-full active:text-[#B5C04A]">
                 <div className="flex flex-row items-center gap-4">
                   <div onClick={handleShowSidebar} className="flex justify-center items-center w-[30px] h-auto">
-                    <img src="/assets/icons/admin-icons/sidedbar/in-kind-donation-application.png" alt="account" />
+                    <img src="/assets/icons/admin-icons/sidedbar/feeding.png" alt="account" />
                   </div>
                   <label className={sidebarShow ? 'cursor-pointer font-bold hover:text-[#DC8801]' : 'hidden'}>Feeding</label>
                 </div>
@@ -254,12 +254,6 @@ const AdminSideBar = ({ className }) => {
                     <div className='flex items-center justify-center size-5 bg-[#DC8801] text-[#FFF] font-bold rounded-full'>
                       {feedingApplicationNum.length}
                     </div>
-                  </Link>
-                  <Link
-                    to="/donationadmin"
-                    className={sidebarShow ? (location.pathname === '/donationadmin' ? pageActive : pageInactive) : 'hidden'}
-                  >
-                    Donation History
                   </Link>
                 </>
               )}
@@ -374,13 +368,19 @@ const AdminSideBar = ({ className }) => {
           )}
 
           <div className={`absolute ${sidebarShow ? 'left-75 bottom-12' : 'left-15 bottom-5'} flex flex-col w-auto gap-2 box-border bg-[#FFF] shadow-md rounded-[15px] rounded-bl-[0px] z-[9999]`}>
-            {isLoggedIn && (
+            {isLoggedIn ? (
               <div ref={menuRef} className={isVisible ? 'flex flex-col w-fit p-2 gap-2' : 'hidden'}>
                 <Link to="/home" className="text-[#000] text-center p-3 pl-6 pr-6 w-full bg-[#f0f2c8] hover:bg-[#E3E697] active:bg-[#f0f2c8] active:text-[#FFF] rounded-[10px]">
                   <label className="w-full whitespace-nowrap">Home</label>
                 </Link>
                 <Link to="/login" onClick={handleLogout} className="text-[#000] text-center p-3 pl-6 pr-6 w-full bg-[#f0f2c8] hover:bg-[#E3E697] active:bg-[#f0f2c8] active:text-[#FFF] rounded-[10px]">
                   <label className="w-full whitespace-nowrap">Log out</label>
+                </Link>
+              </div>
+            ) : (
+              <div className={isVisible ? 'flex flex-col w-fit p-2 gap-2' : 'hidden'}>
+                <Link  to="/login" className="text-[#000] text-center p-3 pl-6 pr-6 w-full bg-[#f0f2c8] hover:bg-[#E3E697] active:bg-[#f0f2c8] active:text-[#FFF] rounded-[10px]">
+                  <label className="w-full whitespace-nowrap">Login</label>
                 </Link>
               </div>
             )}
