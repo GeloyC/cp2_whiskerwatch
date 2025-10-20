@@ -270,6 +270,7 @@ CatRoute.get('/catlist/limit', async (req, res) => {
           c.name, 
           c.gender, 
           c.age, 
+          DATE_FORMAT(c.birthday, '%Y-%m-%d') AS birthday,
           c.description, 
           c.adoption_status,
           ci.image_filename AS thumbnail
@@ -283,6 +284,7 @@ CatRoute.get('/catlist/limit', async (req, res) => {
           LIMIT 1
         )
         WHERE c.adoption_status = 'Available'
+        ORDER BY c.birthday ASC
         LIMIT 4;
         `)
 

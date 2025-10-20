@@ -26,12 +26,17 @@ const Home = () => {
       try {
         const response = await axios.get(`${url}/cat/catlist/limit`);
 
-        const formattedCats = response.data.map(cat => ({
-          ...cat,
-          thumbnail: cat.thumbnail
-            ? `${cat.thumbnail}`
-            : null
-        }));
+        const formattedCats = response.data.map(cat => {
+          const ageData = calculateCatAgeFromBirthDate(cat.birthday);
+          return {
+            ...cat,
+            thumbnail: cat.thumbnail
+              ? `${cat.thumbnail}`
+              : null,
+            formattedCatAge: ageData.formattedCatAge,
+            formattedHumanAge: ageData.formattedHumanAge,
+          };
+        });
 
         setCatList(formattedCats);
       } catch(err) {
@@ -42,6 +47,44 @@ const Home = () => {
   }, []);
 
 
+  const calculateCatAgeFromBirthDate = (birthDateStr) => {
+    const currentDate = new Date();
+    const birthDate = new Date(birthDateStr);
+
+    if (isNaN(birthDate.getTime())) return { error: "Invalid date format" };
+    if (birthDate > currentDate) return { error: "Birth date is in the future" };
+
+    const diffMs = currentDate - birthDate;
+    const diffDays = diffMs / (1000 * 60 * 60 * 24);
+    const diffYears = Math.floor(diffDays / 365.25);
+    const diffMonths = Math.floor((diffDays % 365.25) / 30.44);
+
+    // Format cat age
+    const formattedCatAge =
+      diffYears === 0
+        ? `${diffMonths} month${diffMonths !== 1 ? "s" : ""}`
+        : `${diffYears} year${diffYears !== 1 ? "s" : ""}${diffMonths > 0 ? ` and ${diffMonths} month${diffMonths !== 1 ? "s" : ""}` : ""}`;
+
+    // Convert to human years (same logic as before)
+    const catAgeInYears = diffYears + diffMonths / 12;
+    const humanYears =
+      catAgeInYears <= 1
+        ? catAgeInYears * 15
+        : catAgeInYears <= 2
+        ? 15 + (catAgeInYears - 1) * 9
+        : 24 + (catAgeInYears - 2) * 4;
+
+    const humanYearsInt = Math.floor(humanYears);
+    const humanMonths = Math.round((humanYears % 1) * 12);
+
+    // Format human age (also month-only if < 1 year)
+    const formattedHumanAge =
+      humanYearsInt === 0
+        ? `${humanMonths} month${humanMonths !== 1 ? "s" : ""} in human years`
+        : `${humanYearsInt} year${humanYearsInt !== 1 ? "s" : ""}${humanMonths > 0 ? ` and ${humanMonths} month${humanMonths !== 1 ? "s" : ""}` : ""} in human years`;
+
+    return { formattedCatAge, formattedHumanAge };
+  };
 
 
 
@@ -118,7 +161,10 @@ const Home = () => {
                                 <div className="flex items-center justify-center w-[15px] h-auto">
                                   <img src="/assets/icons/hourglass.png" alt="hourglas" />
                                 </div>
-                                {cat.age} years old
+                                <div className="flex flex-wrap items-center gap-1">
+                                  <strong>{cat.formattedCatAge} old</strong>
+                                  <span>({cat.formattedHumanAge})</span>
+                                </div>
                               </label>
                             </div>
                           </div>
