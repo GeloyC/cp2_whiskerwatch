@@ -55,51 +55,42 @@ const CatAdoption = () => {
 
   // Calculate cat age
   const calculateCatAgeFromBirthDate = (birthDateStr) => {
-    const currentDate = new Date('2025-10-19T21:47:00-07:00'); // Example current date
+    const currentDate = new Date();
     const birthDate = new Date(birthDateStr);
 
-    // Validate
-    if (isNaN(birthDate.getTime())) {
-      return "Error: Invalid birth date format.";
-    }
-    if (birthDate > currentDate) {
-      return "Error: Birth date cannot be in the future.";
-    }
+    if (isNaN(birthDate.getTime())) return { error: "Invalid date format" };
+    if (birthDate > currentDate) return { error: "Birth date is in the future" };
 
-    // This calculates the cat age in years + months
-    let totalMonths =
-      (currentDate.getFullYear() - birthDate.getFullYear()) * 12 +
-      (currentDate.getMonth() - birthDate.getMonth());
+    const diffMs = currentDate - birthDate;
+    const diffDays = diffMs / (1000 * 60 * 60 * 24);
+    const diffYears = Math.floor(diffDays / 365.25);
+    const diffMonths = Math.floor((diffDays % 365.25) / 30.44);
 
-    if (currentDate.getDate() < birthDate.getDate()) {
-      totalMonths -= 1;
-    }
+    // Format cat age
+    const formattedCatAge =
+      diffYears === 0
+        ? `${diffMonths} month${diffMonths !== 1 ? "s" : ""}`
+        : `${diffYears} year${diffYears !== 1 ? "s" : ""}${diffMonths > 0 ? ` and ${diffMonths} month${diffMonths !== 1 ? "s" : ""}` : ""}`;
 
-    const catYears = Math.floor(totalMonths / 12);
-    const catMonths = totalMonths % 12;
-    const catAgeInYears = catYears + catMonths / 12;
+    // Convert to human years (same logic as before)
+    const catAgeInYears = diffYears + diffMonths / 12;
+    const humanYears =
+      catAgeInYears <= 1
+        ? catAgeInYears * 15
+        : catAgeInYears <= 2
+        ? 15 + (catAgeInYears - 1) * 9
+        : 24 + (catAgeInYears - 2) * 4;
 
+    const humanYearsInt = Math.floor(humanYears);
+    const humanMonths = Math.round((humanYears % 1) * 12);
 
-    // This calculates the cat age equivalent to human years
-    const catAgeToHumanYears = (catYears) => {
-      if (catYears <= 1) return catYears * 15;
-      if (catYears <= 2) return 15 + (catYears - 1) * 9;
-      return 24 + (catYears - 2) * 4;
-    };
+    // Format human age (also month-only if < 1 year)
+    const formattedHumanAge =
+      humanYearsInt === 0
+        ? `${humanMonths} month${humanMonths !== 1 ? "s" : ""} in human years`
+        : `${humanYearsInt} year${humanYearsInt !== 1 ? "s" : ""}${humanMonths > 0 ? ` and ${humanMonths} month${humanMonths !== 1 ? "s" : ""}` : ""} in human years`;
 
-    const humanAgeInYears = catAgeToHumanYears(catAgeInYears);
-    const humanYears = Math.floor(humanAgeInYears);
-    const humanMonths = Math.round((humanAgeInYears - humanYears) * 12);
-
-    // -------------------------------
-    // 🎯 Final output (formatted)a
-    // -------------------------------
-    return {
-      formattedCatAge: `${catYears} year${catYears !== 1 ? "s" : ""} and ${catMonths} month${catMonths !== 1 ? "s" : ""}`,
-      formattedHumanAge: `${humanYears} year${humanYears !== 1 ? "s" : ""} and ${humanMonths} month${humanMonths !== 1 ? "s" : ""} in Human years`,
-      catAgeInYears: parseFloat(catAgeInYears.toFixed(2)),
-      humanAgeInYears: parseFloat(humanAgeInYears.toFixed(2))
-    };
+    return { formattedCatAge, formattedHumanAge };
   };
 
   // const result = calculateCatAgeFromBirthDate(cats.birthday);
@@ -184,8 +175,7 @@ const CatAdoption = () => {
                           <div className="flex items-center justify-center w-[15px] h-auto">
                             <img src="/assets/icons/hourglass.png" alt="hourglass" />
                           </div>
-                          {cat.age} years old
-                          {cat.formattedCatAge}
+                          {cat.formattedCatAge} ({cat.formattedHumanAge})
                         </label>
                       </div>
                     </div>
