@@ -404,8 +404,12 @@
 
 // export default Donate
 
+
+
 import React, { useState } from 'react';
 import NavigationBar from '../components/NavigationBar';
+import SideNavigation from '../components/SideNavigation';
+import HeadVolunteerSideBar from '../components/HeadVolunteerSideBar';
 import Footer from '../components/Footer';
 import CatBot from '../components/CatBot';
 import Whisker from '../components/Whisker';
@@ -420,19 +424,25 @@ const Donate = () => {
     money: false,
     food: false,
     item: false,
+    other: false,
   });
 
-  const [screenshotFile, setScreenshotFile] = useState(null);
-  const [screenshotName, setScreenshotName] = useState('');
+  const [screenshotImage, setScreenshotImage] = useState();
+  const [screenshotName, setScreenshotName] = useState();
   const [moneyAmount, setMoneyAmount] = useState('');
-  const [foodType, setFoodType] = useState('');
-  const [foodQuantity, setFoodQuantity] = useState('');
+  const [foodType, setFoodType] = useState([]);
+  const [foodQuantity, setFoodQuantity] = useState(1);
   const [foodDescription, setFoodDescription] = useState('');
   const [itemDescription, setItemDescription] = useState('');
-  const [itemQuantity, setItemQuantity] = useState('');
-  const [isAnonymous, setIsAnonymous] = useState(false);
+  const [itemQuantity, setItemQuantity] = useState(1);
+  const [othersDescription, setOthersDescription] = useState('');
+  const [otherQuantity, setOtherQuantity] = useState(1);
+  const [anonymous, setAnonymous] = useState(false);
+  const [anonymousName, setAnonymousName] = useState('');
+  const [anonymousContact, setAnonymousContact] = useState('');
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [screenshotFile, setScreenshotFile] = useState(null);
 
   // Handle checkbox changes for donation types
   const handleCheckboxChange = (e) => {
@@ -443,44 +453,49 @@ const Donate = () => {
     }));
   };
 
-  // Handle file upload with name sanitization
+  // Handle food type checkbox
+  const handleFoodtypeCheckbox = (event) => {
+    const { value, checked } = event.target;
+    if (checked) {
+      setFoodType([...foodType, value]);
+    } else {
+      setFoodType(foodType.filter((item) => item !== value));
+    }
+  };
+
+  // Handle screenshot upload
   const handleUploadScreenshot = (e) => {
     const file = e.target.files[0];
     if (file) {
       if (file.size > 10 * 1024 * 1024) {
-        setError('File size exceeds 10MB limit. Please upload a file of 10MB or smaller.');
+        alert('File size exceeds 10MB limit. Please upload an image of 10MB or smaller.');
         return;
       }
-      if (!['image/png', 'image/jpeg', 'application/pdf'].includes(file.type)) {
-        setError('Please upload a PNG, JPEG, or PDF file.');
-        return;
-      }
-      // Sanitize file name: replace spaces with underscores
-      const sanitizedName = file.name.replace(/\s+/g, '_');
+      const reader = new FileReader();
+      reader.onload = () => {
+        setScreenshotImage(reader.result);
+      };
       setScreenshotFile(file);
-      setScreenshotName(sanitizedName);
+      setScreenshotName(file.name);
+      reader.readAsDataURL(file);
     }
   };
 
-  // Handle numeric input (only positive integers or empty)
+  // Handle numeric input
   const handleNumericChange = (setter) => (e) => {
     const value = e.target.value;
-    if (/^\d*$/.test(value) || value === '') {
+    if (/^\d*\.?\d*$/.test(value) || value === '') {
       setter(value);
     }
   };
 
-  // Form validation
+  // Validate form inputs
   const validateForm = () => {
-    setError('');
-
-    // Check if at least one donation type is selected
-    if (!donateItem.money && !donateItem.food && !donateItem.item) {
+    if (!donateItem.money && !donateItem.food && !donateItem.item && !donateItem.other) {
       setError('Please select at least one donation type.');
       return false;
     }
 
-    // Validate Money donation fields only if selected
     if (donateItem.money) {
       if (!moneyAmount || isNaN(moneyAmount) || parseFloat(moneyAmount) <= 0) {
         setError('Please enter a valid amount of money to donate.');
@@ -492,14 +507,9 @@ const Donate = () => {
       }
     }
 
-    // Validate Food donation fields only if selected
     if (donateItem.food) {
-      if (!foodType) {
+      if (!foodType.length) {
         setError('Please select a type of food (Wet or Dry).');
-        return false;
-      }
-      if (!foodQuantity || parseInt(foodQuantity) <= 0) {
-        setError('Please provide a valid quantity for the food donation.');
         return false;
       }
       if (!foodDescription.trim()) {
@@ -508,101 +518,105 @@ const Donate = () => {
       }
     }
 
-    // Validate Item donation fields only if selected
     if (donateItem.item) {
-      if (!itemQuantity || parseInt(itemQuantity) <= 0) {
-        setError('Please provide a valid quantity for the item donation.');
-        return false;
-      }
       if (!itemDescription.trim()) {
         setError('Please provide a description for the item donation.');
         return false;
       }
     }
 
+    if (donateItem.other) {
+      if (!othersDescription.trim()) {
+        setError('Please provide a description for the other donation.');
+        return false;
+      }
+    }
+
+    if (anonymous && (!anonymousName.trim() || !anonymousContact.trim())) {
+      setError('Please provide your name and contact number for anonymous donations.');
+      return false;
+    }
+
+    setError('');
     return true;
   };
 
   // Handle form submission
   const handleSubmit = async () => {
-    if (!validateForm()) return;
-
-    // Log Food and Item field values for debugging
-    console.log('Food field values:', { foodType, foodQuantity, foodDescription });
-    console.log('Item field values:', { itemQuantity, itemDescription });
+    const isValid = validateForm();
+    if (!isValid) return;
 
     const donationItems = [];
 
     if (donateItem.money) {
       donationItems.push({
-        item_type: 'Money',
-        amount: parseFloat(moneyAmount),
-        proof_image: screenshotName,
+        donation_type: 'Money',
+        amount: moneyAmount,
+        proofImage: screenshotName,
       });
     }
 
     if (donateItem.food) {
       donationItems.push({
-        item_type: 'Food',
+        donation_type: 'Food',
         food_type: foodType,
-        quantity: parseInt(foodQuantity),
+        quantity: foodQuantity,
         description: foodDescription,
       });
     }
 
     if (donateItem.item) {
       donationItems.push({
-        item_type: 'Item',
-        quantity: parseInt(itemQuantity),
+        donation_type: 'Item',
+        quantity: itemQuantity,
         description: itemDescription,
       });
     }
 
-    const formData = new FormData();
-    if (user) formData.append('donator_id', user.user_id);
-    formData.append('is_anonymous', isAnonymous ? '1' : '0');
-    if (screenshotFile) formData.append('proof_image', screenshotFile);
-    formData.append('items', JSON.stringify(donationItems));
-
-    // Debug: Log FormData contents
-    console.log('FormData contents:');
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}: ${typeof value === 'object' ? value.name || value : value}`);
+    if (donateItem.other) {
+      donationItems.push({
+        donation_type: 'Other',
+        quantity: otherQuantity,
+        description: othersDescription,
+      });
     }
 
+    const description = anonymous
+      ? `Anonymous donation by ${anonymousName}, Contact: ${anonymousContact}. Awaiting admin review.`
+      : 'Awaiting admin review';
+
+    const donationPayload = {
+      donator_id: anonymous ? null : user?.user_id,
+      proofImage: screenshotName,
+      description,
+      items: donationItems,
+    };
+
     try {
+      const formData = new FormData();
+      formData.append('donator_id', donationPayload.donator_id || '');
+      formData.append('description', donationPayload.description);
+      if (screenshotFile) {
+        formData.append('proof_image', screenshotFile);
+      }
+      formData.append('items', JSON.stringify(donationItems));
+
       const response = await axios.post(`${url}/donate/donation_application`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-        withCredentials: true,
       });
 
       setSuccessMessage(
-        `Thank you for donating! Your support keeps our cats safe, healthy, and loved while they wait for their forever families. We couldn't do this without you!\n\nOur head volunteers will reach out to the contact number you provided for the process of shipping the donated items for SPR Cats.`
+        `Thank you for donating! Your support keeps our cats safe, healthy, and loved while they wait for their forever families. We couldn't do this without you! \n\n Our head volunteers will reach out to the contact number you provided for the process of shipping the donated items for SPR Cats.`
       );
-      if (user) {
+      if (!anonymous && user?.user_id) {
         await fetchNotifications(user.user_id);
         triggerWhiskerUpdate();
       }
-
-      // Reset form
-      setDonateItem({ money: false, food: false, item: false });
-      setScreenshotFile(null);
-      setScreenshotName('');
-      setMoneyAmount('');
-      setFoodType('');
-      setFoodQuantity('');
-      setFoodDescription('');
-      setItemDescription('');
-      setItemQuantity('');
-      setIsAnonymous(false);
     } catch (err) {
       console.error('Donation submission failed:', err);
-      console.error('Full error response:', err.response?.data);
-      setError(
-        err.response?.data?.message || 'Donation submission failed. Please try again or contact support.'
-      );
+      setError('Donation submission failed. Something went wrong during donation.');
     }
   };
 
@@ -625,47 +639,90 @@ const Donate = () => {
                   <input
                     type="checkbox"
                     id="anonymous_donation"
-                    checked={isAnonymous}
-                    onChange={(e) => setIsAnonymous(e.target.checked)}
+                    checked={anonymous}
+                    onChange={(e) => setAnonymous(e.target.checked)}
                   />
                   Anonymous Donation
                 </label>
               </div>
+
+              {anonymous && (
+                <div className="flex flex-col gap-2 p-3">
+                  <label className="text-[#595959] text-[14px]">Name</label>
+                  <input
+                    type="text"
+                    placeholder="Enter your name"
+                    value={anonymousName}
+                    onChange={(e) => setAnonymousName(e.target.value)}
+                    className="p-2 border-1 border-[#A3A3A3] rounded-[5px] w-full"
+                  />
+                  <label className="text-[#595959] text-[14px]">Contact Number</label>
+                  <input
+                    type="text"
+                    placeholder="Enter your contact number"
+                    value={anonymousContact}
+                    onChange={(e) => setAnonymousContact(e.target.value)}
+                    className="p-2 border-1 border-[#A3A3A3] rounded-[5px] w-full"
+                  />
+                </div>
+              )}
 
               <div className="flex flex-col items-center px-3 py-3 w-full">
                 <span className="flex gap-1 font-bold text-[#2F2F2F]">
                   Get started by selecting a type of donation you want to donate
                   <span className="text-[#8f8f8f] italic">(You can choose multiple).</span>
                 </span>
-
                 <span className="leading-tight text-sm text-center px-4 py-2">
-                  Your donation, no matter the size, helps provide the love and care our cats truly deserve. Your support
-                  allows us to continue improving the lives of cats in need and giving them a brighter future. Together, we
-                  can create a kinder, more compassionate world for every cat. We're deeply grateful for your generosity,
-                  thank you!
+                  Your donation, no matter the size, helps provide the love and care our cats truly deserve. Your support allows us to continue improving the lives of cats in need and giving them a brighter future. Together, we can create a kinder, more compassionate world for every cat. We're deeply grateful for your generosity, thank you!
                 </span>
-
                 <div className="flex flex-col xl:flex-row lg:flex-row gap-3 w-full rounded-[10px] pt-2">
                   <label
                     htmlFor="donate_money"
                     className="cursor-pointer flex gap-5 p-2 rounded-[10px] bg-[#FFF] w-full border-2 border-[#2F2F2F]"
                   >
-                    <input type="checkbox" id="donate_money" checked={donateItem.money} onChange={handleCheckboxChange} />
+                    <input
+                      type="checkbox"
+                      id="donate_money"
+                      checked={donateItem.money}
+                      onChange={handleCheckboxChange}
+                    />
                     Money
                   </label>
                   <label
                     htmlFor="donate_food"
                     className="cursor-pointer flex gap-5 p-2 rounded-[10px] bg-[#FFF] w-full border-2 border-[#2F2F2F]"
                   >
-                    <input type="checkbox" id="donate_food" checked={donateItem.food} onChange={handleCheckboxChange} />
+                    <input
+                      type="checkbox"
+                      id="donate_food"
+                      checked={donateItem.food}
+                      onChange={handleCheckboxChange}
+                    />
                     Food
                   </label>
                   <label
                     htmlFor="donate_item"
                     className="cursor-pointer flex gap-5 p-2 rounded-[10px] bg-[#FFF] w-full border-2 border-[#2F2F2F]"
                   >
-                    <input type="checkbox" id="donate_item" checked={donateItem.item} onChange={handleCheckboxChange} />
+                    <input
+                      type="checkbox"
+                      id="donate_item"
+                      checked={donateItem.item}
+                      onChange={handleCheckboxChange}
+                    />
                     Item
+                  </label>
+                  <label
+                    htmlFor="donate_other"
+                    className="cursor-pointer flex gap-5 p-2 rounded-[10px] bg-[#FFF] w-full border-2 border-[#2F2F2F]"
+                  >
+                    <input
+                      type="checkbox"
+                      id="donate_other"
+                      checked={donateItem.other}
+                      onChange={handleCheckboxChange}
+                    />
+                    Other
                   </label>
                 </div>
               </div>
@@ -685,8 +742,6 @@ const Donate = () => {
                             <label>Amount of money to donate</label>
                             <input
                               type="number"
-                              min="0.01"
-                              step="0.01"
                               placeholder="Add amount"
                               value={moneyAmount}
                               onChange={(e) => setMoneyAmount(e.target.value)}
@@ -707,7 +762,7 @@ const Donate = () => {
                                 <input
                                   type="file"
                                   id="screenshot_image"
-                                  accept="image/png,image/jpeg,application/pdf"
+                                  accept="image/png, image/jpeg"
                                   hidden
                                   required
                                   onChange={handleUploadScreenshot}
@@ -736,72 +791,93 @@ const Donate = () => {
                         <div className="flex flex-col gap-4 w-full">
                           <div className="flex flex-col w-full gap-2">
                             <div className="flex flex-col items-start">
-                              <label className="text-[#595959] text-[14px] leading-tight">Select a food type</label>
-                              <select
-                                value={foodType}
-                                onChange={(e) => setFoodType(e.target.value)}
-                                className="p-2 border-1 border-[#A3A3A3] rounded-[5px] w-full"
-                                required
-                              >
-                                <option value="">Select Food Type</option>
-                                <option value="Wet">Wet</option>
-                                <option value="Dry">Dry</option>
-                              </select>
+                              <label className="text-[#595959] text-[14px] leading-tight">
+                                Select a food type (you can select both)
+                              </label>
+                              <div className="flex gap-2 w-full">
+                                <label
+                                  htmlFor="food_wet"
+                                  className="flex gap-2 p-2 border-1 border-[#A3A3A3] rounded-[5px] w-full"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    name="donation_food"
+                                    id="food_wet"
+                                    value="Wet"
+                                    onChange={handleFoodtypeCheckbox}
+                                  />
+                                  Wet
+                                </label>
+                                <label
+                                  htmlFor="food_dry"
+                                  className="flex gap-2 p-2 border-1 border-[#A3A3A3] rounded-[5px] w-full"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    name="donation_food"
+                                    id="food_dry"
+                                    value="Dry"
+                                    onChange={handleFoodtypeCheckbox}
+                                  />
+                                  Dry
+                                </label>
+                              </div>
                             </div>
                             <div className="flex flex-col w-full">
                               <label className="text-[#595959] text-[14px] leading-tight">
                                 Quantity (please specify how much food you're donating)
                               </label>
-                              <input
-                                type="number"
-                                min="1"
-                                placeholder="Quantity"
-                                value={foodQuantity}
-                                onChange={handleNumericChange(setFoodQuantity)}
-                                className="p-2 border-1 border-[#A3A3A3] rounded-[5px] w-full"
-                                required
-                              />
+                              <div className="flex gap-2 items-center w-full">
+                                <input
+                                  type="text"
+                                  placeholder="Quantity"
+                                  value={foodQuantity}
+                                  onChange={handleNumericChange(setFoodQuantity)}
+                                  className="p-2 border-1 border-[#A3A3A3] rounded-[5px] w-full"
+                                />
+                                <select name="" id="" className="p-2 border-1 border-[#A3A3A3] rounded-[5px]">
+                                  <option hidden>Select a unit of measurement (kg/g)</option>
+                                  <option value="kilograms">kilograms (kg)</option>
+                                  <option value="grams">grams (g)</option>
+                                </select>
+                              </div>
                             </div>
                           </div>
-                          <div className="flex flex-col w-full">
-                            <label className="text-[#2F2F2F] font-bold">Description</label>
-                            <textarea
-                              placeholder="Add a description"
-                              rows={5}
-                              value={foodDescription}
-                              onChange={(e) => setFoodDescription(e.target.value)}
-                              className="resize-none p-2 border-1 border-[#A3A3A3] rounded-[10px] w-full"
-                              required
-                            ></textarea>
-                          </div>
+                        </div>
+                        <div className="flex flex-col w-full">
+                          <label className="text-[#2F2F2F] font-bold">Description</label>
+                          <textarea
+                            placeholder="Add a description"
+                            rows={5}
+                            value={foodDescription}
+                            onChange={(e) => setFoodDescription(e.target.value)}
+                            className="resize-none p-2 border-1 border-[#A3A3A3] rounded-[10px] w-full"
+                          ></textarea>
                         </div>
                       </div>
                     </div>
                   )}
 
                   {donateItem.item && (
-                    <div className="flex flex-col w-full gap-1 p-5 bg-[#FFF] border-t-2 border-dashed border-t-[#bababa]">
-                      <label className="flex justify-center items-center text-[#2F2F2F] text-[24px] font-bold w-full">
-                        ITEM DONATION
+                    <div className="flex flex-col w-full gap-4 p-5 bg-[#FFF] border-t-2 border-dashed border-t-[#bababa]">
+                      <label className="flex justify-between items-center w-full">
+                        <span className="text-[#2F2F2F] text-[24px] font-bold">ITEM DONATION</span>
+                        <span>You can donate cleaning supplies, food bowls, etc.</span>
                       </label>
-                      <div className="w-full flex flex-col gap-2">
+                      <div className="flex flex-col gap-2">
                         <div className="flex flex-col gap-2">
-                          <div className="flex flex-col w-full">
-                            <label className="text-[#595959] text-[14px]">
-                              Quantity (please specify how many items you're donating)
-                            </label>
+                          <div className="flex flex-col w-full text-[14px]">
+                            <label>Quantity (please specify how many items you're donating)</label>
                             <input
-                              type="number"
-                              min="1"
+                              type="text"
                               placeholder="Quantity"
                               value={itemQuantity}
                               onChange={handleNumericChange(setItemQuantity)}
                               className="p-2 border-1 border-[#A3A3A3] rounded-[5px] w-full"
-                              required
                             />
                           </div>
                           <div className="flex flex-col w-full">
-                            <label className="text-[#595959] text-[14px]">
+                            <label className="text-[14px]">
                               Description (Please provide a specific description of your item donation)
                             </label>
                             <textarea
@@ -810,7 +886,41 @@ const Donate = () => {
                               value={itemDescription}
                               onChange={(e) => setItemDescription(e.target.value)}
                               className="resize-none p-2 border-1 border-[#A3A3A3] rounded-[10px] w-full"
-                              required
+                            ></textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {donateItem.other && (
+                    <div className="flex flex-col w-full gap-4 p-5 bg-[#FFF] border-t-2 border-dashed border-t-[#bababa]">
+                      <label className="flex justify-between items-center w-full">
+                        <span className="text-[#2F2F2F] text-[24px] font-bold">OTHER DONATION</span>
+                        <span>Any other items or contributions</span>
+                      </label>
+                      <div className="flex flex-col gap-2">
+                        <div className="flex flex-col gap-2">
+                          <div className="flex flex-col w-full text-[14px]">
+                            <label>Quantity (please specify how many items you're donating)</label>
+                            <input
+                              type="text"
+                              placeholder="Quantity"
+                              value={otherQuantity}
+                              onChange={handleNumericChange(setOtherQuantity)}
+                              className="p-2 border-1 border-[#A3A3A3] rounded-[5px] w-full"
+                            />
+                          </div>
+                          <div className="flex flex-col w-full">
+                            <label className="text-[14px]">
+                              Description (Please provide a specific description of your donation)
+                            </label>
+                            <textarea
+                              placeholder="Add a description"
+                              rows={5}
+                              value={othersDescription}
+                              onChange={(e) => setOthersDescription(e.target.value)}
+                              className="resize-none p-2 border-1 border-[#A3A3A3] rounded-[10px] w-full"
                             ></textarea>
                           </div>
                         </div>
@@ -820,14 +930,16 @@ const Donate = () => {
                 </div>
 
                 {error && (
-                  <label className="text-[#DC8801] italic text-center p-2 rounded-[10px] w-full bg-[#ffefd5]">{error}</label>
+                  <label className="text-[#DC8801] italic text-center p-2 rounded-[10px] w-full bg-[#ffefd5]">
+                    {error}
+                  </label>
                 )}
 
                 <button
                   type="button"
                   onClick={handleSubmit}
                   className={
-                    donateItem.money || donateItem.food || donateItem.item
+                    donateItem.money || donateItem.food || donateItem.item || donateItem.other
                       ? 'cursor-pointer w-full xl:w-auto lg:w-auto md:w-auto h-auto bg-[#B5C04A] text-[#FFF] py-5 xl:py-3 lg:py-3 md:py-2 active:bg-[#CFDA34]'
                       : 'hidden'
                   }
