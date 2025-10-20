@@ -300,7 +300,7 @@ DonationRoute.post(
   async (req, res) => {
     const db = getDB();
     
-    // Convert 'null' string to actual null, otherwise use the provided ID string
+    // 1. Determine donator_id: Convert 'null' string or falsy value to database NULL
     const donator_id = (req.body.donator_id && req.body.donator_id !== 'null') 
                        ? req.body.donator_id 
                        : null; 
@@ -309,6 +309,7 @@ DonationRoute.post(
     const file = req.file;
 
     try {
+      // Basic input validation
       if (!items) {
         return res.status(400).json({ message: 'Missing required fields: items' });
       }
@@ -327,40 +328,38 @@ DonationRoute.post(
 
       const validDonationTypes = ['Money', 'Food', 'Item', 'Other'];
       const proofImageURL = file?.path || null;
-      let application_id; // This will hold the ID for the entire transaction
+      let application_id;
 
-      // 1. 🎯 INSERT A PLACEHOLDER ROW TO GENERATE THE application_id
-      // We use the first item's data for the initial placeholder row, 
-      // but ensure application_id is set to the generated ID afterwards.
-      // NOTE: This initial INSERT will be corrected in the loop below.
-      const firstItem = parsedItems[0];
-      const initialDescription = firstItem.description || null;
+      // 2. 🔑 INSERT PLACEHOLDER ROW TO GENERATE application_id
+      // This step ensures we get a valid application_id while respecting the 
+      // NOT NULL constraint on that column, even though we haven't processed items yet.
+      // We use a short, valid donation_type ('Item') to avoid the "Data truncated" error.
+      const initialDescription = parsedItems[0].description || null;
       
       const [placeholderResult] = await db.query(
         `INSERT INTO donation_application_items (
           donator_id, date_applied, status, proof_image, description,
           donation_type, amount, food_type, quantity
-        ) VALUES (?, NOW(), 'Pending', ?, ?, 'Placeholder', NULL, NULL, NULL)
+        ) VALUES (?, NOW(), 'Pending', ?, ?, 'Item', NULL, NULL, NULL)
         `,
         [donator_id, proofImageURL, initialDescription]
       );
       
+      // Capture the auto-generated primary key (id) to use as the application_id
       application_id = placeholderResult.insertId;
 
-      // 2. ✏️ DELETE the placeholder row to prepare for the actual item inserts
-      // This is a common pattern when using a single table for header and details.
+      // 3. 🗑️ DELETE the placeholder row
       await db.query(`DELETE FROM donation_application_items WHERE id = ?`, [application_id]);
 
 
-      // 3. 🔄 LOOP through all items and insert them using the generated application_id
+      // 4. 📝 LOOP through all actual items and insert them with the generated application_id
       for (const item of parsedItems) {
         if (!item.donation_type || !validDonationTypes.includes(item.donation_type)) {
           console.error('Invalid donation_type:', item);
-          // If validation fails, we might want to clean up the placeholder (if not deleted already)
           return res.status(400).json({ message: `Invalid donation_type: ${item.donation_type || 'missing'}` });
         }
         
-        // Extract fields for the current item
+        // Extract item-specific data, defaulting to NULL if not present
         const itemDescription = item.description || null;
         const itemAmount = item.amount || null; 
         const itemFoodType = item.food_type ? item.food_type.join(',') : null; 
@@ -373,9 +372,9 @@ DonationRoute.post(
           ) VALUES (?, ?, NOW(), 'Pending', ?, ?, ?, ?, ?, ?)
           `,
           [
-            // ⭐️ Use the generated application_id here
+            // Use the consistent, generated ID for all items in this transaction
             application_id, 
-            donator_id,
+            donator_id, // This is correctly NULL for anonymous donations
             proofImageURL, 
             itemDescription,
             item.donation_type,
@@ -386,13 +385,13 @@ DonationRoute.post(
         );
       }
       
-      // 4. ✅ Only send notification if a donator_id is present (not anonymous)
+      // 5. 🔔 Send notification only if a donator is logged in
       if (donator_id) {
         await db.query(
           `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
           [
             donator_id,
-            `Your donation has been submitted for review. We’ve notify you once it’s approved or rejected.`,
+            `Your donation has been submitted for review. We’ll notify you once it’s approved or rejected.`,
           ]
         );
       }
