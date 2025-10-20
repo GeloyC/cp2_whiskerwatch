@@ -287,12 +287,11 @@ const AdoptersList = () => {
                   <td>{adoptee.adoption_date}</td>
                   <td>{adoptee.contactnumber}</td>
                   <td className='flex items-center justify-start gap-2'>
-                    {!certificateUrl ? (
+                    {certificateUrl ? (
                         <button onClick={() => handleViewCert(adoptee)} className='flex items-center justify-between self-start gap-3 p-1 pl-4 pr-4 bg-[#FDF5D8] text-[#2F2F2F] rounded-[10px] hover:underline border-dashed border-2 border-[#595959]'>
                           Upload Certificate
                         </button>
                     ) : (
-                      
                       <a
                         href={certificateUrl}
                         target='_blank'
