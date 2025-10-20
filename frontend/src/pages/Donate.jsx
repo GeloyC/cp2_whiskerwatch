@@ -240,7 +240,7 @@ const Donate = () => {
           {/* TITLE */}
           <div className='flex flex-col w-full'>
             <div className='flex flex-col bg-[#FFF] p-5 rounded-t-[10px]'> 
-                <div className='bg-[#FFF] w-full flex justify-between p-3 xl:rounded-t-[10px] lg:rounded-t-[10px] md:rounded-t-[10px] sm:rounded-t-[0px]'>
+                <div className='bg-[#FFF] w-full flex flex-col justify-center items-center xl:flex-row lg:flex-row md:flex-row xl:justify-between lg:justify-between md:justify-between p-3 xl:rounded-t-[10px] lg:rounded-t-[10px] md:rounded-t-[10px] sm:rounded-t-[0px]'>
                   <label className='text-[#889132] text-[24px] font-bold'>DONATION FORM</label>
                   <label htmlFor="anonymous_donation" className='flex items-center gap-2'>
                     <input type="checkbox" id="anonymous_donation" checked={isAnonymous} onChange={(e) => setIsAnonymous(e.target.checked)}/>
@@ -249,9 +249,10 @@ const Donate = () => {
                 </div>
 
                 {!successMessage ? (
-                  <div className='flex flex-col items-center px-3 py-3 w-full'>
-                    <span className='flex gap-1 font-bold text-[#2F2F2F]'>Get started by selecting a type of donation you want to donate
-                      <span className='text-[#8f8f8f] italic'>(You can choose multiple).</span>
+                  <div className='flex flex-col items-center px-3 py-3 gap-2 w-full'>
+                    <span className='flex flex-col items-center justify-center leading-tight w-full text-[#2F2F2F]'>
+                      <span className='text-center font-bold'>Get started by selecting a type of donation you want to donate</span>
+                      <span className='text-[#8f8f8f] italic text-sm'>(You can choose multiple).</span>
                     </span>
   
                     <span className='leading-tight text-sm text-center px-4 py-2'>
@@ -291,8 +292,6 @@ const Donate = () => {
 
             {!successMessage && (
               <form className='flex flex-col w-auto rounded-[10px]'>
-
-                
                 <div className= 'flex flex-col rounded-[10px] w-full'>
                   {donateItem.money && (
                     <div className='flex flex-col w-full gap-1 p-5 bg-[#FFF] border-t-2 border-dashed border-t-[#bababa]'> {/* MONEY WINDOW */}

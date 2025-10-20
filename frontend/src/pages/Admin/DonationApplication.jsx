@@ -178,7 +178,7 @@ const DonationApplication = () => {
                     </div>
 
                     {/* DYNAMIC TABLE */}
-                    <table className='hidden xl:flex lg:flex flex-col w-full gap-'>
+                    <table className='hidden xl:flex lg:flex flex-col w-full gap-2'>
                         <thead className='flex w-full'>
                             <tr className='grid grid-cols-[10%_15%_35%_25%_10%] justify-items-start place-items-start w-full bg-[#DC8801] p-3 rounded-[15px] text-[#FFF]'>
                                 <th>App. ID</th>
@@ -189,64 +189,80 @@ const DonationApplication = () => {
                             </tr>
                         </thead>
 
-                        <tbody className='flex flex-col gap-1 item-center justify-center'>
-                            {filteredApplications.length > 0 ? filteredApplications.map((app) => (
-                                <tr key={app.application_id} className='grid grid-cols-[10%_15%_35%_25%_10%] justify-items-start place-items-center w-full bg-[#FFF] p-3 rounded-[10px] text-[#2F2F2F] border-b-1 border-b-[#595959] pb-2'>
-                                    <td className='text-md font-bold'>{app.application_id}</td>
-                                    <td className='text-md'>{app.donator_name}</td>
-                                    <td>
-                                        <div className='flex flex-col text-sm'>
-                                            <p className='font-bold mb-1'>Items ({app.items.length}):</p>
-                                            <ul className='list-disc list-inside ml-2 text-xs'>
-                                                {app.items.map((item, index) => (
-                                                    <span key={index} className='truncate'>
-                                                        {item.donation_type}: 
-                                                        {item.donation_type === 'Money' ? ` PHP${item.amount}` : item.quantity ? ` ${item.quantity}` : ' Item'}
-                                                    </span>
-                                                ))}
-                                            </ul>
-                                            <p className='mt-2 italic truncate max-w-full' title={app.description}>
-                                                Description: {app.description}
-                                            </p>
-                                            {/* Link to view proof image if available */}
-                                            {app.items.find(item => item.proof_image) && (
-                                                <a 
-                                                    href={app.items.find(item => item.proof_image).proof_image} 
-                                                    target="_blank" 
-                                                    rel="noopener noreferrer" 
-                                                    className="text-blue-500 underline text-xs mt-1"
-                                                >
-                                                    View Proof
-                                                </a>
-                                            )}
-                                        </div>
-                                    </td>
-                                    <td className='flex flex-row items-center justify-center gap-2'>
-                                        <p className='text-sm text-gray-500'>{app.date_applied}</p>
-                                        <span className={`px-3 py-1 rounded-[5px] font-bold text-center text-xs ${getStatusClass(app.status)}`}>
-                                            {app.status}
-                                        </span>
-                                    </td>
-                                    <td className='flex items-center gap-1'>
-                                        {/* Accept Button */}
-                                        <button 
-                                            onClick={() => handleDecision(app.application_id, 'Accepted', app.donator_id)}
-                                            className='cursor-pointer bg-[#889132] rounded-full size-8 p-2 active:bg-[#B5C04A]'
-                                            title="Accept Donation"
-                                        >
-                                            <img src="/assets/icons/admin-icons/check.png" alt="Accept" />
-                                        </button>
-                                        {/* Reject Button */}
-                                        <button 
-                                            onClick={() => handleDecision(app.application_id, 'Rejected', app.donator_id)}
-                                            className='cursor-pointer bg-[#e52c1a] rounded-full size-8 p-2 active:bg-[#d95a51]'
-                                            title="Reject Donation"
-                                        >
-                                            <img src="/assets/icons/admin-icons/reject.png" alt="Reject" />
-                                        </button>
-                                    </td>
-                                </tr>
-                            )) : (
+                        
+
+                        <tbody className='flex flex-col gap-1'>
+                            {filteredApplications.length > 0 ? filteredApplications.map((app) => {
+                                // Find the proof URL if the application contains a Money donation with proof
+                                const moneyItemWithProof = app.items.find(item => 
+                                    item.donation_type === 'Money' && item.proof_image
+                                );
+
+                                return (
+                                    <tr key={app.application_id} className='grid grid-cols-[10%_15%_35%_25%_10%] justify-items-start place-items-center w-full bg-[#FFF] p-3 rounded-[10px] text-[#2F2F2F] border-b-1 border-b-[#595959]'>
+                                        <td className='text-md font-bold'>{app.application_id}</td>
+                                        <td className='text-md'>{app.donator_name}</td>
+                                        
+                                        <td>
+                                            <div className='flex flex-row text-sm gap-6'>
+                                                {/* <p className='font-bold mb-1'>Items ({app.items.length}):</p> */}
+                                                <span className='list-disc list-inside ml-2 text-sm'>
+                                                    {app.items.map((item, index) => (
+                                                        <span key={index} className='truncate'>
+                                                            {item.donation_type}: 
+                                                            {item.donation_type === 'Money' 
+                                                                ? ` PHP ${item.amount}` 
+                                                                : item.quantity ? ` ${item.quantity}` : ' Item'}
+                                                        </span>
+                                                    ))}
+                                                </span>
+                                                
+                                                {/* Conditional Rendering of Description vs. View Proof */}
+                                                {moneyItemWithProof ? (
+                                                    // If Money donation with proof exists, display only the link
+                                                    <a 
+                                                        href={moneyItemWithProof.proof_image} 
+                                                        target="_blank" 
+                                                        rel="noopener noreferrer" 
+                                                        className="text-blue-600 underline text-sm mt-2 font-bold"
+                                                    >
+                                                        View Proof (Money Donation)
+                                                    </a>
+                                                ) : (
+                                                    // Otherwise, display the textual description/summary
+                                                    <li className='mt-2 italic flex-wrap max-w-full'>
+                                                        {app.description}
+                                                    </li>
+                                                )}
+                                            </div>
+                                        </td>
+                                        
+                                        {/* ... remaining columns (Date/Status, Decision) ... */}
+                                        <td className='flex flex-row items-center justify-center gap-2'>
+                                            <p className='text-sm text-gray-500 mb-1'>{app.date_applied}</p>
+                                            <span className={`px-3 py-1 rounded-[5px] font-bold text-center text-sm ${getStatusClass(app.status)}`}>
+                                                {app.status}
+                                            </span>
+                                        </td>
+                                        <td className='flex items-center gap-1'>
+                                            <button 
+                                                onClick={() => handleDecision(app.application_id, 'Accepted', app.donator_id)}
+                                                className='cursor-pointer bg-[#889132] rounded-full size-8 p-2 active:bg-[#B5C04A]'
+                                                title="Accept Donation"
+                                            >
+                                                <img src="/assets/icons/admin-icons/check.png" alt="Accept" />
+                                            </button>
+                                            <button 
+                                                onClick={() => handleDecision(app.application_id, 'Rejected', app.donator_id)}
+                                                className='cursor-pointer bg-[#B67101] rounded-full size-8 p-2 active:bg-[#DC8801]'
+                                                title="Reject Donation"
+                                            >
+                                                <img src="/assets/icons/admin-icons/reject.png" alt="Reject" />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                )
+                            }) : (
                                 <tr>
                                     <td colSpan="5" className='text-center py-5 text-[#595959]'>
                                         No pending donation applications found.
@@ -254,6 +270,7 @@ const DonationApplication = () => {
                                 </tr>
                             )}
                         </tbody>
+                        
                     </table>
                 </div>
             </div>
