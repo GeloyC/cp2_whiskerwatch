@@ -243,7 +243,7 @@ const Donate = () => {
                   </label>
                 </div>
 
-                {!successMessage ? (
+                {!successMessage && (
                   <div className='flex flex-col items-center px-3 py-3 w-full'>
                     <span className='flex gap-1 font-bold text-[#2F2F2F]'>Get started by selecting a type of donation you want to donate
                       <span className='text-[#8f8f8f] italic'>(You can choose multiple).</span>
@@ -276,13 +276,6 @@ const Donate = () => {
                         Item
                       </label>
                     </div>
-                  </div>
-                ) : (
-                  <div>
-                    <Link to="/donate" className={'cursor-pointer w-full xl:w-auto lg:w-auto md:w-auto h-auto bg-[#B5C04A] text-[#FFF] py-5 xl:py-3 lg:py-3 md:py-2 active:bg-[#CFDA34]'}>
-                      Donate again.
-                    </Link>
-
                   </div>
                 )}
             </div>
@@ -415,6 +408,12 @@ const Donate = () => {
             ) : (
               <div className='flex flex-col items-center justify-center w-full bg-[#FFF] rounded-[10px] p-5'>
                 <label className='text-[#2F2F2F] italic text-center whitespace-pre-line'>{successMessage}</label>
+
+                <div>
+                  <Link to="/donate" className={'cursor-pointer w-full xl:w-auto lg:w-auto md:w-auto h-auto bg-[#B5C04A] text-[#FFF] py-5 xl:py-3 lg:py-3 md:py-2 active:bg-[#CFDA34]'}>
+                    Donate again.
+                  </Link>
+                </div>
               </div>
             )}
 
