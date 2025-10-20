@@ -404,8 +404,6 @@
 
 // export default Donate
 
-
-
 import React, { useState } from 'react';
 import NavigationBar from '../components/NavigationBar';
 import SideNavigation from '../components/SideNavigation';
@@ -438,8 +436,6 @@ const Donate = () => {
   const [othersDescription, setOthersDescription] = useState('');
   const [otherQuantity, setOtherQuantity] = useState(1);
   const [anonymous, setAnonymous] = useState(false);
-  const [anonymousName, setAnonymousName] = useState('');
-  const [anonymousContact, setAnonymousContact] = useState('');
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [screenshotFile, setScreenshotFile] = useState(null);
@@ -532,11 +528,6 @@ const Donate = () => {
       }
     }
 
-    if (anonymous && (!anonymousName.trim() || !anonymousContact.trim())) {
-      setError('Please provide your name and contact number for anonymous donations.');
-      return false;
-    }
-
     setError('');
     return true;
   };
@@ -581,9 +572,7 @@ const Donate = () => {
       });
     }
 
-    const description = anonymous
-      ? `Anonymous donation by ${anonymousName}, Contact: ${anonymousContact}. Awaiting admin review.`
-      : 'Awaiting admin review';
+    const description = anonymous ? 'Anonymous donation' : 'Awaiting admin review';
 
     const donationPayload = {
       donator_id: anonymous ? null : user?.user_id,
@@ -608,7 +597,7 @@ const Donate = () => {
       });
 
       setSuccessMessage(
-        `Thank you for donating! Your support keeps our cats safe, healthy, and loved while they wait for their forever families. We couldn't do this without you! \n\n Our head volunteers will reach out to the contact number you provided for the process of shipping the donated items for SPR Cats.`
+        `Thank you for donating! Your support keeps our cats safe, healthy, and loved while they wait for their forever families. We couldn't do this without you! \n\n Our head volunteers will reach out for the process of shipping the donated items for SPR Cats.`
       );
       if (!anonymous && user?.user_id) {
         await fetchNotifications(user.user_id);
@@ -645,27 +634,6 @@ const Donate = () => {
                   Anonymous Donation
                 </label>
               </div>
-
-              {anonymous && (
-                <div className="flex flex-col gap-2 p-3">
-                  <label className="text-[#595959] text-[14px]">Name</label>
-                  <input
-                    type="text"
-                    placeholder="Enter your name"
-                    value={anonymousName}
-                    onChange={(e) => setAnonymousName(e.target.value)}
-                    className="p-2 border-1 border-[#A3A3A3] rounded-[5px] w-full"
-                  />
-                  <label className="text-[#595959] text-[14px]">Contact Number</label>
-                  <input
-                    type="text"
-                    placeholder="Enter your contact number"
-                    value={anonymousContact}
-                    onChange={(e) => setAnonymousContact(e.target.value)}
-                    className="p-2 border-1 border-[#A3A3A3] rounded-[5px] w-full"
-                  />
-                </div>
-              )}
 
               <div className="flex flex-col items-center px-3 py-3 w-full">
                 <span className="flex gap-1 font-bold text-[#2F2F2F]">
