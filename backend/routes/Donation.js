@@ -196,7 +196,7 @@ DonationRoute.post(
 
 
 DonationRoute.post(
-    '/donation_application',
+  '/donation_application',
   upload_donationProof.single('proof_image'),
   async (req, res) => {
     const db = getDB();
@@ -204,15 +204,15 @@ DonationRoute.post(
     const file = req.file;
 
     try {
-      // Basic validation
       if (!items) {
+        console.error('Missing items field');
         return res.status(400).json({ message: 'Missing required fields: items' });
       }
       if (!description) {
+        console.error('Missing description field');
         return res.status(400).json({ message: 'Missing required field: description' });
       }
 
-      // Parse the items JSON
       let parsedItems;
       try {
         parsedItems = JSON.parse(items);
@@ -221,21 +221,18 @@ DonationRoute.post(
         return res.status(400).json({ message: 'Invalid items format' });
       }
 
-      // Validate donation_type
       const validDonationTypes = ['Money', 'Food', 'Item', 'Other'];
       for (const item of parsedItems) {
         if (!item.donation_type || !validDonationTypes.includes(item.donation_type)) {
-          console.error('Invalid or missing donation_type:', item);
+          console.error('Invalid donation_type:', item);
           return res.status(400).json({ message: `Invalid donation_type: ${item.donation_type || 'missing'}` });
         }
       }
 
-      // Log parsedItems
-      console.log('Parsed Items:', parsedItems);
+      console.log('Request details:', { donator_id, description, parsedItems, file });
 
       const proofImageURL = file?.path || null;
 
-      // Generate a unique application_id (since donation_application is removed)
       const [applicationResult] = await db.query(
         `INSERT INTO donation_application_items (
           donator_id, date_applied, status, proof_image, description,
@@ -255,7 +252,6 @@ DonationRoute.post(
 
       const application_id = applicationResult.insertId;
 
-      // Insert remaining items (if multiple)
       for (let i = 1; i < parsedItems.length; i++) {
         const item = parsedItems[i];
         await db.query(
@@ -292,8 +288,8 @@ DonationRoute.post(
         application_id,
       });
     } catch (err) {
-      console.error('Donation submission error:', err);
-      res.status(500).json({ message: 'Server error during donation submission.' });
+      console.error('Detailed error:', err.message, err.stack);
+      res.status(500).json({ message: 'Server error during donation submission.', error: err.message });
     }
   }
 );

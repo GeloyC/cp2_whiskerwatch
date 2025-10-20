@@ -413,6 +413,7 @@ import CatBot from '../components/CatBot';
 import Whisker from '../components/Whisker';
 import { useSession } from '../context/SessionContext';
 import axios from 'axios';
+import { resendOtp } from '../../../backend/routes/OTP';
 
 const Donate = () => {
   const url = `https://whiskerwatch-0j6g.onrender.com`;
@@ -616,6 +617,8 @@ const Donate = () => {
         },
       });
 
+      console.log(response)
+
       setSuccessMessage(
         anonymous
           ? `Thank you for your anonymous donation! Your support keeps our cats safe, healthy, and loved while they wait for their forever families. We couldn't do this without you! \n\n Our head volunteers will arrange for the process of shipping the donated items for SPR Cats.`
@@ -626,7 +629,7 @@ const Donate = () => {
         triggerWhiskerUpdate();
       }
     } catch(err) {
-      console.error('Donation submission failed:', err);
+      console.error('Donation submission failed: ', err);
       setError('Donation submission failed. Something went wrong during donation.');
     }
   };
