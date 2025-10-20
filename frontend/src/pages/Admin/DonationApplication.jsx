@@ -28,7 +28,7 @@ const DonationApplication = () => {
 
                     <table className='hidden xl:flex lg:flex flex-col w-full gap-2'>
                         <thead className='flex w-full'>
-                            <tr className='grid grid-cols-[15%_15%_30%_20%_20%] justify-items-start place-items-start w-full bg-[#DC8801] p-3 rounded-[15px] text-[#FFF]'>
+                            <tr className='grid grid-cols-[15%_15%_40%_20%_10%] justify-items-start place-items-start w-full bg-[#DC8801] p-3 rounded-[15px] text-[#FFF]'>
                                 <th>Application No.</th>
                                 <th>Donator</th>
                                 <th>Description</th>
@@ -38,14 +38,20 @@ const DonationApplication = () => {
                         </thead>
 
                         <tbody>
-                            <tr className='grid grid-cols-[15%_15%_30%_20%_20%] justify-items-start place-items-center w-full bg-[#FFF] p-3 rounded-[10px] text-[#2F2F2F] border-b-1 border-b-[#595959]'>
+                            <tr className='grid grid-cols-[15%_15%_40%_20%_10%] justify-items-start place-items-center w-full bg-[#FFF] p-3 rounded-[10px] text-[#2F2F2F] border-b-1 border-b-[#595959]'>
                                 <td>100</td>
                                 <td>Angelo Cabangal</td>
                                 <td>asdjhaskdjahsd</td>
-                                <td>pending</td>
+                                <td className='bg-[#CCCCCC] px-3 py-1 rounded-[5px] font-bold text-[#2F2F2F]'>
+                                    Pending
+                                </td>
                                 <td className='flex items-center gap-1'>
-                                    <button>Accept</button>
-                                    <button>Reject</button>
+                                    <button className='cursor-pointer bg-[#889132] rounded-full size-8 p-2 active:bg-[#B5C04A]'>
+                                        <img src="/assets/icons/admin-icons/check.png" alt="" />
+                                    </button>
+                                    <button className='cursor-pointer bg-[#e52c1a] rounded-full size-8 p-2 active:bg-[#d95a51]'>
+                                        <img src="/assets/icons/admin-icons/reject.png" alt="" />
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>

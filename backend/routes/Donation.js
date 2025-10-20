@@ -70,128 +70,6 @@ const upload_donationProof = multer({
 
 
 // // ---------------- DONATIONS ---------------- //
-
-
-
-// DonationRoute.post('/donation_data', upload_donationProof.single('proof_image'), async (req, res) => {
-//   const db = getDB()
-//   const { donator_id, items } = req.body;
-//   const file = req.file;
-
-//   try {
-//     if (!donator_id || !items) {
-//       return res.status(400).json({ message: 'Missing required fields' });
-//     }
-
-//     const parsedItems = JSON.parse(items); // frontend sends JSON as a string
-//     const proofImageFilename = file?.filename || null;
-
-//     const [donationResult] = await db.query(
-//       `INSERT INTO donation (donator_id, proofimage, description) VALUES (?, ?, ?)`,
-//       [donator_id, proofImageFilename, '']
-//     );
-
-//     const donation_id = donationResult.insertId;
-//     console.log('Uploaded file:', file);
-
-//     let totalPointsEarned = 0;
-
-//     // 2. Insert into donation_items
-//     for (const item of parsedItems) {
-//       const {
-//         donation_type,
-//         amount = null,
-//         food_type = null,
-//         quantity = null,
-//         description = null,
-//       } = item;
-
-//       await db.query(
-//         `INSERT INTO donation_items (donation_id, donation_type, amount, food_type, quantity, description)
-//         VALUES (?, ?, ?, ?, ?, ?)`,
-//         [donation_id, donation_type, amount, food_type, quantity, description]
-//       );
-
-//       totalPointsEarned += 10; // fixed 10 points per donation transaction
-
-
-//       let itemSummary = '';
-//       switch (donation_type) {
-//         case 'Money':
-//           itemSummary = `PHP${amount}`;
-//           break;
-//         case 'Food':
-//           itemSummary = `${quantity}x ${food_type} food`;
-//           break;
-//         case 'Item':
-//         case 'Other':
-//           itemSummary = `${quantity}x ${donation_type.toLowerCase()} item(s)`;
-//           break;
-//         default:
-//           itemSummary = 'an item';
-//       }
-
-//       let message = `We received your donation of ${itemSummary}. <strong>We'd like to thank you for donating to WhiskerWatch!</strong> `;
-        
-//       await db.query(
-//           `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
-//           [donator_id, message]
-//       );
-//     }
-
-//     // Update whiskermeter points
-//     if (totalPointsEarned > 0) {
-//       // Check if user already has a whiskermeter entry
-//       const [rows] = await db.query(
-//         `SELECT points FROM whiskermeter WHERE user_id = ?`,
-//         [donator_id]
-//       );
-
-//       if (rows.length > 0) {
-//         // Update existing points by adding earned points
-//         await db.query(
-//           `UPDATE whiskermeter SET points = points + ?, last_updated = CURRENT_TIMESTAMP WHERE user_id = ?`,
-//           [totalPointsEarned, donator_id]
-//         );
-//       } else {
-//         // Insert new whiskermeter row
-//         await db.query(
-//           `INSERT INTO whiskermeter (user_id, points) VALUES (?, ?)`,
-//           [donator_id, totalPointsEarned]
-//         );
-//       }
-
-//       const [[{ points }]] = await db.query(
-//         `SELECT points FROM whiskermeter WHERE user_id = ?`,
-//         [donator_id]
-//       );
-
-//       let newBadge = 'Toe Bean Trainee';
-//       if (points >= 500) newBadge = 'The Catnip Captain';
-//       else if (points >= 300) newBadge = 'Meowtain Mover';
-//       else if (points >= 200) newBadge = 'Furmidable Friend';
-//       else if (points >= 100) newBadge = 'Snuggle Scout';
-
-//       await db.query(
-//         `UPDATE users SET badge = ? WHERE user_id = ?`,
-//         [newBadge, donator_id]
-//       );
-
-//       let message = `Congratulations on achieving a badge of ${newBadge}. Keep on going!`;
-
-//       await db.query(
-//           `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
-//           [donator_id, message]
-//       );
-//     }
-
-//     res.status(201).json({ message: 'Donation submitted successfully!', pointsEarned: totalPointsEarned });
-//   } catch (err) {
-//     console.error('Donation error:', err);
-//     res.status(500).json({ message: 'Server error during donation submission.' });
-//   }
-// });
-
 DonationRoute.post(
   '/donation_data',
   upload_donationProof.single('proof_image'),
@@ -208,7 +86,7 @@ DonationRoute.post(
       const parsedItems = JSON.parse(items); // frontend sends JSON as a string
       const proofImageURL = file?.path || null; // Cloudinary URL
 
-      // Insert main donation record
+
       const [donationResult] = await db.query(
         `INSERT INTO donation (donator_id, proofimage, description) VALUES (?, ?, ?)`,
         [donator_id, proofImageURL, '']
@@ -217,7 +95,7 @@ DonationRoute.post(
       const donation_id = donationResult.insertId;
       let totalPointsEarned = 0;
 
-      // 2️⃣ Insert each donation item
+
       for (const item of parsedItems) {
         const {
           donation_type,
@@ -227,7 +105,7 @@ DonationRoute.post(
           description = null,
         } = item;
 
-        // If it's a money donation, attach the proof_image
+
         const itemProofImage = donation_type === 'Money' ? proofImageURL : null;
 
         await db.query(
@@ -335,7 +213,7 @@ DonationRoute.post(
       const parsedItems = JSON.parse(items);
       const proofImageURL = file?.path || null;
 
-      // 1️⃣ Create a new donation application entry
+
       const [applicationResult] = await db.query(`
         INSERT INTO donation_application (donator_id, proof_image, description, status) 
         VALUES (?, ?, ?, 'pending')`,
@@ -344,7 +222,6 @@ DonationRoute.post(
 
       const application_id = applicationResult.insertId;
 
-      // 2️⃣ Insert each item into donation_application_items
       for (const item of parsedItems) {
         const {
           donation_type,
@@ -362,7 +239,6 @@ DonationRoute.post(
         );
       }
 
-      // 3️⃣ Send notification to user
       await db.query(
         `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
         [
