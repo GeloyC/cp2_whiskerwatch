@@ -848,7 +848,7 @@ AdminRoute.get('/adopters', async (req, res) => {
     try {
         const [rows] = await dbConnection.query(
             `SELECT adoption_id, adoptedcat_id, adopter_id, cat_name, adopter, 
-            DATEFORMAT(adoption_date, '%Y-%m-%d') AS adoption_date, contactnumber, certificate FROM adoption`
+            DATE_FORMAT(adoption_date, '%Y-%m-%d') AS adoption_date, contactnumber, certificate FROM adoption`
         );
         console.log('Adopters fetched:', JSON.stringify(rows, null, 2)); // Detailed log
         res.status(200).json(rows);
