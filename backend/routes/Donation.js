@@ -195,12 +195,118 @@ DonationRoute.post(
 );
 
 
+// DonationRoute.post(
+//   '/donation_application',
+//   upload_donationProof.single('proof_image'),
+//   async (req, res) => {
+//     const db = getDB();
+//     const { donator_id, description, items } = req.body;
+//     const file = req.file;
+
+//     try {
+//       if (!items) {
+//         console.error('Missing items field');
+//         return res.status(400).json({ message: 'Missing required fields: items' });
+//       }
+//       if (!description) {
+//         console.error('Missing description field');
+//         return res.status(400).json({ message: 'Missing required field: description' });
+//       }
+
+//       let parsedItems;
+//       try {
+//         parsedItems = JSON.parse(items);
+//       } catch (parseError) {
+//         console.error('Error parsing items:', parseError);
+//         return res.status(400).json({ message: 'Invalid items format' });
+//       }
+
+//       const validDonationTypes = ['Money', 'Food', 'Item', 'Other'];
+//       for (const item of parsedItems) {
+//         if (!item.donation_type || !validDonationTypes.includes(item.donation_type)) {
+//           console.error('Invalid donation_type:', item);
+//           return res.status(400).json({ message: `Invalid donation_type: ${item.donation_type || 'missing'}` });
+//         }
+//       }
+
+//       console.log('Request details:', { donator_id, description, parsedItems, file });
+
+//       const proofImageURL = file?.path || null;
+
+//       const [applicationResult] = await db.query(
+//         `INSERT INTO donation_application_items (
+//           donator_id, date_applied, status, proof_image, description,
+//           donation_type, amount, food_type, quantity
+//         ) VALUES (?, NOW(), 'Pending', ?, ?, ?, ?, ?, ?)
+//         `,
+//         [
+//           donator_id || null,
+//           proofImageURL,
+//           description,
+//           parsedItems[0].donation_type,
+//           parsedItems[0].amount || null,
+//           parsedItems[0].food_type ? parsedItems[0].food_type.join(',') : null,
+//           parsedItems[0].quantity || null,
+//         ]
+//       );
+
+//       const application_id = applicationResult.insertId;
+
+//       for (let i = 1; i < parsedItems.length; i++) {
+//         const item = parsedItems[i];
+//         await db.query(
+//           `INSERT INTO donation_application_items (
+//             application_id, donator_id, date_applied, status, proof_image, description,
+//             donation_type, amount, food_type, quantity
+//           ) VALUES (?, ?, NOW(), 'Pending', ?, ?, ?, ?, ?, ?)
+//           `,
+//           [
+//             application_id,
+//             donator_id || null,
+//             proofImageURL,
+//             item.description || null,
+//             item.donation_type,
+//             item.amount || null,
+//             item.food_type ? item.food_type.join(',') : null,
+//             item.quantity || null,
+//           ]
+//         );
+//       }
+
+//       if (donator_id) {
+//         await db.query(
+//           `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
+//           [
+//             donator_id,
+//             `Your donation has been submitted for review. We’ll notify you once it’s approved or rejected.`,
+//           ]
+//         );
+//       }
+
+//       res.status(201).json({
+//         message: 'Donation submitted successfully and pending review.',
+//         application_id,
+//       });
+//     } catch (err) {
+//       console.error('Detailed error:', err.message, err.stack);
+//       res.status(500).json({ message: 'Server error during donation submission.', error: err.message });
+//     }
+//   }
+// );
+
 DonationRoute.post(
   '/donation_application',
   upload_donationProof.single('proof_image'),
   async (req, res) => {
     const db = getDB();
-    const { donator_id, description, items } = req.body;
+    
+    // donator_id comes from frontend as string 'null' or a number string.
+    // Convert to actual null if it's not a valid ID.
+    const donator_id = (req.body.donator_id && req.body.donator_id !== 'null') 
+                       ? req.body.donator_id 
+                       : null; 
+    
+    const { items } = req.body;
     const file = req.file;
 
     try {
@@ -208,11 +314,10 @@ DonationRoute.post(
         console.error('Missing items field');
         return res.status(400).json({ message: 'Missing required fields: items' });
       }
-      if (!description) {
-        console.error('Missing description field');
-        return res.status(400).json({ message: 'Missing required field: description' });
-      }
 
+      // 💥 REMOVE the check for top-level 'description' as it's not sent from frontend:
+      // if (!description) { ... } 
+      
       let parsedItems;
       try {
         parsedItems = JSON.parse(items);
@@ -220,59 +325,75 @@ DonationRoute.post(
         console.error('Error parsing items:', parseError);
         return res.status(400).json({ message: 'Invalid items format' });
       }
+      
+      if (parsedItems.length === 0) {
+          return res.status(400).json({ message: 'No donation items provided.' });
+      }
 
       const validDonationTypes = ['Money', 'Food', 'Item', 'Other'];
-      for (const item of parsedItems) {
+      const proofImageURL = file?.path || null;
+      let firstApplicationId = null;
+
+      // 🎯 Iterate through ALL items and insert them
+      for (let i = 0; i < parsedItems.length; i++) {
+        const item = parsedItems[i];
+
         if (!item.donation_type || !validDonationTypes.includes(item.donation_type)) {
           console.error('Invalid donation_type:', item);
           return res.status(400).json({ message: `Invalid donation_type: ${item.donation_type || 'missing'}` });
         }
-      }
+        
+        // Extract specific fields for the item's type, setting to null if not present
+        const itemDescription = item.description || null;
+        const itemAmount = item.amount || null; // Used for Money
+        // food_type is an array from the frontend, join it for DB
+        const itemFoodType = item.food_type ? item.food_type.join(',') : null; 
+        const itemQuantity = item.quantity || null;
 
-      console.log('Request details:', { donator_id, description, parsedItems, file });
-
-      const proofImageURL = file?.path || null;
-
-      const [applicationResult] = await db.query(
-        `INSERT INTO donation_application_items (
-          donator_id, date_applied, status, proof_image, description,
-          donation_type, amount, food_type, quantity
-        ) VALUES (?, NOW(), 'Pending', ?, ?, ?, ?, ?, ?)
-        `,
-        [
-          donator_id || null,
-          proofImageURL,
-          description,
-          parsedItems[0].donation_type,
-          parsedItems[0].amount || null,
-          parsedItems[0].food_type ? parsedItems[0].food_type.join(',') : null,
-          parsedItems[0].quantity || null,
-        ]
-      );
-
-      const application_id = applicationResult.insertId;
-
-      for (let i = 1; i < parsedItems.length; i++) {
-        const item = parsedItems[i];
-        await db.query(
+        // The first successful insert provides the main application_id
+        // which can be optionally stored for other rows if needed (though not
+        // strictly required if each row is a full item application).
+        // Since you were trying to link them, we'll keep the application_id concept.
+        
+        const [insertResult] = await db.query(
           `INSERT INTO donation_application_items (
             application_id, donator_id, date_applied, status, proof_image, description,
             donation_type, amount, food_type, quantity
           ) VALUES (?, ?, NOW(), 'Pending', ?, ?, ?, ?, ?, ?)
           `,
           [
-            application_id,
-            donator_id || null,
-            proofImageURL,
-            item.description || null,
+            // Set application_id to NULL on the first insert, and the generated ID for subsequent ones
+            firstApplicationId, 
+            donator_id,
+            // Only 'Money' needs the proof_image, but we store it anyway if provided.
+            proofImageURL, 
+            itemDescription,
             item.donation_type,
-            item.amount || null,
-            item.food_type ? item.food_type.join(',') : null,
-            item.quantity || null,
+            itemAmount,
+            itemFoodType,
+            itemQuantity,
           ]
         );
-      }
+        
+        // 💾 For the first item, capture the insertId to link subsequent items
+        if (i === 0) {
+            firstApplicationId = insertResult.insertId;
+        }
+        
+        // 🔄 Update the application_id for the first inserted row to itself.
+        // This is a necessary step if your schema requires `application_id` to link 
+        // the multiple items in a single request, but the initial insert 
+        // doesn't have the ID yet. This is an unusual, but required, design fix.
+        if (i === 0) {
+             await db.query(
+                `UPDATE donation_application_items SET application_id = ? WHERE id = ?`,
+                [firstApplicationId, firstApplicationId]
+            );
+        }
 
+      }
+      
+      // ✅ Only send notification if a donator_id is explicitly present (not anonymous)
       if (donator_id) {
         await db.query(
           `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
@@ -285,7 +406,7 @@ DonationRoute.post(
 
       res.status(201).json({
         message: 'Donation submitted successfully and pending review.',
-        application_id,
+        application_id: firstApplicationId, // Return the ID of the first/main application
       });
     } catch (err) {
       console.error('Detailed error:', err.message, err.stack);
@@ -293,8 +414,6 @@ DonationRoute.post(
     }
   }
 );
-
-
 
 DonationRoute.get('/donation_list', async (req, res) => {
   const db = getDB();
