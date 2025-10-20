@@ -308,6 +308,8 @@ DonationRoute.post(
     const { items } = req.body;
     const file = req.file;
 
+    let application_id = null; // Initialize the application ID
+
     try {
       // Basic input validation
       if (!items) {
@@ -328,32 +330,17 @@ DonationRoute.post(
 
       const validDonationTypes = ['Money', 'Food', 'Item', 'Other'];
       const proofImageURL = file?.path || null;
-      let application_id;
-
-      // 2. 🔑 INSERT PLACEHOLDER ROW TO GENERATE application_id
-      // This step ensures we get a valid application_id while respecting the 
-      // NOT NULL constraint on that column, even though we haven't processed items yet.
-      // We use a short, valid donation_type ('Item') to avoid the "Data truncated" error.
-      const initialDescription = parsedItems[0].description || null;
       
-      const [placeholderResult] = await db.query(
-        `INSERT INTO donation_application_items (
-          donator_id, date_applied, status, proof_image, description,
-          donation_type, amount, food_type, quantity
-        ) VALUES (?, NOW(), 'Pending', ?, ?, 'Item', NULL, NULL, NULL)
-        `,
-        [donator_id, proofImageURL, initialDescription]
-      );
+      // 2. 📝 Insert all items with a temporary placeholder for application_id
+      // Since application_id is NOT NULL, we MUST use the item_id of the first item
+      // to serve as the application_id. We'll use a temporary value (like 0)
+      // and update it immediately after the first insert.
       
-      // Capture the auto-generated primary key (id) to use as the application_id
-      application_id = placeholderResult.insertId;
+      const insertedItemIds = [];
 
-      // 3. 🗑️ DELETE the placeholder row
-      await db.query(`DELETE FROM donation_application_items WHERE id = ?`, [application_id]);
-
-
-      // 4. 📝 LOOP through all actual items and insert them with the generated application_id
-      for (const item of parsedItems) {
+      for (let i = 0; i < parsedItems.length; i++) {
+        const item = parsedItems[i];
+        
         if (!item.donation_type || !validDonationTypes.includes(item.donation_type)) {
           console.error('Invalid donation_type:', item);
           return res.status(400).json({ message: `Invalid donation_type: ${item.donation_type || 'missing'}` });
@@ -364,17 +351,19 @@ DonationRoute.post(
         const itemAmount = item.amount || null; 
         const itemFoodType = item.food_type ? item.food_type.join(',') : null; 
         const itemQuantity = item.quantity || null;
+        
+        // Use the application_id placeholder for all inserts initially
+        const temp_application_id = application_id || 0; 
 
-        await db.query(
+        const [insertResult] = await db.query(
           `INSERT INTO donation_application_items (
             application_id, donator_id, date_applied, status, proof_image, description,
             donation_type, amount, food_type, quantity
           ) VALUES (?, ?, NOW(), 'Pending', ?, ?, ?, ?, ?, ?)
           `,
           [
-            // Use the consistent, generated ID for all items in this transaction
-            application_id, 
-            donator_id, // This is correctly NULL for anonymous donations
+            temp_application_id, // Temporarily use 0 (or a placeholder value)
+            donator_id,          // Correctly NULL for anonymous donations
             proofImageURL, 
             itemDescription,
             item.donation_type,
@@ -382,6 +371,24 @@ DonationRoute.post(
             itemFoodType,
             itemQuantity,
           ]
+        );
+        
+        insertedItemIds.push(insertResult.insertId);
+
+        // 3. 🔑 Capture the application_id from the first inserted item's item_id
+        if (i === 0) {
+            application_id = insertResult.insertId;
+        }
+      }
+
+      // 4. 🔄 Update all newly inserted rows to use the correct application_id
+      // The application_id is the item_id of the very first donation item.
+      if (application_id) {
+        await db.query(
+            `UPDATE donation_application_items 
+             SET application_id = ? 
+             WHERE item_id IN (?)`, 
+            [application_id, insertedItemIds]
         );
       }
       
