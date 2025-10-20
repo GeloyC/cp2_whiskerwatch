@@ -24,8 +24,11 @@ const CatProfile = () => {
 
     const [currentCatIndex, setCurrentCatIndex] = useState(0)
     
-    const [catInfo, setCatInfo] = useState([]);
+    const [catInfo, setCatInfo] = useState(null);
     const [catImage, setCatImage] = useState([]); 
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
     const { cat_id } = useParams();
 
 
@@ -40,38 +43,73 @@ const CatProfile = () => {
     };
         
     // Fetches Cat data then sends cat_id to URL
+    // useEffect(() => {
+    //     const fetchCat = async () => {
+    //         try {
+    //         const response = await axios.get(`${url}/cat/catlist`);
+    //         const cats = response.data;
+
+    //         // Find the cat that matches the URL param
+    //         const foundCat = cats.find(cat => cat.cat_id.toString() === cat_id);
+
+    //         if (!foundCat) {
+    //             console.error('Cat not found for ID:', cat_id);
+    //             return;
+    //         }
+
+    //         // Calculate the cat's age and human equivalent
+    //         const ageData = calculateCatAgeFromBirthDate(foundCat.birthday);
+
+    //         // Combine all cat info with formatted age fields
+    //         setCatInfo({
+    //             ...foundCat,
+    //             formattedCatAge: ageData.formattedCatAge,
+    //             formattedHumanAge: ageData.formattedHumanAge,
+    //         });
+
+    //         console.log('Fetched cat:', foundCat);
+    //         } catch (err) {
+    //         console.error('Error fetching cat profiles:', err);
+    //         }
+    //     };
+
+    //     fetchCat();
+    // }, [cat_id]);
+
     useEffect(() => {
         const fetchCat = async () => {
-            try {
+        try {
+            setLoading(true);
             const response = await axios.get(`${url}/cat/catlist`);
             const cats = response.data;
 
-            // Find the cat that matches the URL param
-            const foundCat = cats.find(cat => cat.cat_id.toString() === cat_id);
-
+            const foundCat = cats.find((cat) => cat.cat_id.toString() === cat_id);
             if (!foundCat) {
-                console.error('Cat not found for ID:', cat_id);
-                return;
+            setError('Cat not found');
+            return;
             }
 
-            // Calculate the cat's age and human equivalent
             const ageData = calculateCatAgeFromBirthDate(foundCat.birthday);
-
-            // Combine all cat info with formatted age fields
-            setCatInfo({
-                ...foundCat,
-                formattedCatAge: ageData.formattedCatAge,
-                formattedHumanAge: ageData.formattedHumanAge,
-            });
-
-            console.log('Fetched cat:', foundCat);
-            } catch (err) {
-            console.error('Error fetching cat profiles:', err);
+            if (ageData.error) {
+            setError(ageData.error);
+            return;
             }
+
+            setCatInfo({
+            ...foundCat,
+            formattedCatAge: ageData.formattedCatAge,
+            formattedHumanAge: ageData.formattedHumanAge,
+            });
+        } catch (err) {
+            console.error('Error fetching cat profiles:', err);
+            setError('Failed to fetch cat data');
+        } finally {
+            setLoading(false);
+        }
         };
 
         fetchCat();
-    }, [cat_id]);
+    }, [cat_id, url]);
 
 
     const calculateCatAgeFromBirthDate = (birthDateStr) => {
@@ -114,38 +152,66 @@ const CatProfile = () => {
     };
 
 
+    // useEffect(() => {
+    //     const fetchCatImage = async () => {
+    //         if (!catInfo[currentCatIndex]) return;
+
+    //         try {
+    //             const catId = catInfo[currentCatIndex].cat_id;
+    //             const response = await axios.get(`${url}/cat/images/${catId}`);
+
+    //             const imageUrls = response.data.map(image => ({
+    //                 ...image,
+    //                 url: image.url || image.image_filename, // fallback just in case
+    //             }));
+
+    //             setCatImage(imageUrls);
+
+    //             if (imageUrls.length === 0) {
+    //                 setCatImage([]);
+    //                 setSelectedImage('');
+    //                 setSelectedImageIndex(null);
+    //             } else {
+    //                 setCatImage(imageUrls);
+    //                 setSelectedImage(imageUrls[0].url);
+    //                 setSelectedImageIndex(0);
+    //             }
+    //         } catch (err) {
+    //             console.error('Error fetching cat images:', err);
+    //         }
+    //     };
+
+    //     fetchCatImage();
+    // }, [currentCatIndex, catInfo]);
+
+
     useEffect(() => {
         const fetchCatImage = async () => {
-            if (!catInfo[currentCatIndex]) return;
+        if (!catInfo?.cat_id) return;
 
-            try {
-                const catId = catInfo[currentCatIndex].cat_id;
-                const response = await axios.get(`${url}/cat/images/${catId}`);
+        try {
+            const response = await axios.get(`${url}/cat/images/${catInfo.cat_id}`);
+            const imageUrls = response.data.map((image) => ({
+            ...image,
+            url: image.url || image.image_filename,
+            }));
 
-                const imageUrls = response.data.map(image => ({
-                    ...image,
-                    url: image.url || image.image_filename, // fallback just in case
-                }));
-
-                setCatImage(imageUrls);
-
-                if (imageUrls.length === 0) {
-                    setCatImage([]);
-                    setSelectedImage('');
-                    setSelectedImageIndex(null);
-                } else {
-                    setCatImage(imageUrls);
-                    setSelectedImage(imageUrls[0].url);
-                    setSelectedImageIndex(0);
-                }
-            } catch (err) {
-                console.error('Error fetching cat images:', err);
+            setCatImages(imageUrls);
+            if (imageUrls.length > 0) {
+            setSelectedImage(imageUrls[0].url);
+            setSelectedImageIndex(0);
+            } else {
+            setSelectedImage('');
+            setSelectedImageIndex(null);
             }
+        } catch (err) {
+            console.error('Error fetching cat images:', err);
+            setCatImages([]);
+        }
         };
 
         fetchCatImage();
-    }, [currentCatIndex, catInfo]);
-
+    }, [catInfo, url]);
 
     const currentCat = catInfo[currentCatIndex];
 

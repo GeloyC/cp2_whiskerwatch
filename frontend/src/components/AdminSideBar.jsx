@@ -101,6 +101,7 @@ const AdminSideBar = ({ className }) => {
   const [dropdown, setDropdown] = useState({
     adopters: false,
     feeding: false,
+    donation: false,
     manage: false,
   });
 
@@ -148,156 +149,196 @@ const AdminSideBar = ({ className }) => {
         </button>
       </div>
 
-      <div className={`flex flex-col ${!sidebarShow ? 'items-center' : ''} justify-between h-full p-1`}>
-        <div className="flex flex-col justify-center">
-          <Link to="/dashboard" className={location.pathname === '/dashboard' ? sideItemStyleCurrent : sideItemStyle}>
-            <div className="flex flex-row items-center gap-4">
-              <div className="flex justify-center items-center w-[30px] h-auto">
-                <img src="/assets/icons/admin-icons/sidedbar/dashboard.png" alt="account" />
-              </div>
-              <label className={sidebarShow ? 'cursor-pointer font-bold hover:text-[#DC8801]' : 'hidden'}>Overview</label>
-            </div>
-          </Link>
-
-          <Link
-            to="/admincatprofile"
-            className={user?.role === 'head_volunteer' ? 'hidden' : location.pathname === '/admincatprofile' || location.pathname === '/catprofileproperty/:cat_id' ? sideItemStyleCurrent : sideItemStyle}
-          >
-            <div className="flex flex-row items-center gap-4">
-              <div className="flex justify-center items-center w-[30px] h-auto">
-                <img src="/assets/icons/admin-icons/sidedbar/cat-profile.png" alt="account" />
-              </div>
-              <label className={sidebarShow ? 'cursor-pointer font-bold hover:text-[#DC8801]' : 'hidden'}>Cat Profiles</label>
-            </div>
-          </Link>
-
-          <div className={location.pathname === '/adopterslist' || location.pathname === '/adopterapplication' ? sideItemDownCurrent : sideItemStyle}>
-            <div className="flex flex-row items-center justify-between w-full active:text-[#B5C04A]">
+      <div className={`flex flex-col ${!sidebarShow ? 'items-start justify-start' : ''} justify-between h-full p-1`}>
+        <div className='flex h-full overflow-y-scroll scrollbar-thin'>
+          <div className="flex flex-col justify-start">
+            <Link to="/dashboard" className={location.pathname === '/dashboard' ? sideItemStyleCurrent : sideItemStyle}>
               <div className="flex flex-row items-center gap-4">
-                <div onClick={handleShowSidebar} className="flex justify-center items-center w-[30px] h-auto">
-                  <img src="/assets/icons/admin-icons/sidedbar/adopters-visitors.png" alt="account" />
+                <div className="flex justify-center items-center w-[30px] h-auto">
+                  <img src="/assets/icons/admin-icons/sidedbar/dashboard.png" alt="account" />
                 </div>
-                <label className={sidebarShow ? 'cursor-pointer font-bold hover:text-[#DC8801]' : 'hidden'}>Adopters</label>
+                <label className={sidebarShow ? 'cursor-pointer font-bold hover:text-[#DC8801]' : 'hidden'}>Overview</label>
               </div>
-              <button
-                onClick={() => toggleDropdown('adopters')}
-                className={sidebarShow ? 'flex justify-center items-center w-[30px] h-auto p-[8px] rounded-[25px] hover:bg-[#FDF5D8] active:bg-[#FFF]' : 'hidden'}
-              >
-                <img
-                  src="/assets/icons/down-arrow-orange.png"
-                  alt="orange arrow"
-                  className={!dropdown.adopters & sidebarShow ? 'rotate-0' : '-rotate-90'}
-                />
-              </button>
-            </div>
-            {!dropdown.adopters && (
-              <>
-                <Link
-                  to="/adopterslist"
-                  className={sidebarShow ? (location.pathname === '/adopterslist' || location.pathname === '/adopterslist/adopterview' ? pageActive : pageInactive) : 'hidden'}
-                >
-                  Adopters List
-                </Link>
-                <Link
-                  to="/adopterapplication"
-                  className={sidebarShow ? (location.pathname === '/adopterapplication' || location.pathname === '/adopterapplication/adopterapplicationview' ? pageActive : pageInactive) : 'hidden'}
-                >
-                  Adoption Applications List
-                  <div className='flex items-center justify-center size-5 bg-[#DC8801] text-[#FFF] font-bold rounded-full'>
-                    {adoptionApplicationNum.length}
+            </Link>
+
+            <Link
+              to="/admincatprofile"
+              className={user?.role === 'head_volunteer' ? 'hidden' : location.pathname === '/admincatprofile' || location.pathname === '/catprofileproperty/:cat_id' ? sideItemStyleCurrent : sideItemStyle}
+            >
+              <div className="flex flex-row items-center gap-4">
+                <div className="flex justify-center items-center w-[30px] h-auto">
+                  <img src="/assets/icons/admin-icons/sidedbar/cat-profile.png" alt="account" />
+                </div>
+                <label className={sidebarShow ? 'cursor-pointer font-bold hover:text-[#DC8801]' : 'hidden'}>Cat Profiles</label>
+              </div>
+            </Link>
+
+            <div className={location.pathname === '/adopterslist' || location.pathname === '/adopterapplication' ? sideItemDownCurrent : sideItemStyle}>
+              <div className="flex flex-row items-center justify-between w-full active:text-[#B5C04A]">
+                <div className="flex flex-row items-center gap-4">
+                  <div onClick={handleShowSidebar} className="flex justify-center items-center w-[30px] h-auto">
+                    <img src="/assets/icons/admin-icons/sidedbar/adopters-visitors.png" alt="account" />
                   </div>
-                </Link>
-              </>
-            )}
-          </div>
-
-          <div className={location.pathname === '/feedingvolunteers' || location.pathname === '/feedingapplications' ? sideItemDownCurrent : sideItemStyle}>
-            <div className="flex flex-row items-center justify-between w-full active:text-[#B5C04A]">
-              <div className="flex flex-row items-center gap-4">
-                <div onClick={handleShowSidebar} className="flex justify-center items-center w-[30px] h-auto">
-                  <img src="/assets/icons/admin-icons/sidedbar/in-kind-donation-application.png" alt="account" />
+                  <label className={sidebarShow ? 'cursor-pointer font-bold hover:text-[#DC8801]' : 'hidden'}>Adopters</label>
                 </div>
-                <label className={sidebarShow ? 'cursor-pointer font-bold hover:text-[#DC8801]' : 'hidden'}>Feeding</label>
+                <button
+                  onClick={() => toggleDropdown('adopters')}
+                  className={sidebarShow ? 'flex justify-center items-center w-[30px] h-auto p-[8px] rounded-[25px] hover:bg-[#FDF5D8] active:bg-[#FFF]' : 'hidden'}
+                >
+                  <img
+                    src="/assets/icons/down-arrow-orange.png"
+                    alt="orange arrow"
+                    className={!dropdown.adopters & sidebarShow ? 'rotate-0' : '-rotate-90'}
+                  />
+                </button>
               </div>
-              <button
-                onClick={() => toggleDropdown('feeding')}
-                className={sidebarShow ? 'flex justify-center items-center w-[30px] h-auto p-[8px] rounded-[25px] hover:bg-[#FDF5D8] active:bg-[#FFF]' : 'hidden'}
-              >
-                <img
-                  src="/assets/icons/down-arrow-orange.png"
-                  alt="orange arrow"
-                  className={!dropdown.feeding ? 'rotate-0' : '-rotate-90'}
-                />
-              </button>
+              {!dropdown.adopters && (
+                <>
+                  <Link
+                    to="/adopterslist"
+                    className={sidebarShow ? (location.pathname === '/adopterslist' || location.pathname === '/adopterslist/adopterview' ? pageActive : pageInactive) : 'hidden'}
+                  >
+                    Adopters List
+                  </Link>
+                  <Link
+                    to="/adopterapplication"
+                    className={sidebarShow ? (location.pathname === '/adopterapplication' || location.pathname === '/adopterapplication/adopterapplicationview' ? pageActive : pageInactive) : 'hidden'}
+                  >
+                    Adoption Applications List
+                    <div className='flex items-center justify-center size-5 bg-[#DC8801] text-[#FFF] font-bold rounded-full'>
+                      {adoptionApplicationNum.length}
+                    </div>
+                  </Link>
+                </>
+              )}
             </div>
-            {!dropdown.feeding && (
-              <>
-                <Link
-                  to="/feedingvolunteers"
-                  className={sidebarShow ? (location.pathname === '/feedingvolunteers' ? pageActive : pageInactive) : 'hidden'}
-                >
-                  Feeding Volunteers List
-                </Link>
-                <Link
-                  to="/report"
-                  className={sidebarShow ? (location.pathname === '/report' ? pageActive : pageInactive) : 'hidden'}
-                >
-                  Feeding Reports List
-                </Link>
-                <Link
-                  to="/feedingapplications"
-                  className={sidebarShow ? (location.pathname === '/feedingapplications' || location.pathname === '/feedingapplications/feedingapplicationview' ? pageActive : pageInactive) : 'hidden'}
-                >
-                  Feeding Applications List
-                  <div className='flex items-center justify-center size-5 bg-[#DC8801] text-[#FFF] font-bold rounded-full'>
-                    {feedingApplicationNum.length}
+
+            <div className={location.pathname === '/feedingvolunteers' || location.pathname === '/feedingapplications' ? sideItemDownCurrent : sideItemStyle}>
+              <div className="flex flex-row items-center justify-between w-full active:text-[#B5C04A]">
+                <div className="flex flex-row items-center gap-4">
+                  <div onClick={handleShowSidebar} className="flex justify-center items-center w-[30px] h-auto">
+                    <img src="/assets/icons/admin-icons/sidedbar/in-kind-donation-application.png" alt="account" />
                   </div>
-                </Link>
-                <Link
-                  to="/donationadmin"
-                  className={sidebarShow ? (location.pathname === '/donationadmin' ? pageActive : pageInactive) : 'hidden'}
-                >
-                  Donation History
-                </Link>
-              </>
-            )}
-          </div>
-
-          <div className={user?.role === 'head_volunteer' ? 'hidden' : location.pathname === '/adminlist' || location.pathname === '/allusers' ? sideItemDownCurrent : sideItemStyle}>
-            <div className="flex flex-row items-center justify-between w-full active:text-[#B5C04A]">
-              <div className="flex flex-row items-center gap-4">
-                <div onClick={handleShowSidebar} className="flex justify-center items-center w-[30px] h-auto">
-                  <img src="/assets/icons/admin-icons/sidedbar/settings.png" alt="account" />
+                  <label className={sidebarShow ? 'cursor-pointer font-bold hover:text-[#DC8801]' : 'hidden'}>Feeding</label>
                 </div>
-                <label className={sidebarShow ? 'cursor-pointer font-bold hover:text-[#DC8801]' : 'hidden'}>Manage</label>
+                <button
+                  onClick={() => toggleDropdown('feeding')}
+                  className={sidebarShow ? 'flex justify-center items-center w-[30px] h-auto p-[8px] rounded-[25px] hover:bg-[#FDF5D8] active:bg-[#FFF]' : 'hidden'}
+                >
+                  <img
+                    src="/assets/icons/down-arrow-orange.png"
+                    alt="orange arrow"
+                    className={!dropdown.feeding ? 'rotate-0' : '-rotate-90'}
+                  />
+                </button>
               </div>
-              <button
-                onClick={() => toggleDropdown('manage')}
-                className={sidebarShow ? 'flex justify-center items-center w-[30px] h-auto p-[8px] rounded-[25px] hover:bg-[#FDF5D8] active:bg-[#FFF]' : 'hidden'}
-              >
-                <img
-                  src="/assets/icons/down-arrow-orange.png"
-                  alt="orange arrow"
-                  className={!dropdown.manage & sidebarShow ? 'rotate-0' : '-rotate-90'}
-                />
-              </button>
+              {!dropdown.feeding && (
+                <>
+                  <Link
+                    to="/feedingvolunteers"
+                    className={sidebarShow ? (location.pathname === '/feedingvolunteers' ? pageActive : pageInactive) : 'hidden'}
+                  >
+                    Feeding Volunteers List
+                  </Link>
+                  <Link
+                    to="/report"
+                    className={sidebarShow ? (location.pathname === '/report' ? pageActive : pageInactive) : 'hidden'}
+                  >
+                    Feeding Reports List
+                  </Link>
+                  <Link
+                    to="/feedingapplications"
+                    className={sidebarShow ? (location.pathname === '/feedingapplications' || location.pathname === '/feedingapplications/feedingapplicationview' ? pageActive : pageInactive) : 'hidden'}
+                  >
+                    Feeding Applications List
+                    <div className='flex items-center justify-center size-5 bg-[#DC8801] text-[#FFF] font-bold rounded-full'>
+                      {feedingApplicationNum.length}
+                    </div>
+                  </Link>
+                  <Link
+                    to="/donationadmin"
+                    className={sidebarShow ? (location.pathname === '/donationadmin' ? pageActive : pageInactive) : 'hidden'}
+                  >
+                    Donation History
+                  </Link>
+                </>
+              )}
             </div>
-            {!dropdown.manage && (
-              <>
-                <Link
-                  to="/adminlist"
-                  className={sidebarShow ? (location.pathname === '/adminlist' ? pageActive : pageInactive) : 'hidden'}
+
+            <div className={location.pathname === '/donationadmin' || location.pathname === '/donation_application' ? sideItemDownCurrent : sideItemStyle}>
+              <div className="flex flex-row items-center justify-between w-full active:text-[#B5C04A]">
+                <div className="flex flex-row items-center gap-4">
+                  <div onClick={handleShowSidebar} className="flex justify-center items-center w-[30px] h-auto">
+                    <img src="/assets/icons/admin-icons/sidedbar/in-kind-donation-application.png" alt="account" />
+                  </div>
+                  <label className={sidebarShow ? 'cursor-pointer font-bold hover:text-[#DC8801]' : 'hidden'}>Donation</label>
+                </div>
+                <button
+                  onClick={() => toggleDropdown('donation')}
+                  className={sidebarShow ? 'flex justify-center items-center w-[30px] h-auto p-[8px] rounded-[25px] hover:bg-[#FDF5D8] active:bg-[#FFF]' : 'hidden'}
                 >
-                  Admin List
-                </Link>
-                <Link
-                  to="/allusers"
-                  className={sidebarShow ? (location.pathname === '/allusers' || location.pathname === '/userprofile' ? pageActive : pageInactive) : 'hidden'}
+                  <img
+                    src="/assets/icons/down-arrow-orange.png"
+                    alt="orange arrow"
+                    className={!dropdown.donation ? 'rotate-0' : '-rotate-90'}
+                  />
+                </button>
+              </div>
+              {!dropdown.donation && (
+                <>
+                  <Link
+                    to="/donationadmin"
+                    className={sidebarShow ? (location.pathname === '/donationadmin' ? pageActive : pageInactive) : 'hidden'}
+                  >
+                    Donation History
+                  </Link>
+
+                  <Link
+                    to="/donation_application"
+                    className={sidebarShow ? (location.pathname === '/donation_application' ? pageActive : pageInactive) : 'hidden'}
+                  >
+                    Donation Applications
+                  </Link>
+                </>
+              )}
+            </div>
+
+            <div className={user?.role === 'head_volunteer' ? 'hidden' : location.pathname === '/adminlist' || location.pathname === '/allusers' ? sideItemDownCurrent : sideItemStyle}>
+              <div className="flex flex-row items-center justify-between w-full active:text-[#B5C04A]">
+                <div className="flex flex-row items-center gap-4">
+                  <div onClick={handleShowSidebar} className="flex justify-center items-center w-[30px] h-auto">
+                    <img src="/assets/icons/admin-icons/sidedbar/settings.png" alt="account" />
+                  </div>
+                  <label className={sidebarShow ? 'cursor-pointer font-bold hover:text-[#DC8801]' : 'hidden'}>Manage</label>
+                </div>
+                <button
+                  onClick={() => toggleDropdown('manage')}
+                  className={sidebarShow ? 'flex justify-center items-center w-[30px] h-auto p-[8px] rounded-[25px] hover:bg-[#FDF5D8] active:bg-[#FFF]' : 'hidden'}
                 >
-                  All Users
-                </Link>
-              </>
-            )}
+                  <img
+                    src="/assets/icons/down-arrow-orange.png"
+                    alt="orange arrow"
+                    className={!dropdown.manage & sidebarShow ? 'rotate-0' : '-rotate-90'}
+                  />
+                </button>
+              </div>
+              {!dropdown.manage && (
+                <>
+                  <Link
+                    to="/adminlist"
+                    className={sidebarShow ? (location.pathname === '/adminlist' ? pageActive : pageInactive) : 'hidden'}
+                  >
+                    Admin List
+                  </Link>
+                  <Link
+                    to="/allusers"
+                    className={sidebarShow ? (location.pathname === '/allusers' || location.pathname === '/userprofile' ? pageActive : pageInactive) : 'hidden'}
+                  >
+                    All Users
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
         </div>
 

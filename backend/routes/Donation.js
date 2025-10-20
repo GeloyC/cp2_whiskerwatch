@@ -317,6 +317,74 @@ DonationRoute.post(
 );
 
 
+DonationRoute.post(
+  '/donation_application',
+  upload_donationProof.single('proof_image'),
+  async (req, res) => {
+    const db = getDB();
+    const { donator_id, items } = req.body;
+    const file = req.file;
+
+    try {
+      // Basic validation
+      if (!donator_id || !items) {
+        return res.status(400).json({ message: 'Missing required fields' });
+      }
+
+      // Parse the items JSON sent from the frontend
+      const parsedItems = JSON.parse(items);
+      const proofImageURL = file?.path || null;
+
+      // 1️⃣ Create a new donation application entry
+      const [applicationResult] = await db.query(`
+        INSERT INTO donation_application (donator_id, proof_image, description, status) 
+        VALUES (?, ?, ?, 'pending')`,
+        [donator_id, proofImageURL, 'Awaiting admin review']
+      );
+
+      const application_id = applicationResult.insertId;
+
+      // 2️⃣ Insert each item into donation_application_items
+      for (const item of parsedItems) {
+        const {
+          donation_type,
+          amount = null,
+          food_type = null,
+          quantity = null,
+          description = null,
+        } = item;
+
+        await db.query(`
+          INSERT INTO donation_application_items 
+          (application_id, donation_type, amount, food_type, quantity, description)
+          VALUES (?, ?, ?, ?, ?, ?)`,
+          [application_id, donation_type, amount, food_type, quantity, description]
+        );
+      }
+
+      // 3️⃣ Send notification to user
+      await db.query(
+        `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
+        [
+          donator_id,
+          `Your donation has been submitted for review. We’ll notify you once it’s approved or rejected.`,
+        ]
+      );
+
+      res.status(201).json({
+        message: 'Donation application submitted successfully and pending review.',
+        application_id,
+      });
+    } catch (err) {
+      console.error('Donation application error:', err);
+      res
+        .status(500)
+        .json({ message: 'Server error during donation application submission.' });
+    }
+  }
+);
+
+
 
 DonationRoute.get('/donation_list', async (req, res) => {
   const db = getDB();

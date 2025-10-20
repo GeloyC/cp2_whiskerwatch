@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, BrowserRouter, Route, createBrowserRouter, createRoutesFromElements, RouterProvider } from 'react-router-dom';
-
 import RootLayout from './layout/RootLayout';
 
 import { SessionProvider } from './context/SessionContext';
@@ -56,8 +55,21 @@ import CatProfileCreate from './pages/Admin/CatProfileProperty/CatProfileCreate'
 import FeedingReport from './pages/Feeding/FeedingReport';
 import TermsCondition from './layout/TermsCondition';
 import WhiskerLeaderboard from './pages/WhiskerLeaderboard';
+import DonationApplication from './pages/Admin/DonationApplication';
 
 const App = () => {
+
+  const [data, setData] = useState(() => {
+    // Load state from localStorage on mount
+    return JSON.parse(localStorage.getItem('appData')) || { input: '' };
+  });
+
+  useEffect(() => {
+    // Save state to localStorage on change
+    localStorage.setItem('appData', JSON.stringify(data));
+  }, [data]);
+
+
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<RootLayout />}>
@@ -113,6 +125,7 @@ const App = () => {
         <Route path="feedingapplications" element={<FeedingApplications />} />
         <Route path="feedingapplications/feedingapplicationview/:application_id" element={<FeedingApplicationView />} />
         <Route path="donationadmin" element={<Donation />} />
+        <Route path='donation_application' element={<DonationApplication />} />
         <Route path='report' element={<Report/>}/>
 
         <Route path="manage" element={<Manage />} />
