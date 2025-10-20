@@ -422,11 +422,11 @@ const Donate = () => {
                 </button>
               </form>
             ) : (
-              <div className='flex flex-col items-center justify-center w-full bg-[#FFF] rounded-[10px] p-5'>
+              <div className='flex flex-col items-center justify-center w-full bg-[#FFF] gap-3 rounded-[10px]'>
                 <label className='text-[#2F2F2F] italic text-center whitespace-pre-line'>{successMessage}</label>
 
                 <div>
-                  <Link to="/donate" className={'cursor-pointer w-full xl:w-auto lg:w-auto md:w-auto h-auto bg-[#B5C04A] text-[#FFF] py-5 xl:py-3 lg:py-3 md:py-2 active:bg-[#CFDA34]'}>
+                  <Link to="/donate" className={'cursor-pointer w-full xl:w-auto lg:w-auto md:w-auto h-auto bg-[#B5C04A] text-[#FFF] rounded-[8px] py-5 px-2 xl:py-3 lg:py-3 md:py-2 active:bg-[#CFDA34]'}>
                     Donate again.
                   </Link>
                 </div>
