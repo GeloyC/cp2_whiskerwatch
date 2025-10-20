@@ -32,6 +32,7 @@ const Donate = () => {
 
   const [foodType, setFoodType] = useState('');
   const [foodQuantity, setFoodQuantity] = useState(1);
+  const [foodUnit, setFoodUnit] = useState('');
   const [foodDescription, setFoodDescription] = useState('');
 
   const [itemDescription, setItemDescription] = useState('');
@@ -119,6 +120,10 @@ const Donate = () => {
         setError('Please select a type of food (Wet or Dry).');
         return false;
       }
+      if (!foodUnit) {
+        setError('Please select a unit of measurement (kg or g) for the food quantity.');
+        return false;
+      }
       if (!foodDescription.trim()) {
         setError('Please provide a description for the food donation.');
         return false;
@@ -164,7 +169,7 @@ const Donate = () => {
       donationItems.push({
         donation_type: 'Food',
         food_type: foodType,
-        quantity: foodQuantity,
+        quantity: `${foodQuantity} ${foodUnit}`,
         description: foodDescription,
       });
     }
@@ -343,10 +348,21 @@ const Donate = () => {
                             <div className='flex flex-col w-full'>
                               <label className='text-[#595959] text-[14px] leading-tight'>Quantity (please specify how much food you're donating)</label>
                               <div className='flex gap-2 items-center w-full'> 
-                                <input type="text" placeholder='Quantity' value={foodQuantity} onChange={handleNumericChange(setFoodQuantity)} className='p-2 border-1 border-[#A3A3A3] rounded-[5px] w-full'/>
-
-                                <select name="" id="" className='p-2 border-1 border-[#A3A3A3] rounded-[5px]'>
-                                  <option hidden>Select a unit of measurement (kg/g)</option>
+                                <input 
+                                  type="text" 
+                                  placeholder='Quantity' 
+                                  value={foodQuantity} 
+                                  onChange={handleNumericChange(setFoodQuantity)} 
+                                  className='p-2 border-1 border-[#A3A3A3] rounded-[5px] w-full'
+                                  required // Ensure quantity is filled
+                                />
+                                <select 
+                                  value={foodUnit} // Connect to state
+                                  onChange={(e) => setFoodUnit(e.target.value)} // Update state on change
+                                  className='p-2 border-1 border-[#A3A3A3] rounded-[5px]'
+                                  required // Ensure a unit is selected
+                                >
+                                  <option value="" hidden>Select a unit (kg/g)</option>
                                   <option value="kilograms">kilograms (kg)</option>
                                   <option value="grams">grams (g)</option>
                                 </select>
