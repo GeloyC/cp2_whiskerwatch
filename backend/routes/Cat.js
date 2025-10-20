@@ -302,6 +302,7 @@ CatRoute.get('/catprofile/:cat_id', async (req, res) => {
     const [rows] = await db.query(
       `SELECT 
         cat_id, name, age, gender, sterilization_status, adoption_status, description,
+        DATE_FORMAT(birthday, '%Y-%m-%d') AS birthday,
         DATE_FORMAT(date_created, '%Y-%m-%d') AS date_created,
         DATE_FORMAT(date_updated, '%Y-%m-%d') AS date_updated
         FROM cat WHERE cat_id = ?`,
@@ -321,7 +322,7 @@ CatRoute.post('/catimage/:cat_id', async (req, res) => {
   const cat_id = req.params.cat_id;
   const { images } = req.body;
 
-   if (!Array.isArray(images)) {
+  if (!Array.isArray(images)) {
     return res.status(400).json({ message: 'Images must be an array' });
   }
 

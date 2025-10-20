@@ -93,9 +93,6 @@ const CatAdoption = () => {
     return { formattedCatAge, formattedHumanAge };
   };
 
-  // const result = calculateCatAgeFromBirthDate(cats.birthday);
-
-  // console.log(`${result.formattedCatAge} old (${result.formattedHumanAge})`);
 
 
 
@@ -145,7 +142,7 @@ const CatAdoption = () => {
               <div
                 key={cat.cat_id}
                 onClick={() => navigate(`/catprofile/${cat.cat_id}`)}
-                className="w-full w-[300px] h-auto grid grid-cols-2 lg:grid-cols-none lg:grid-rows-[auto_auto] md:grid-cols-none md:grid-rows-[auto_auto] border-2 border-white overflow-hidden rounded-[25px] bg-white hover:shadow-lg hover:border-[#889132] hover:scale-103 active:scale-95 transition-all duration-100"
+                className="w-full xl:minax-w-[300px] lg:min-w-300px max-h-[450px] grid grid-cols-2 lg:grid-cols-none lg:grid-rows-[auto_auto] md:grid-cols-none md:grid-rows-[auto_auto] border-2 border-white overflow-hidden rounded-[25px] bg-white hover:shadow-lg hover:border-[#889132] hover:scale-103 active:scale-95 transition-all duration-100"
               >
                 <div className="overflow-hidden xl:rounded-t-[25px] lg:rounded-t-[25px] w-full h-[250px]">
                   <img
@@ -154,13 +151,28 @@ const CatAdoption = () => {
                     className="overflow-hidden w-full h-full object-cover"
                   />
                 </div>
-                <div className="flex flex-col justify-center w-full p-3">
+                <div className="flex flex-col justify-start w-full gap-2 p-2">
                   <div className="flex flex-col gap-4">
-                    <div className="grid grid-rows-2">
-                      <label className="flex items-end gap-2 text-[30px] font-bold text-[#889132]">
+                    <div className="flex flex-col">
+                      <label className="flex items-end leading-tight gap-2 text-[30px] font-bold text-[#889132]">
                         {cat.name}
                       </label>
-                      <div className="flex flex-row flex-wrap gap-3 border-dashed border-b-2 border-b-[#B5C04A]">
+                      <div className="flex flex-row flex-wrap gap-3 py-2 border-dashed border-b-2 border-b-[#B5C04A]">
+
+                        <label className="flex flex-row items-start text-[12px] gap-[6px] leading-none">
+                          <div className="flex items-center justify-start w-[15px] h-[15px] flex-shrink-0">
+                            <img
+                              src="/assets/icons/hourglass.png"
+                              alt="hourglass"
+                              className="w-full h-full object-contain"
+                            />
+                          </div>
+                          <div className="flex flex-wrap items-center gap-1">
+                            <strong>{cat.formattedCatAge} old</strong>
+                            <span>({cat.formattedHumanAge})</span>
+                          </div>
+                        </label>
+
                         <label className="flex flex-row items-center font-bold text-[12px] gap-[5px]">
                           <div className="flex items-center justify-center w-[20px] h-auto">
                             <img
@@ -171,12 +183,7 @@ const CatAdoption = () => {
                           </div>
                           {cat.gender}
                         </label>
-                        <label className="flex flex-row items-center font-bold text-[12px] gap-[5px]">
-                          <div className="flex items-center justify-center w-[15px] h-auto">
-                            <img src="/assets/icons/hourglass.png" alt="hourglass" />
-                          </div>
-                          {cat.formattedCatAge} ({cat.formattedHumanAge})
-                        </label>
+
                       </div>
                     </div>
                     <textarea

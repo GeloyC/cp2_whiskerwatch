@@ -13,7 +13,7 @@ const CatProfileProperty = () => {
         cat_id: '',
         name: '',
         gender: 'Male',
-        age: '',
+        birthday: '',
         adoption_status: 'Available',
         sterilization_status: 'Intact',
         description: '',
@@ -82,7 +82,7 @@ const CatProfileProperty = () => {
             const response = await axios.patch(`${url}/cat/update/${cat_id}`, {
                 name: catprofile.name,
                 gender: catprofile.gender,
-                age: catprofile.age,
+                birthday: catprofile.birthday,
                 adoption_status: catprofile.adoption_status,
                 sterilization_status: catprofile.sterilization_status,
                 description: catprofile.description
@@ -127,7 +127,7 @@ const CatProfileProperty = () => {
             catImagePreview.forEach(({ file }) => formData.append('images', file));
 
             const response = await axios.post(`${url}/cat/uploadcatimages/${cat_id}`, formData, {
-            headers: { 'Content-Type': 'multipart/form-data' },
+                headers: { 'Content-Type': 'multipart/form-data' },
             });
 
             if (response.status === 200) {
@@ -224,10 +224,10 @@ const CatProfileProperty = () => {
                             {/* Age/Gender/Sterilization Status/Adoption Status */}
                             <div className='flex flex-row justify-between gap-3 w-full '>
                                 <div className='flex flex-col gap-1 w-full'>
-                                    <label className='text-[16px] text-[#595959]'>Age</label>
-                                    <input type="number" placeholder='Input Age here'
-                                    value={catprofile.age || ''}
-                                    onChange={(e) => setCatprofile(prev => ({...prev, age: e.target.value}))} 
+                                    <label className='text-[16px] text-[#595959]'>Birthday</label>
+                                    <input type="date" placeholder='Input Age here'
+                                    value={catprofile.birthday}
+                                    // onChange={(e) => setCatprofile(prev => ({...prev, birthday: e.target.value}))} 
                                     className='appearance-none p-2 text-[#2F2F2F] rounded-[10px] border-2 border-[#CFCFCF] font-bold'/>
                                 </div>
                                 <div className='flex flex-col gap-1 w-full'>
