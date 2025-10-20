@@ -53,6 +53,15 @@ const Donate = () => {
     }));
   };
 
+  const handleFoodtypeCheckbox = (event) => {
+    const { value, checked } = event.target;
+    if (checked) {
+      setFoodType([...foodType, value]);
+    } else {
+      setFoodType(foodType.filter((item) => item !== value));
+    }
+  };
+
   const handleUploadScreenshot = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -214,40 +223,47 @@ const Donate = () => {
 
           {/* TITLE */}
           <div className='flex flex-col w-full'>
-            <div className='flex flex-col '> 
-                <div className='bg-[#2F2F2F] w-full flex justify-center p-3 xl:rounded-t-[10px] lg:rounded-t-[10px] md:rounded-t-[10px] sm:rounded-t-[0px]'>
-                  <label className='text-[#FFF] text-[18px] font-bold'>DONATION FORM</label>
+            <div className='flex flex-col bg-[#FFF] p-5 rounded-t-[10px]'> 
+                <div className='bg-[#FFF] w-full flex justify-between p-3 xl:rounded-t-[10px] lg:rounded-t-[10px] md:rounded-t-[10px] sm:rounded-t-[0px]'>
+                  <label className='text-[#889132] text-[24px] font-bold'>DONATION FORM</label>
+                  <label htmlFor="anonymous_donation" className='flex items-center gap-2'>
+                    <input type="checkbox" name="" id="anonymous_donation" />
+                    Anonymous Donation
+                  </label>
                 </div>
-            </div>
 
-            {!successMessage ? (
-              <form className='flex flex-col w-auto rounded-[10px] xl:gap-2 lg:gap-2 md:gap-2'>
-                <div className='flex flex-col items-center w-full bg-[#DC8801] bg-[url(/assets/background-paws.png)] bg-cover bg-fit bg-repeat  p-5 gap-4'>
-                  <label className='text-[#FFF] text-[20px] font-bold leading-tight'> Hey {`${user?.firstname} ${user?.lastname}`}, thinking of Donating?</label>
+                <div className='flex flex-col items-center px-3 py-3 w-full'>
+                  <span className='flex gap-1 font-bold text-[#2F2F2F]'>Get started by selecting a type of donation you want to donate
+                    <span className='text-[#8f8f8f] italic'>(You can choose multiple).</span>
+                  </span>
 
-                  <div className='flex flex-col xl:flex-row lg:flex-row gap-3 w-full rounded-[10px]'>
-                    <label htmlFor="donate_money" className='cursor-pointer flex gap-5 p-2 rounded-[10px] bg-[#FFF] w-full'>
+                  <span className='leading-tight text-sm text-center px-4 py-2'>
+                    Your donation, no matter the size, helps provide the love and care our cats truly deserve. Your support allows us to continue improving the lives of cats in need and giving them a brighter future. Together, we can create a kinder, more compassionate world for every cat. We're deeply grateful for your generosity, thank you!
+                  </span>
+
+                  <div className='flex flex-col xl:flex-row lg:flex-row gap-3 w-full rounded-[10px] pt-2'>
+                    <label htmlFor="donate_money" className='cursor-pointer flex gap-5 p-2 rounded-[10px] bg-[#FFF] w-full border-2 border-[#2F2F2F]'>
                       <input type="checkbox" id='donate_money' 
                         checked={donateItem.money} 
                         onChange={handleCheckboxChange}
                       />
                       Money
                     </label>
-                    <label htmlFor="donate_food" className='cursor-pointer flex gap-5 p-2 rounded-[10px] bg-[#FFF] w-full'>
+                    <label htmlFor="donate_food" className='cursor-pointer flex gap-5 p-2 rounded-[10px] bg-[#FFF] w-full border-2 border-[#2F2F2F]'>
                       <input type="checkbox" id='donate_food' 
                         checked={donateItem.food}
                         onChange={handleCheckboxChange}
                       />
                       Food
                     </label>
-                    <label htmlFor="donate_item" className='cursor-pointer flex gap-5 p-2 rounded-[10px] bg-[#FFF] w-full'>
+                    <label htmlFor="donate_item" className='cursor-pointer flex gap-5 p-2 rounded-[10px] bg-[#FFF] w-full border-2 border-[#2F2F2F]'>
                       <input type="checkbox" id='donate_item' 
                         checked={donateItem.item}
                         onChange={handleCheckboxChange}
                       />
                       Item
                     </label>
-                    <label htmlFor="donate_other" className='cursor-pointer flex gap-5 p-2 rounded-[10px] bg-[#FFF] w-full'>
+                    <label htmlFor="donate_other" className='cursor-pointer flex gap-5 p-2 rounded-[10px] bg-[#FFF] w-full border-2 border-[#2F2F2F]'>
                       <input type="checkbox" id='donate_other' 
                         checked={donateItem.other}
                         onChange={handleCheckboxChange}
@@ -256,146 +272,117 @@ const Donate = () => {
                     </label>
                   </div>
                 </div>
+            </div>
 
-                {donateItem.money || donateItem.food || donateItem.item || donateItem.other ? (
-                  <div className= 'flex flex-col rounded-[10px] w-full'>
-                    {donateItem.money && (
-                      <div className='flex flex-col w-full gap-1 p-5 bg-[#FFF]'> {/* MONEY WINDOW */}
-                        <label className='flex justify-center items-center text-[#2F2F2F] text-[24px] font-bold w-full'>MONEY</label>
+            {!successMessage ? (
+              <form className='flex flex-col w-auto rounded-[10px] xl:gap-2 lg:gap-2 md:gap-2'>
 
-                        <div className='xl:grid xl:grid-cols-2 lg:grid lg:grid-cols-2 md:grid md:grid-cols-2 w-full flex flex-col gap-2'>
+                
+                <div className= 'flex flex-col rounded-[10px] w-full'>
+                  {donateItem.money && (
+                    <div className='flex flex-col w-full gap-1 p-5 bg-[#FFF] border-t-2 border-dashed border-t-[#bababa]'> {/* MONEY WINDOW */}
+                      <label className='flex justify-center items-center text-[#2F2F2F] text-[24px] font-bold w-full'>MONEY</label>
+
+                      <div className='xl:grid xl:grid-cols-2 lg:grid lg:grid-cols-2 md:grid md:grid-cols-2 w-full flex flex-col gap-2'>
+                        <div className='flex flex-col gap-2'>
                           <div className='flex flex-col gap-2'>
-                            <div className='flex flex-col gap-2'>
-                              <label htmlFor="">Amount of money to donate</label>
-                              <input type="number" placeholder='Add amount' value={moneyAmount} onChange={(e) => setMoneyAmount(e.target.value)} required
-                              className='p-2 rounded-[10px] border-1 border-[#A3A3A3]'/>
-                            </div>
-                            <div className='flex flex-col gap-2'>
-                              <label className='text-[#595959] text-[14px] pt-2'>Please upload an image of transaction's receipt (Receipt Screenshot)</label>
-                              <div className='flex flex-col items-center w-full p-2 gap-2 border-dashed border-2 border-[#DC8801] rounded-[12px]'>
-                                <label htmlFor="screenshot_image" className='cursor-pointer bg-[#DC8801] p-2 rounded-[10px] text-[#FFF] text-center active:bg-[#fea921] w-full'>
-                                  Upload Image
-                                  <input type="file" id='screenshot_image' accept='image/png, image/jpeg' hidden required
-                                  onChange={handleUploadScreenshot}/>
-                                </label>
-                                <label htmlFor="">{screenshotName}</label>
-                              </div>
-                            </div>
+                            <label htmlFor="">Amount of money to donate</label>
+                            <input type="number" placeholder='Add amount' value={moneyAmount} onChange={(e) => setMoneyAmount(e.target.value)} required
+                            className='p-2 rounded-[10px] border-1 border-[#A3A3A3]'/>
                           </div>
-                          <div className='flex flex-col items-center w-full pb-2'>
-                            <label htmlFor="">Scan the QR code to proceed with the transaction</label>
-                            <div className='w-[300px] h-[300px] object-fit rounded-[10px] overflow-hidden'>
-                              <img src="/assets/QR_Code.jpg" alt="qr_code" className='w-full h-full object-cover'/>
+                          <div className='flex flex-col gap-2'>
+                            <label className='text-[#595959] text-[14px] pt-2'>Please upload an image of transaction's receipt (Receipt Screenshot)</label>
+                            <div className='flex flex-col items-center w-full p-2 gap-2 border-dashed border-2 border-[#DC8801] rounded-[12px]'>
+                              <label htmlFor="screenshot_image" className='cursor-pointer bg-[#DC8801] p-2 rounded-[10px] text-[#FFF] text-center active:bg-[#fea921] w-full'>
+                                Upload Image
+                                <input type="file" id='screenshot_image' accept='image/png, image/jpeg' hidden required
+                                onChange={handleUploadScreenshot}/>
+                              </label>
+                              <label htmlFor="">{screenshotName}</label>
                             </div>
                           </div>
                         </div>
+                        <div className='flex flex-col items-center w-full pb-2'>
+                          <label htmlFor="">Scan the QR code to proceed with the transaction</label>
+                          <div className='w-[300px] h-[300px] object-fit rounded-[10px] overflow-hidden'>
+                            <img src="/assets/QR_Code.jpg" alt="qr_code" className='w-full h-full object-cover'/>
+                          </div>
+                        </div>
                       </div>
-                    )}
+                    </div>
+                  )}
 
-                    {donateItem.food && (
-                      <div className='flex flex-col w-full gap-1 p-5 bg-[#FFF] border-t-2 border-dashed border-t-[#bababa]'> {/* FOOD WINDOW */}
-                        <label className='flex justify-center items-center text-[#2F2F2F] text-[24px] font-bold w-full'>FOOD</label>
-                        <div className='xl:grid xl:grid-cols-2 lg:grid lg:grid-cols-2 md:grid md:grid-cols-2 w-full flex flex-col gap-2'>
-                          <div className='flex flex-col gap-4 w-full'>  
-                            <div className='flex flex-col w-full gap-2'>
-                              <label className='text-[#595959] leading-tight'>Type of food you want to donate</label>
+                  {donateItem.food && (
+                    <div className='flex flex-col w-full gap-1 p-5 bg-[#FFF] border-t-2 border-dashed border-t-[#bababa]'> {/* FOOD WINDOW */}
+                      <label className='flex justify-center items-center text-[#2F2F2F] text-[24px] font-bold w-full'>FOOD</label>
+                      <div className='w-full flex flex-col gap-2'>
+                        <div className='flex flex-col gap-4 w-full'>  
+                          <div className='flex flex-col w-full gap-2'>
+                            <label className='text-[#595959] leading-tight'>Type of food you want to donate</label>
+                            <div className='flex items-center'>
                               <div className='flex gap-2'>
                                 <label htmlFor="food_wet" className='flex gap-2 p-2 border-1 border-[#A3A3A3] rounded-[10px] w-full'>
-                                  <input type="radio" name="donation_food" id="food_wet" 
-                                  checked={foodType === 'Wet'} onChange={() => setFoodType('Wet') }/>
+                                  <input type="checkbox" name="donation_food" id="food_wet" 
+                                  value={'Wet'} 
+                                  onChange={handleFoodtypeCheckbox}/>
                                   Wet
                                 </label>
-                                <label htmlFor="food_dry" className='flex gap-2 p-2 border-1 border-[#A3A3A3] rounded-[10px] w-full'>
-                                  <input type="radio" name="donation_food" id="food_dry" 
-                                  checked={foodType === 'Dry'} onChange={() => setFoodType('Dry') }/>
+                                <label htmlFor="food_dry" className='flex gap-2 p-2 border-1 border-[#A3A3A3] rounded-[5px] w-full'>
+                                  <input type="checkbox" name="donation_food" id="food_dry" 
+                                  value={'Dry'} onChange={handleFoodtypeCheckbox}/>
                                   Dry
                                 </label>
                               </div>
-                            </div>
-                            <div className='flex flex-col gap-2'>
-                              <label>Quantity</label>
-                              <div className='grid grid-cols-3 rounded-[10px] border-1 border-[#DC8801] w-full overflow-hidden'>
-                                <button type='button' onClick={subtractFoodQuantity} className='cursor-pointer flex items-center justify-center w-full p-2 hover:bg-[#fec260] w-full object-cover'>
-                                  <div className='w-[20px] h-[20px]'>
-                                    <img src="/assets/icons/subtract.png" alt="" className='w-full h-full object-contain'/>
-                                  </div>
-                                </button>
-                                <input type="number" className='text-center w-auto' value={foodQuantity} onChange={(e) => setFoodQuantity(Number(e.target.value))}/>
-                                <button type='button' onClick={addFoodQuantity} className='cursor-pointer flex items-center justify-center p-2 hover:bg-[#fec260] w-full'>
-                                  <div className='w-[20px] h-[20px]'>
-                                    <img src="/assets/icons/plus.png" alt="" className='w-full h-full object-contain'/>
-                                  </div>
-                                </button>
+                              <div className='flex flex-col gap-2'>
+                                {/* <label>Quantity</label>
+                                <div className='grid grid-cols-3 rounded-[10px] border-1 border-[#DC8801] w-full overflow-hidden'>
+                                  <button type='button' onClick={subtractFoodQuantity} className='cursor-pointer flex items-center justify-center w-full p-2 hover:bg-[#fec260] w-full object-cover'>
+                                    <div className='w-[20px] h-[20px]'>
+                                      <img src="/assets/icons/subtract.png" alt="" className='w-full h-full object-contain'/>
+                                    </div>
+                                  </button>
+                                  <input type="number" className='text-center w-auto' value={foodQuantity} onChange={(e) => setFoodQuantity(Number(e.target.value))}/>
+                                  <button type='button' onClick={addFoodQuantity} className='cursor-pointer flex items-center justify-center p-2 hover:bg-[#fec260] w-full'>
+                                    <div className='w-[20px] h-[20px]'>
+                                      <img src="/assets/icons/plus.png" alt="" className='w-full h-full object-contain'/>
+                                    </div>
+                                  </button>
+                                </div> */}
+                                <input type="text" placeholder='Quantity' className='p-2 border-1 border-[#A3A3A3] rounded-[5px]'/>
                               </div>
                             </div>
+                          </div>
 
-                          </div>
-                          <div className='flex flex-col w-full'>
-                            <div>
-                              <label className='text-[#2F2F2F] font-bold'>Description</label>
-                              <textarea 
-                                placeholder='Add a description' 
-                                rows={5} value={foodDescription} onChange={(e) => setFoodDescription(e.target.value)}
-                                className='resize-none p-2 border-1 border-[#A3A3A3] rounded-[10px] w-full'
-                              ></textarea>
-                            </div>
-                          </div>
                         </div>
-                      </div>
-                    )}
-                    
-                    {donateItem.item && (
-                      <div className='flex flex-col w-full gap-1 p-5 bg-[#FFF] border-t-2 border-dashed border-t-[#bababa]'> {/* ITEM WINDOW */}
-                        <label className='flex justify-center items-center text-[#2F2F2F] text-[24px] font-bold w-full'>ITEM</label>
-                        <div className='xl:grid xl:grid-cols-2 lg:grid lg:grid-cols-2 md:grid md:grid-cols-2 w-full flex flex-col gap-2'>
-                          <div className='flex flex-col gap-2'>
-                            <div className='flex flex-col gap-2 w-full'>
-                              <label>Quantity</label>
-                              <div className='grid grid-cols-3 rounded-[10px] border-1 border-[#DC8801] w-full overflow-hidden'>
-                                <button type='button' onClick={subtractItemQuantity} className='cursor-pointer flex items-center justify-center w-full p-2 hover:bg-[#fec260] w-full object-cover'>
-                                  <div className='w-[20px] h-[20px]'>
-                                    <img src="/assets/icons/subtract.png" alt="" className='w-full h-full object-contain'/>
-                                  </div>
-                                </button>
-                                <input type="number" className='text-center w-auto' value={itemQuantity} onChange={(e) => setItemQuantity(Number(e.target.value))}/>
-                                <button type='button' onClick={addItemQuantity} className='cursor-pointer flex items-center justify-center p-2 hover:bg-[#fec260] w-full'>
-                                  <div className='w-[20px] h-[20px]'>
-                                    <img src="/assets/icons/plus.png" alt="" className='w-full h-full object-contain'/>
-                                  </div>
-                                </button>
-                              </div>
-                            </div>
-
-                          </div>
-
+                        <div className='flex flex-col w-full'>
                           <div>
-                            <label htmlFor="">Description</label>
+                            <label className='text-[#2F2F2F] font-bold'>Description</label>
                             <textarea 
-                              name="" 
-                              id="" 
                               placeholder='Add a description' 
-                              rows={5} value={itemDescription} onChange={(e) => setItemDescription(e.target.value)}
+                              rows={5} value={foodDescription} onChange={(e) => setFoodDescription(e.target.value)}
                               className='resize-none p-2 border-1 border-[#A3A3A3] rounded-[10px] w-full'
                             ></textarea>
                           </div>
                         </div>
                       </div>
-                    )}
-
-                    {donateItem.other && (
-                      <div className='flex flex-col w-full gap-1 p-5 bg-[#FFF] border-t-2 border-dashed border-t-[#bababa]'> {/* OTHER WINDOW */}
-                        <label className='flex justify-center items-center text-[#2F2F2F] text-[24px] font-bold w-full'>OTHERS</label>
-                        <div className='xl:grid xl:grid-cols-2 lg:grid lg:grid-cols-2 md:grid md:grid-cols-2 w-full flex flex-col gap-2'>
-                          <div className='flex flex-col gap-2'>
+                    </div>
+                  )}
+                  
+                  {donateItem.item && (
+                    <div className='flex flex-col w-full gap-1 p-5 bg-[#FFF] border-t-2 border-dashed border-t-[#bababa]'> {/* ITEM WINDOW */}
+                      <label className='flex justify-center items-center text-[#2F2F2F] text-[24px] font-bold w-full'>ITEM</label>
+                      <div className='xl:grid xl:grid-cols-2 lg:grid lg:grid-cols-2 md:grid md:grid-cols-2 w-full flex flex-col gap-2'>
+                        <div className='flex flex-col gap-2'>
+                          <div className='flex flex-col gap-2 w-full'>
                             <label>Quantity</label>
                             <div className='grid grid-cols-3 rounded-[10px] border-1 border-[#DC8801] w-full overflow-hidden'>
-                              <button type='button' onClick={subtractOtherQuantity} className='cursor-pointer flex items-center justify-center w-full p-2 hover:bg-[#fec260] w-full object-cover'>
+                              <button type='button' onClick={subtractItemQuantity} className='cursor-pointer flex items-center justify-center w-full p-2 hover:bg-[#fec260] w-full object-cover'>
                                 <div className='w-[20px] h-[20px]'>
                                   <img src="/assets/icons/subtract.png" alt="" className='w-full h-full object-contain'/>
                                 </div>
                               </button>
-                              <input type="number" className='text-center w-auto' value={otherQuantity} onChange={(e) => setOtherQuantity(Number(e.target.value))}/>
-                              <button type='button' onClick={addOtherQuantity} className='cursor-pointer flex items-center justify-center p-2 hover:bg-[#fec260] w-full'>
+                              <input type="number" className='text-center w-auto' value={itemQuantity} onChange={(e) => setItemQuantity(Number(e.target.value))}/>
+                              <button type='button' onClick={addItemQuantity} className='cursor-pointer flex items-center justify-center p-2 hover:bg-[#fec260] w-full'>
                                 <div className='w-[20px] h-[20px]'>
                                   <img src="/assets/icons/plus.png" alt="" className='w-full h-full object-contain'/>
                                 </div>
@@ -403,29 +390,62 @@ const Donate = () => {
                             </div>
                           </div>
 
-                          <div>
-                            <label htmlFor="">Description</label>
-                            <textarea 
-                              name="" 
-                              id="" 
-                              placeholder='Add a description' 
-                              rows={5} value={othersDescription} onChange={(e) => setOthersDescription(e.target.value)}
-                              className='resize-none p-2 border-1 border-[#A3A3A3] rounded-[10px] w-full'
-                            ></textarea>
-                          </div>
+                        </div>
+
+                        <div>
+                          <label htmlFor="">Description</label>
+                          <textarea 
+                            name="" 
+                            id="" 
+                            placeholder='Add a description' 
+                            rows={5} value={itemDescription} onChange={(e) => setItemDescription(e.target.value)}
+                            className='resize-none p-2 border-1 border-[#A3A3A3] rounded-[10px] w-full'
+                          ></textarea>
                         </div>
                       </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className='flex items-center justify-center p-10 border-dashed border-2 border-[#DC8801] xl:rounded-[10px] lg:rounded-[10px] md:rounded-[5px] text-[#DC8801] text-center'>
-                    Please select a type of donation you want to donate.
-                  </div>
-                )}
-
-                  {error && (
-                    <label className='text-[#DC8801] italic text-center p-2 rounded-[10px] w-full bg-[#ffefd5]'>{error}</label>
+                    </div>
                   )}
+
+                  {donateItem.other && (
+                    <div className='flex flex-col w-full gap-1 p-5 bg-[#FFF] border-t-2 border-dashed border-t-[#bababa]'> {/* OTHER WINDOW */}
+                      <label className='flex justify-center items-center text-[#2F2F2F] text-[24px] font-bold w-full'>OTHERS</label>
+                      <div className='xl:grid xl:grid-cols-2 lg:grid lg:grid-cols-2 md:grid md:grid-cols-2 w-full flex flex-col gap-2'>
+                        <div className='flex flex-col gap-2'>
+                          <label>Quantity</label>
+                          <div className='grid grid-cols-3 rounded-[10px] border-1 border-[#DC8801] w-full overflow-hidden'>
+                            <button type='button' onClick={subtractOtherQuantity} className='cursor-pointer flex items-center justify-center w-full p-2 hover:bg-[#fec260] w-full object-cover'>
+                              <div className='w-[20px] h-[20px]'>
+                                <img src="/assets/icons/subtract.png" alt="" className='w-full h-full object-contain'/>
+                              </div>
+                            </button>
+                            <input type="number" className='text-center w-auto' value={otherQuantity} onChange={(e) => setOtherQuantity(Number(e.target.value))}/>
+                            <button type='button' onClick={addOtherQuantity} className='cursor-pointer flex items-center justify-center p-2 hover:bg-[#fec260] w-full'>
+                              <div className='w-[20px] h-[20px]'>
+                                <img src="/assets/icons/plus.png" alt="" className='w-full h-full object-contain'/>
+                              </div>
+                            </button>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label htmlFor="">Description</label>
+                          <textarea 
+                            name="" 
+                            id="" 
+                            placeholder='Add a description' 
+                            rows={5} value={othersDescription} onChange={(e) => setOthersDescription(e.target.value)}
+                            className='resize-none p-2 border-1 border-[#A3A3A3] rounded-[10px] w-full'
+                          ></textarea>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              
+
+                {error && (
+                  <label className='text-[#DC8801] italic text-center p-2 rounded-[10px] w-full bg-[#ffefd5]'>{error}</label>
+                )}
                 
                 <button type='button' onClick={handleSubmit} className={donateItem.money || donateItem.food || donateItem.item || donateItem.other ? 'cursor-pointer self-center min-w-[100px] w-full xl:w-auto lg:w-auto md:w-auto h-auto bg-[#B5C04A] text-[#FFF] xl:rounded-[10px] py-5 xl:py-2 lg:py-2 md:py-2 active:bg-[#CFDA34]' : 'hidden'}>
                   Submit

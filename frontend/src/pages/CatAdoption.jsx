@@ -14,7 +14,7 @@ const CatAdoption = () => {
   const { user } = useSession();
   const navigate = useNavigate();
 
-  const [catList, setCatList] = useState([]);
+  const [cats, setCats] = useState([]);
   const [searchInput, setSearchInput] = useState('');
   const [genderFilter, setGenderFilter] = useState('all');
 
@@ -30,7 +30,7 @@ const CatAdoption = () => {
             : `https://res.cloudinary.com/dop5djsfg/image/upload/${cat.cloudinary_id}.jpg`
           : '/assets/default-cat.jpg',
         }));
-        setCatList(formattedCats);
+        setCats(formattedCats);
       } catch (err) {
         console.error('Error fetching cat:', err);
       }
@@ -38,7 +38,63 @@ const CatAdoption = () => {
     fetchCats();
   }, []);
 
-  const filteredNames = catList.filter((cat) => {
+
+  // Calculate cat age
+  const calculateCatAgeFromBirthDate = (birthDateStr) => {
+    const currentDate = new Date('2025-10-19T21:47:00-07:00'); // Example current date
+    const birthDate = new Date(birthDateStr);
+
+    // Validate
+    if (isNaN(birthDate.getTime())) {
+      return "Error: Invalid birth date format.";
+    }
+    if (birthDate > currentDate) {
+      return "Error: Birth date cannot be in the future.";
+    }
+
+    // This calculates the cat age in years + months
+    let totalMonths =
+      (currentDate.getFullYear() - birthDate.getFullYear()) * 12 +
+      (currentDate.getMonth() - birthDate.getMonth());
+
+    if (currentDate.getDate() < birthDate.getDate()) {
+      totalMonths -= 1;
+    }
+
+    const catYears = Math.floor(totalMonths / 12);
+    const catMonths = totalMonths % 12;
+    const catAgeInYears = catYears + catMonths / 12;
+
+
+    // This calculates the cat age equivalent to human years
+    const catAgeToHumanYears = (catYears) => {
+      if (catYears <= 1) return catYears * 15;
+      if (catYears <= 2) return 15 + (catYears - 1) * 9;
+      return 24 + (catYears - 2) * 4;
+    };
+
+    const humanAgeInYears = catAgeToHumanYears(catAgeInYears);
+    const humanYears = Math.floor(humanAgeInYears);
+    const humanMonths = Math.round((humanAgeInYears - humanYears) * 12);
+
+    // -------------------------------
+    // 🎯 Final output (formatted)
+    // -------------------------------
+    return {
+      formattedCatAge: `${catYears} year${catYears !== 1 ? "s" : ""} and ${catMonths} month${catMonths !== 1 ? "s" : ""}`,
+      formattedHumanAge: `${humanYears} year${humanYears !== 1 ? "s" : ""} and ${humanMonths} month${humanMonths !== 1 ? "s" : ""} in Human years`,
+      catAgeInYears: parseFloat(catAgeInYears.toFixed(2)),
+      humanAgeInYears: parseFloat(humanAgeInYears.toFixed(2))
+    };
+  };
+
+  // const result = calculateCatAgeFromBirthDate(cats.birthday);
+
+  // console.log(`${result.formattedCatAge} old (${result.formattedHumanAge})`);
+
+
+
+  const filteredNames = cats.filter((cat) => {
     const nameMatches = cat.name?.toLowerCase().includes(searchInput.toLowerCase());
     const genderMatches = genderFilter === 'all' || cat.gender === genderFilter;
     return nameMatches && genderMatches;
@@ -115,6 +171,7 @@ const CatAdoption = () => {
                             <img src="/assets/icons/hourglass.png" alt="hourglass" />
                           </div>
                           {cat.age} years old
+                          {calculateCatAgeFromBirthDate(cats.birthday)}
                         </label>
                       </div>
                     </div>

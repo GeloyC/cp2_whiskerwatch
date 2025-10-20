@@ -81,12 +81,12 @@ const upload = multer({
 CatRoute.post('/create', async (req, res) => {
   try {
     const db =  getDB();
-    const { name, age, gender, sterilization_status, description } = req.body;
+    const { name, birthday, gender, sterilization_status, description } = req.body;
     
     const [profile] = await db.query(
-      `INSERT INTO cat (name, age, gender, sterilization_status, description) 
+      `INSERT INTO cat (name, birthday, gender, sterilization_status, description) 
       VALUES ( ?, ?, ?, ?, ?)`,
-      [name, age, gender, sterilization_status, description]
+      [name, birthday, gender, sterilization_status, description]
     );
 
     res.status(200).json({
@@ -159,6 +159,7 @@ CatRoute.get('/catlist', async (req, res) => {
         c.cat_id, 
         c.name, 
         c.gender, 
+        c.birthday,
         c.age, 
         c.description, 
         c.sterilization_status,
@@ -174,7 +175,8 @@ CatRoute.get('/catlist', async (req, res) => {
           ORDER BY is_primary DESC, uploaded_at DESC 
           LIMIT 1
         )
-      WHERE c.adoption_status = 'Available';
+      WHERE c.adoption_status = 'Available'
+      ORDER BY c.birthday ASC;
     `);
 
     // Format the images for Cloudinary or local path fallback

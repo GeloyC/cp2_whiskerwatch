@@ -9,6 +9,7 @@ const CatProfileCreate = () => {
 
     const [name, setName] = useState('');
     const [age, setAge] = useState('');
+    const [birthday, setBirthday] = useState('');
     const [gender, setGender] = useState('');
     const [sterilization_status, setSterilizationStatus] = useState('');
     const [description, setDescription] = useState('');
@@ -24,7 +25,7 @@ const CatProfileCreate = () => {
 
         try {
             const response = await axios.post(`${url}/cat/create`, {
-                name, age, gender, sterilization_status, description
+                name, birthday, gender, sterilization_status, description
             });
 
 
@@ -118,9 +119,9 @@ const CatProfileCreate = () => {
                             {/* Age/Gender/Sterilization Status/Adoption Status */}
                             <div className='flex flex-row justify-between gap-3 w-full '>
                                 <div className='flex flex-col gap-1 w-full'>
-                                    <label className='text-[16px] text-[#595959]'>Age</label>
-                                    <input type="number" placeholder='Input Age here' required 
-                                    value={age} onChange={(e) => setAge(Number(e.target.value))}
+                                    <label className='text-[16px] text-[#595959]'>Date of birth</label>
+                                    <input type="date" required 
+                                    value={birthday} onChange={(e) => setBirthday(e.target.value)}
                                     className='appearance-none p-2 text-[#2F2F2F] rounded-[10px] border-2 border-[#CFCFCF] font-bold'/>
                                 </div>
                                 <div className='flex flex-col gap-1 w-full'>

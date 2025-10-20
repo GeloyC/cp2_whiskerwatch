@@ -39,6 +39,7 @@ const NavigationBar = () => {
     const fetchProfileImage = async () => {
       if (!user) {
         setProfileImage('/assets/icons/account.png');
+        console.log('User: ',user)
         return;
       }
 
@@ -238,7 +239,7 @@ const NavigationBar = () => {
       
       {/* Lower Navigation link */}
       <div className='flex justify-start xl:justify-center lg:justify-center md:justify-center sm:justify-center items-center w-full h-auto bg-[#DC8801] scrollable-hide-scroll overflow-x-auto whitespace-nowrap'>
-          <Link onClick={(e) => verifyLoggedIn(e, "/donate")}
+          <Link to="/donate"
           className={`text-[#FFF] font-bold hover:bg-[#2F2F2F] active:bg-[#DC8801] p-2 px-4 ${location.pathname === '/donate' ? 'bg-[#2F2F2F]' : ''}`}>DONATE</Link>
           <Link to="/catadoption" 
           className={`text-[#FFF] font-bold hover:bg-[#2F2F2F] active:bg-[#DC8801] p-2 px-4 ${location.pathname === '/catadoption' ? 'bg-[#2F2F2F]' : ''}`}>CAT ADOPTION</Link>
