@@ -403,6 +403,7 @@
 // }
 
 // export default Donate
+
 import React, { useState } from 'react';
 import NavigationBar from '../components/NavigationBar';
 import SideNavigation from '../components/SideNavigation';
@@ -429,6 +430,7 @@ const Donate = () => {
   const [moneyAmount, setMoneyAmount] = useState('');
   const [foodType, setFoodType] = useState([]);
   const [foodQuantity, setFoodQuantity] = useState(1);
+  const [foodUnit, setFoodUnit] = useState(''); // New state for unit
   const [foodDescription, setFoodDescription] = useState('');
   const [itemDescription, setItemDescription] = useState('');
   const [itemQuantity, setItemQuantity] = useState(1);
@@ -511,6 +513,10 @@ const Donate = () => {
         setError('Please provide a description for the food donation.');
         return false;
       }
+      if (!foodUnit) {
+        setError('Please select a unit of measurement for the food donation.');
+        return false;
+      }
     }
 
     if (donateItem.item) {
@@ -550,7 +556,7 @@ const Donate = () => {
       donationItems.push({
         donation_type: 'Food',
         food_type: foodType,
-        quantity: foodQuantity,
+        quantity: `${foodQuantity} ${foodUnit}`,
         description: foodDescription,
       });
     }
@@ -571,19 +577,21 @@ const Donate = () => {
       });
     }
 
-    // Construct description based on donation type and anonymous status
+    // Log donationItems to debug
+    console.log('Donation Items:', donationItems);
+
+    // Construct description for donation_application_items
     let description = '';
     if (donateItem.money) {
       description = screenshotName; // Use proof_image for Money donations
     } else if (anonymous) {
-      // For anonymous donations, concatenate descriptions of non-Money donations
       const descriptions = [];
       if (donateItem.food) descriptions.push(foodDescription);
       if (donateItem.item) descriptions.push(itemDescription);
       if (donateItem.other) descriptions.push(othersDescription);
       description = descriptions.join('; ');
     } else {
-      description = 'Awaiting admin review'; // Default for logged-in users
+      description = 'Awaiting admin review';
     }
 
     const donationPayload = {
@@ -602,7 +610,7 @@ const Donate = () => {
       }
       formData.append('items', JSON.stringify(donationItems));
 
-      const response = await axios.post(`${url}/donate/donation_application`, formData, {
+      const response = await axios.post(`${url}/donate`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -617,7 +625,7 @@ const Donate = () => {
         await fetchNotifications(user.user_id);
         triggerWhiskerUpdate();
       }
-    } catch (err) {
+    } catch(err) {
       console.error('Donation submission failed:', err);
       setError('Donation submission failed. Something went wrong during donation.');
     }
@@ -817,8 +825,14 @@ const Donate = () => {
                                   onChange={handleNumericChange(setFoodQuantity)}
                                   className="p-2 border-1 border-[#A3A3A3] rounded-[5px] w-full"
                                 />
-                                <select name="" id="" className="p-2 border-1 border-[#A3A3A3] rounded-[5px]">
-                                  <option hidden>Select a unit of measurement (kg/g)</option>
+                                <select
+                                  name="food_unit"
+                                  id="food_unit"
+                                  value={foodUnit}
+                                  onChange={(e) => setFoodUnit(e.target.value)}
+                                  className="p-2 border-1 border-[#A3A3A3] rounded-[5px]"
+                                >
+                                  <option value="" hidden>Select a unit of measurement (kg/g)</option>
                                   <option value="kilograms">kilograms (kg)</option>
                                   <option value="grams">grams (g)</option>
                                 </select>
