@@ -43,6 +43,8 @@ const Donate = () => {
   const [successMessage, setSuccessMessage] = useState('')
   const [screenshotFile, setScreenshotFile] = useState(null);
 
+  const [isAnonymous, setIsAnonymous] = useState(false);
+
 
   // Handle checkbox changes
   const handleCheckboxChange = (e) => {
@@ -95,6 +97,11 @@ const Donate = () => {
       return false;
     }
 
+    if (!user && !isAnonymous) {
+      setError('You must be logged in to donate, or select "Anonymous Donation" to proceed.');
+      return false;
+    }
+
     if (donateItem.money) {
       if (!moneyAmount || isNaN(moneyAmount) || parseFloat(moneyAmount) <= 0) {
         setError('Please enter a valid amount of money to donate.');
@@ -142,6 +149,8 @@ const Donate = () => {
     const isValid = validateForm();
     if (!isValid) return;
 
+    
+
     if (donateItem.money) {
       donationItems.push({
         donation_type: 'Money',
@@ -167,9 +176,10 @@ const Donate = () => {
       })
     }
 
+    const finalDonatorId = (user?.user_id && !isAnonymous) ? user.user_id : null;
 
     const donationPayLoad = {
-      donator_id: user.user_id || null, 
+      donator_id: finalDonatorId, 
       proofImage: screenshotName,
       items: donationItems,
     };
@@ -180,7 +190,7 @@ const Donate = () => {
     try {
       const formData = new FormData();
 
-      formData.append('donator_id', user.user_id || null);
+      formData.append('donator_id', finalDonatorId);
       if (screenshotImage) {
         formData.append('proof_image', screenshotFile);
       }
@@ -196,7 +206,9 @@ const Donate = () => {
         Thank you for donating! Your support keeps our cats safe, healthy, and loved while they wait for their forever families. We couldn't do this without you! \n\n Our head volunteers will reach out to the contact number you provided for the process of shipping the donated itemsfor SPR Cats.
       `)
 
-      await fetchNotifications(user.user_id)
+      if (user?.user_id && !isAnonymous) {
+        await fetchNotifications(user.user_id)
+      }
       triggerWhiskerUpdate();
 
     } catch(err) {
