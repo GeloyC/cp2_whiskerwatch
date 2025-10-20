@@ -293,7 +293,7 @@ const AdoptersList = () => {
 
                     {/* CERTIFICATE */}
                     {selectedAdoptee && (
-                      <div className='absolute inset-0 flex flex-col items-center justify-center p-10 bg-black/20 backdrop-blur-sm'>
+                      <div className='absolute inset-0 flex flex-col items-center justify-center p-10 bg-black/20'>
                         <div id="certificate-block" className='relative flex flex-col items-center bg-[#FFF] bg-[url(/assets/AdoptionCertificate/Signed_Adoption_Certificate.png)] bg-cover bg-center w-[1020px] h-[650px]'>
                           <label className='absolute top-73 text-4xl font-bold'>{selectedAdoptee.cat_name}</label>
                           <label className='absolute top-94 right-40 text-xl font-bold'>{selectedAdoptee.adopter}</label>
