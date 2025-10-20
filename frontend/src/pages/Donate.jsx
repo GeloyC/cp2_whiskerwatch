@@ -610,7 +610,7 @@ const Donate = () => {
       }
       formData.append('items', JSON.stringify(donationItems));
 
-      const response = await axios.post(`${url}/donate`, formData, {
+      const response = await axios.post(`${url}/donate/donation_application`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

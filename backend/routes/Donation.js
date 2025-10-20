@@ -196,7 +196,7 @@ DonationRoute.post(
 
 
 DonationRoute.post(
-    '/donate',
+    '/donation_application',
   upload_donationProof.single('proof_image'),
   async (req, res) => {
     const db = getDB();
