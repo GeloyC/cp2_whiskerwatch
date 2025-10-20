@@ -540,7 +540,7 @@ const Donate = () => {
 
     if (donateItem.money) {
       donationItems.push({
-        item_type: 'Money',
+        donation_type: 'Money',
         amount: moneyAmount,
         proof_image: screenshotName,
       });
@@ -548,7 +548,7 @@ const Donate = () => {
 
     if (donateItem.food) {
       donationItems.push({
-        item_type: 'Food',
+        donation_type: 'Food',
         food_type: foodType,
         quantity: foodQuantity,
         description: foodDescription,
@@ -557,7 +557,7 @@ const Donate = () => {
 
     if (donateItem.item) {
       donationItems.push({
-        item_type: 'Item',
+        donation_type: 'Item',
         quantity: itemQuantity,
         description: itemDescription,
       });
@@ -565,7 +565,7 @@ const Donate = () => {
 
     if (donateItem.other) {
       donationItems.push({
-        item_type: 'Other',
+        donation_type: 'Other',
         quantity: otherQuantity,
         description: othersDescription,
       });
