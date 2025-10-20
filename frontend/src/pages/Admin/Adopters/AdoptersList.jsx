@@ -279,7 +279,6 @@
 // export default AdoptersList;
 
 
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import AdminSideBar from '../../../components/AdminSideBar';
@@ -298,10 +297,10 @@ const AdoptersList = () => {
     const fetchAdopter = async () => {
       try {
         const response = await axios.get(`${url}/admin/adopters`);
-        console.log('Adopters response:', response.data);
+        console.log('Adopters response:', JSON.stringify(response.data, null, 2));
         setAdopters(response.data);
       } catch (err) {
-        console.error('Error fetching adopter data: ', err.response?.data || err.message);
+        console.error('Error fetching adopter data:', err.response?.data || err.message);
       }
     };
     fetchAdopter();
@@ -311,21 +310,32 @@ const AdoptersList = () => {
   const handleCloseCert = () => setSelectedAdoptee(null);
 
   const handleAutoGenerateCertificate = async (adoptee) => {
-    if (isGenerating) return; // Prevent multiple generations
+    if (isGenerating) return;
     setIsGenerating(true);
 
     try {
-      // Step 1: Validate adoptee data
-      console.log('Adoptee data:', adoptee); // Debug log
-      if (!adoptee?.adopter || !adoptee?.cat_name || !adoptee?.adoption_id) {
-        throw new Error('Missing required fields: adopter, cat_name, or adoption_id');
+      // Step 1: Log and validate adoptee data
+      console.log('Adoptee data for certificate:', JSON.stringify(adoptee, null, 2));
+      if (!adoptee || !adoptee.adoption_id || !adoptee.adopter || !adoptee.cat_name) {
+        throw new Error('Missing required fields: adoption_id, adopter, or cat_name');
       }
 
-      // Step 2: Create certificate container
+      // Step 2: Prepare data for certificate
+      const adopterName = adoptee.adopter.replace(/\s+/g, '_');
+      const catName = adoptee.cat_name.replace(/\s+/g, '_');
+      const adoptionDate = adoptee.adoption_date
+        ? new Date(adoptee.adoption_date).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })
+        : 'Unknown_Date';
+
+      // Step 3: Create certificate container
       const tempCert = document.createElement('div');
-      tempCert.id = `certificate-temp-${adoptee.adoption_id}`; // Unique ID
+      tempCert.id = `certificate-temp-${adoptee.adoption_id}`;
       tempCert.style.position = 'absolute';
-      tempCert.style.top = '-9999px'; // Off-screen
+      tempCert.style.top = '-9999px';
       tempCert.style.left = '-9999px';
       tempCert.style.width = '1020px';
       tempCert.style.height = '650px';
@@ -340,57 +350,52 @@ const AdoptersList = () => {
       tempCert.style.color = '#000';
       tempCert.style.overflow = 'hidden';
 
-      // Step 3: Add certificate content
+      // Step 4: Add certificate content
       tempCert.innerHTML = `
         <div style="position: absolute; top: 360px; width: 100%; text-align: center; font-size: 44px; font-weight: bold; color: #1a1a1a;">
-          ${adoptee.cat_name}
+          ${catName.replace(/_/g, ' ')}
         </div>
         <div style="position: absolute; top: 480px; right: 160px; font-size: 24px; font-weight: bold; color: #1a1a1a;">
-          ${adoptee.adopter}
+          ${adopterName.replace(/_/g, ' ')}
         </div>
         <div style="position: absolute; top: 530px; right: 300px; font-size: 24px; font-weight: bold; color: #1a1a1a;">
-          ${new Date(adoptee.adoption_date).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })}
+          ${adoptionDate}
         </div>
       `;
       document.body.appendChild(tempCert);
 
-      // Step 4: Wait for fonts and rendering
+      // Step 5: Wait for fonts and rendering
       await document.fonts.ready;
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // Step 5: Convert to PNG
+      // Step 6: Convert to PNG
       const dataUrl = await toPng(tempCert, {
         quality: 1.0,
         pixelRatio: 2,
         backgroundColor: '#fff',
       });
 
-      // Step 6: Clean up DOM
+      // Step 7: Clean up DOM
       document.body.removeChild(tempCert);
 
-      // Step 7: Create filename with fallbacks
-      const adopterName = adoptee.adopter.replace(/\s+/g, '_') || 'Unknown_Adopter';
-      const catName = adoptee.cat_name.replace(/\s+/g, '_') || 'Unknown_Cat';
-      const file = new File(
-        [blob],
-        `Adoption_Certificate_${adopterName}_${catName}.png`,
-        { type: 'image/png' }
-      );
+      // Step 8: Create file (filename aligns with backend)
+      const fileName = `certificate_${adoptee.adoption_id}_${Date.now()}.png`;
+      console.log('Generated filename:', fileName);
+      const blob = await (await fetch(dataUrl)).blob();
+      const file = new File([blob], fileName, { type: 'image/png' });
 
-      // Step 8: Upload certificate
+      // Step 9: Upload certificate with additional fields
       const formData = new FormData();
       formData.append('certificate', file);
       formData.append('adoption_id', adoptee.adoption_id);
+      formData.append('adopter', adoptee.adopter);
+      formData.append('cat_name', adoptee.cat_name);
 
       const response = await axios.post(`${url}/admin/upload_certificate`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      // Step 9: Update adopters state
+      // Step 10: Update adopters state
       const updatedAdopters = adopters.map((a) =>
         a.adoption_id === adoptee.adoption_id
           ? { ...a, certificate: response.data.certificateUrl }
@@ -441,11 +446,11 @@ const AdoptersList = () => {
                   key={adoptee.adoption_id}
                   className='grid grid-cols-7 w-full place-items-center justify-items-start bg-[#FFF] p-2 rounded-[15px] text-[#2F2F2F]'
                 >
-                  <td>{adoptee.adoption_id}</td>
-                  <td>{adoptee.adopter}</td>
-                  <td>{adoptee.cat_name}</td>
-                  <td>{adoptee.adoption_date}</td>
-                  <td>{adoptee.contactnumber}</td>
+                  <td>{adoptee.adoption_id || 'N/A'}</td>
+                  <td>{adoptee.adopter || 'Unknown'}</td>
+                  <td>{adoptee.cat_name || 'Unknown'}</td>
+                  <td>{adoptee.adoption_date || 'N/A'}</td>
+                  <td>{adoptee.contactnumber || 'N/A'}</td>
                   <td>
                     {adoptee.certificate ? (
                       <a
@@ -463,10 +468,10 @@ const AdoptersList = () => {
                   <td>
                     {!adoptee.certificate && (
                       <button
-                        disabled={isGenerating}
+                        disabled={isGenerating || !adoptee.adoption_id || !adoptee.adopter || !adoptee.cat_name}
                         onClick={() => handleAutoGenerateCertificate(adoptee)}
                         className={`p-2 px-4 rounded-lg ${
-                          isGenerating
+                          isGenerating || !adoptee.adoption_id || !adoptee.adopter || !adoptee.cat_name
                             ? 'bg-gray-400 cursor-not-allowed'
                             : 'bg-[#DC8801] text-white hover:bg-[#b76d00]'
                         }`}

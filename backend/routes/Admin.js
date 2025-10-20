@@ -66,19 +66,23 @@ const certificateStorage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
         folder: "whiskerwatch/certificates",
-        allowed_formats: ["png", "jpeg", "jpg"], // ONLY PNG
-        public_id: (req, file) =>
-        `certificate_${req.body.adoption_id}_${Date.now()}`,
+        allowed_formats: ["png"], // Restrict to PNG only
+        public_id: (req, file) => {
+            const adoption_id = req.body.adoption_id || 'unknown_adoption';
+            const adopter = (req.body.adopter || 'unknown_adopter').replace(/\s+/g, '_');
+            const cat_name = (req.body.cat_name || 'unknown_cat').replace(/\s+/g, '_');
+            return `certificate_${adopter}_${cat_name}_${adoption_id}_${Date.now()}`;
+        },
     },
 });
 
 const uploadCertificate = multer({
     storage: certificateStorage,
     fileFilter: (req, file, cb) => {
-        if (file.mimetype === "image/png" || file.mimetype === "image/jpeg" || file.mimetype === "image/jpg") {
+        if (file.mimetype === "image/png") {
             cb(null, true);
         } else {
-            cb(new Error("Only PNG/JPEG/JPG files are allowed!"), false);
+            cb(new Error("Only PNG files are allowed!"), false);
         }
     },
 });
@@ -902,17 +906,60 @@ AdminRoute.get('/adopters_certificate/:user_id', async (req, res) => {
 
 
 
+// AdminRoute.post("/upload_certificate", (req, res, next) => {
+//         uploadCertificate.single("certificate")(req, res, (err) => {
+//         if (err) {
+//             console.error("Multer error:", err); 
+//             return res.status(400).json({ error: err.message });
+//         }
+//         next();
+//         });
+//     },
+//     async (req, res) => {
+//         try {
+//         console.log("Body received:", req.body);
+//         console.log("File received:", req.file);
+
+//         const { adoption_id } = req.body;
+//         if (!req.file || !req.file.path) {
+//             console.error("File missing or invalid format!");
+//             return res.status(400).json({ error: "No file uploaded or invalid file format" });
+//         }
+
+//         const certificateUrl = req.file.path;
+
+//         const [updateResult] = await getDB().query(
+//             "UPDATE adoption SET certificate = ? WHERE adoption_id = ?",
+//             [certificateUrl, adoption_id]
+//         );
+
+//         console.log("Update result:", updateResult);
+
+//         res.status(200).json({
+//             message: "Certificate uploaded successfully",
+//             certificateUrl,
+//         });
+//         } catch (err) {
+//         console.error("Server error during certificate upload:", err);
+//         res.status(500).json({ error: "Server error", message: err.message });
+//         }
+//     }
+// );
+
 AdminRoute.post("/upload_certificate", (req, res, next) => {
-        uploadCertificate.single("certificate")(req, res, (err) => {
+    uploadCertificate.single("certificate")(req, res, (err) => {
         if (err) {
-            console.error("Multer error:", err); 
+            console.error("Multer error:", err);
             return res.status(400).json({ error: err.message });
         }
+        if (!req.body.adoption_id) {
+            console.error("Missing adoption_id in request body");
+            return res.status(400).json({ error: "Missing adoption_id" });
+        }
         next();
-        });
-    },
-    async (req, res) => {
-        try {
+    });
+}, async (req, res) => {
+    try {
         console.log("Body received:", req.body);
         console.log("File received:", req.file);
 
@@ -935,13 +982,11 @@ AdminRoute.post("/upload_certificate", (req, res, next) => {
             message: "Certificate uploaded successfully",
             certificateUrl,
         });
-        } catch (err) {
+    } catch (err) {
         console.error("Server error during certificate upload:", err);
         res.status(500).json({ error: "Server error", message: err.message });
-        }
     }
-);
-
+});
 
 
 export default AdminRoute;
