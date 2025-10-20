@@ -237,7 +237,7 @@ const Donate = () => {
                 <div className='bg-[#FFF] w-full flex justify-between p-3 xl:rounded-t-[10px] lg:rounded-t-[10px] md:rounded-t-[10px] sm:rounded-t-[0px]'>
                   <label className='text-[#889132] text-[24px] font-bold'>DONATION FORM</label>
                   <label htmlFor="anonymous_donation" className='flex items-center gap-2'>
-                    <input type="checkbox" name="" id="anonymous_donation" />
+                    <input type="checkbox" id="anonymous_donation" checked={isAnonymous} onChange={(e) => setIsAnonymous(e.target.checked)}/>
                     Anonymous Donation
                   </label>
                 </div>
