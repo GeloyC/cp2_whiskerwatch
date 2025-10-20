@@ -113,31 +113,6 @@ const CatProfile = () => {
         return { formattedCatAge, formattedHumanAge };
     };
 
-    // useEffect(() => {
-    //     const fetchCatImage = async () => {
-    //         if (!catInfo[currentCatIndex]) return;
-
-    //         try {
-    //         const catId = catInfo[currentCatIndex].cat_id;
-    //         const response = await axios.get(`${url}/cat/images/${catId}`);
-    //         const imageUrls = response.data.map(image => {
-    //             const file = image.image_filename;
-    //             return {
-    //                 filename: file,
-    //                 url: image.image_filename,
-    //             };
-    //         });
-
-    //         setCatImage(imageUrls);
-    //         setSelectedImage(imageUrls[0]?.url || '');
-    //         setSelectedImageIndex(0);
-    //         } catch (err) {
-    //         console.error('Error fetching cat images:', err);
-    //         }
-    //     };
-
-    //     fetchCatImage();
-    // }, [currentCatIndex, catInfo]);
 
     useEffect(() => {
         const fetchCatImage = async () => {
