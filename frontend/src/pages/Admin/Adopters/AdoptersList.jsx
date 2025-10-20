@@ -230,7 +230,7 @@ const AdoptersList = () => {
     setCertificateUrl(null);
 
     try {
-      const response = await axios.get(`${url}/admin/adopters_certificate/${adoptee.adopter_id}`);
+      const response = await axios.get(`${url}/admin/adopters_certificate/${adoptee.adoption_id}`);
       if (response.data && response.data.certificate) {
         setCertificateUrl(response.data.certificate);
         console.log('Existing certificate found:', response.data.certificate);
