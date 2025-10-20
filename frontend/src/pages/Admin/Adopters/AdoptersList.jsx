@@ -293,35 +293,12 @@ const AdoptersList = () => {
 
                     {/* CERTIFICATE */}
                     {selectedAdoptee && (
-                      <div className='absolute inset-0 flex flex-col items-center justify-center p-10 bg-black/50 bg-opacity-75'>
-                        {certificateUrl ? (
-                          <div className="relative flex flex-col items-center">
-                            <img
-                              src={certificateUrl}
-                              alt="Uploaded Certificate"
-                              className="rounded-xl shadow-lg w-[1020px] h-[650px] object-cover"
-                            />
-                            <p className="mt-4 text-green-700 font-semibold">
-                              This adoption already has a certificate.
-                            </p>
-                          </div>
-
-                        ) : (
-                          <div
-                            id="certificate-block"
-                            className="relative flex flex-col items-center bg-[#FFF] bg-[url(/assets/AdoptionCertificate/Signed_Adoption_Certificate.png)] bg-cover bg-center w-[1020px] h-[650px]"
-                          >
-                            <label className="absolute top-73 text-4xl font-bold">
-                              {selectedAdoptee.cat_name}
-                            </label>
-                            <label className="absolute top-94 right-40 text-xl font-bold">
-                              {selectedAdoptee.adopter}
-                            </label>
-                            <label className="absolute top-102 right-140 text-xl font-bold">
-                              {selectedAdoptee.adoption_date}
-                            </label>
-                          </div>
-                        )}
+                      <div className='absolute inset-0 flex flex-col items-center justify-center p-10 bg-black/20 backdrop-blur-sm'>
+                        <div id="certificate-block" className='relative flex flex-col items-center bg-[#FFF] bg-[url(/assets/AdoptionCertificate/Signed_Adoption_Certificate.png)] bg-cover bg-center w-[1020px] h-[650px]'>
+                          <label className='absolute top-73 text-4xl font-bold'>{selectedAdoptee.cat_name}</label>
+                          <label className='absolute top-94 right-40 text-xl font-bold'>{selectedAdoptee.adopter}</label>
+                          <label className='absolute top-102 right-140 text-xl font-bold'>{selectedAdoptee.adoption_date}</label>
+                        </div>
 
                         <div className='flex gap-4 mt-4 pt-2'>
                           <button
@@ -331,22 +308,13 @@ const AdoptersList = () => {
                             Close
                           </button>
 
-                          {!certificateUrl ? (
+                          {!certificateUrl && (
                             <button
                               onClick={handleUploadCert}
                               className='bg-[#DC8801] text-white px-4 py-2 rounded-lg hover:bg-[#b76d00]'
                             >
                               Upload Certificate
                             </button>
-                          ) : (
-                            <a
-                              href={certificateUrl}
-                              target='_blank'
-                              rel='noopener noreferrer'
-                              className='bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700'
-                            >
-                              View Uploaded Certificate
-                            </a>
                           )}
                         </div>
                       </div>
