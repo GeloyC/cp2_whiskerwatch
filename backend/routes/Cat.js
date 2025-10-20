@@ -159,7 +159,7 @@ CatRoute.get('/catlist', async (req, res) => {
         c.cat_id, 
         c.name, 
         c.gender, 
-        c.birthday,
+        DATE_FORMAT(c.birthday, '%Y-%m-%d') AS birthday,
         c.age, 
         c.description, 
         c.sterilization_status,
