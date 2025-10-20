@@ -278,7 +278,7 @@ const AdoptersList = () => {
                 <th>Certificate</th>
               </tr>
             </thead>
-            <tbody className='flex flex-col w-full overflow-y-scroll h-[550px] gap-1'>
+            <tbody className='flex flex-col w-full overflow-y-scroll scrollbar-thin h-[550px] gap-1'>
               {adopters.map((adoptee) => (
                 <tr key={adoptee.adoption_id} className='grid grid-cols-6 w-full place-items-center justify-items-start bg-[#FFF] p-2 rounded-[15px] text-[#2F2F2F] border-b-1 border-b-[#595959]'>
                   <td>{adoptee.adoption_id}</td>
@@ -288,7 +288,7 @@ const AdoptersList = () => {
                   <td>{adoptee.contactnumber}</td>
                   <td className='flex items-center justify-start gap-2'>
                     <button onClick={() => handleViewCert(adoptee)} className='flex items-center justify-between self-start gap-3 p-1 pl-4 pr-4 bg-[#FDF5D8] text-[#2F2F2F] rounded-[10px] hover:underline border-dashed border-2 border-[#595959]'>
-                      Upload Certificate
+                      Certificate
                     </button>
 
                     {/* CERTIFICATE */}
