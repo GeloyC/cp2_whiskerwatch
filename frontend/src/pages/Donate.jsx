@@ -6,6 +6,7 @@ import HeadVolunteerSideBar from '../components/HeadVolunteerSideBar';
 import Footer from '../components/Footer';
 import CatBot from '../components/CatBot'
 import Whisker from '../components/Whisker';
+import { Link } from 'react-router-dom';
 
 
 import { useSession } from '../context/SessionContext';
@@ -203,7 +204,7 @@ const Donate = () => {
       });
 
       setSuccessMessage(`
-        Thank you for donating! Your support keeps our cats safe, healthy, and loved while they wait for their forever families. We couldn't do this without you! \n\n Our head volunteers will reach out to the contact number you provided for the process of shipping the donated itemsfor SPR Cats.
+        Thank you for donating! Your support keeps our cats safe, healthy, and loved while they wait for their forever families. We couldn't do this without you!
       `)
 
       if (user?.user_id && !isAnonymous) {
@@ -242,39 +243,48 @@ const Donate = () => {
                   </label>
                 </div>
 
-                <div className='flex flex-col items-center px-3 py-3 w-full'>
-                  <span className='flex gap-1 font-bold text-[#2F2F2F]'>Get started by selecting a type of donation you want to donate
-                    <span className='text-[#8f8f8f] italic'>(You can choose multiple).</span>
-                  </span>
-
-                  <span className='leading-tight text-sm text-center px-4 py-2'>
-                    Your donation, no matter the size, helps provide the love and care our cats truly deserve. Your support allows us to continue improving the lives of cats in need and giving them a brighter future. Together, we can create a kinder, more compassionate world for every cat. We're deeply grateful for your generosity, thank you!
-                  </span>
-
-                  <div className='flex flex-col xl:flex-row lg:flex-row gap-3 w-full rounded-[10px] pt-2'>
-                    <label htmlFor="donate_money" className='cursor-pointer flex gap-5 p-2 rounded-[10px] bg-[#FFF] w-full border-2 border-[#2F2F2F]'>
-                      <input type="checkbox" id='donate_money' 
-                        checked={donateItem.money} 
-                        onChange={handleCheckboxChange}
-                      />
-                      Money
-                    </label>
-                    <label htmlFor="donate_food" className='cursor-pointer flex gap-5 p-2 rounded-[10px] bg-[#FFF] w-full border-2 border-[#2F2F2F]'>
-                      <input type="checkbox" id='donate_food' 
-                        checked={donateItem.food}
-                        onChange={handleCheckboxChange}
-                      />
-                      Food
-                    </label>
-                    <label htmlFor="donate_item" className='cursor-pointer flex gap-5 p-2 rounded-[10px] bg-[#FFF] w-full border-2 border-[#2F2F2F]'>
-                      <input type="checkbox" id='donate_item' 
-                        checked={donateItem.item}
-                        onChange={handleCheckboxChange}
-                      />
-                      Item
-                    </label>
+                {!successMessage ? (
+                  <div className='flex flex-col items-center px-3 py-3 w-full'>
+                    <span className='flex gap-1 font-bold text-[#2F2F2F]'>Get started by selecting a type of donation you want to donate
+                      <span className='text-[#8f8f8f] italic'>(You can choose multiple).</span>
+                    </span>
+  
+                    <span className='leading-tight text-sm text-center px-4 py-2'>
+                      Your donation, no matter the size, helps provide the love and care our cats truly deserve. Your support allows us to continue improving the lives of cats in need and giving them a brighter future. Together, we can create a kinder, more compassionate world for every cat. We're deeply grateful for your generosity, thank you!
+                    </span>
+  
+                    <div className='flex flex-col xl:flex-row lg:flex-row gap-3 w-full rounded-[10px] pt-2'>
+                      <label htmlFor="donate_money" className='cursor-pointer flex gap-5 p-2 rounded-[10px] bg-[#FFF] w-full border-2 border-[#2F2F2F]'>
+                        <input type="checkbox" id='donate_money' 
+                          checked={donateItem.money} 
+                          onChange={handleCheckboxChange}
+                        />
+                        Money
+                      </label>
+                      <label htmlFor="donate_food" className='cursor-pointer flex gap-5 p-2 rounded-[10px] bg-[#FFF] w-full border-2 border-[#2F2F2F]'>
+                        <input type="checkbox" id='donate_food' 
+                          checked={donateItem.food}
+                          onChange={handleCheckboxChange}
+                        />
+                        Food
+                      </label>
+                      <label htmlFor="donate_item" className='cursor-pointer flex gap-5 p-2 rounded-[10px] bg-[#FFF] w-full border-2 border-[#2F2F2F]'>
+                        <input type="checkbox" id='donate_item' 
+                          checked={donateItem.item}
+                          onChange={handleCheckboxChange}
+                        />
+                        Item
+                      </label>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div>
+                    <Link to="/donate" className={'cursor-pointer w-full xl:w-auto lg:w-auto md:w-auto h-auto bg-[#B5C04A] text-[#FFF] py-5 xl:py-3 lg:py-3 md:py-2 active:bg-[#CFDA34]'}>
+                      Donate again.
+                    </Link>
+
+                  </div>
+                )}
             </div>
 
             {!successMessage ? (

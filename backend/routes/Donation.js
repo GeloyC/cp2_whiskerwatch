@@ -300,10 +300,9 @@ DonationRoute.post(
   async (req, res) => {
     const db = getDB();
     
-    // 1. Determine donator_id: Convert 'null' string or falsy value to database NULL
     const donator_id = (req.body.donator_id && req.body.donator_id !== 'null') 
-                       ? req.body.donator_id 
-                       : null; 
+      ? req.body.donator_id 
+      : null; 
     
     const { items } = req.body;
     const file = req.file;
@@ -330,11 +329,6 @@ DonationRoute.post(
 
       const validDonationTypes = ['Money', 'Food', 'Item', 'Other'];
       const proofImageURL = file?.path || null;
-      
-      // 2. 📝 Insert all items with a temporary placeholder for application_id
-      // Since application_id is NOT NULL, we MUST use the item_id of the first item
-      // to serve as the application_id. We'll use a temporary value (like 0)
-      // and update it immediately after the first insert.
       
       const insertedItemIds = [];
 
@@ -381,18 +375,16 @@ DonationRoute.post(
         }
       }
 
-      // 4. 🔄 Update all newly inserted rows to use the correct application_id
-      // The application_id is the item_id of the very first donation item.
       if (application_id) {
-        await db.query(
-            `UPDATE donation_application_items 
-             SET application_id = ? 
-             WHERE item_id IN (?)`, 
-            [application_id, insertedItemIds]
+        await db.query(`
+          UPDATE donation_application_items 
+          SET application_id = ? 
+          WHERE item_id IN (?)`, 
+          [application_id, insertedItemIds]
         );
       }
       
-      // 5. 🔔 Send notification only if a donator is logged in
+
       if (donator_id) {
         await db.query(
           `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
