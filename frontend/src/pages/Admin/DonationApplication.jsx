@@ -130,10 +130,11 @@ const DonationApplication = () => {
     }, []);
 
     // Filter applications based on search query
-    const filteredApplications = applications.filter(app => 
-        app.application_id.toString().includes(searchQuery) ||
-        app.donator_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        app.description.toLowerCase().includes(searchQuery.toLowerCase())
+    const filteredApplications = (Array.isArray(applications) ? applications : [])
+        .filter(app => 
+            app.application_id.toString().includes(searchQuery) ||
+            app.donator_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            app.description.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     // Function to map status to a color class
