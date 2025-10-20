@@ -310,15 +310,23 @@ const AdoptersList = () => {
   const handleViewCert = (adoptee) => setSelectedAdoptee(adoptee);
   const handleCloseCert = () => setSelectedAdoptee(null);
 
-  // ⬇️ NEW: Auto-generate & upload certificate after adoption approval
   const handleAutoGenerateCertificate = async (adoptee) => {
+    if (isGenerating) return; // Prevent multiple generations
     setIsGenerating(true);
+
     try {
-      // Step 1: Create a temporary certificate block for conversion
+      // Step 1: Validate adoptee data
+      console.log('Adoptee data:', adoptee); // Debug log
+      if (!adoptee?.adopter || !adoptee?.cat_name || !adoptee?.adoption_id) {
+        throw new Error('Missing required fields: adopter, cat_name, or adoption_id');
+      }
+
+      // Step 2: Create certificate container
       const tempCert = document.createElement('div');
-      tempCert.id = 'certificate-temp';
+      tempCert.id = `certificate-temp-${adoptee.adoption_id}`; // Unique ID
       tempCert.style.position = 'absolute';
-      tempCert.style.left = '-9999px'; // hide off-screen
+      tempCert.style.top = '-9999px'; // Off-screen
+      tempCert.style.left = '-9999px';
       tempCert.style.width = '1020px';
       tempCert.style.height = '650px';
       tempCert.style.backgroundImage = 'url(/assets/AdoptionCertificate/Signed_Adoption_Certificate.png)';
@@ -328,23 +336,52 @@ const AdoptersList = () => {
       tempCert.style.flexDirection = 'column';
       tempCert.style.alignItems = 'center';
       tempCert.style.justifyContent = 'center';
-      tempCert.style.fontFamily = 'serif';
+      tempCert.style.fontFamily = "'Times New Roman', serif";
+      tempCert.style.color = '#000';
+      tempCert.style.overflow = 'hidden';
+
+      // Step 3: Add certificate content
       tempCert.innerHTML = `
-        <div style="position:absolute; top:73%; font-size:40px; font-weight:bold;">${adoptee.cat_name}</div>
-        <div style="position:absolute; top:94%; right:20%; font-size:22px; font-weight:bold;">${adoptee.adopter}</div>
-        <div style="position:absolute; top:102%; right:35%; font-size:22px; font-weight:bold;">${adoptee.adoption_date}</div>
+        <div style="position: absolute; top: 360px; width: 100%; text-align: center; font-size: 44px; font-weight: bold; color: #1a1a1a;">
+          ${adoptee.cat_name}
+        </div>
+        <div style="position: absolute; top: 480px; right: 160px; font-size: 24px; font-weight: bold; color: #1a1a1a;">
+          ${adoptee.adopter}
+        </div>
+        <div style="position: absolute; top: 530px; right: 300px; font-size: 24px; font-weight: bold; color: #1a1a1a;">
+          ${new Date(adoptee.adoption_date).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })}
+        </div>
       `;
       document.body.appendChild(tempCert);
 
-      // Step 2: Convert it to PNG
-      const dataUrl = await toPng(tempCert);
+      // Step 4: Wait for fonts and rendering
+      await document.fonts.ready;
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Step 5: Convert to PNG
+      const dataUrl = await toPng(tempCert, {
+        quality: 1.0,
+        pixelRatio: 2,
+        backgroundColor: '#fff',
+      });
+
+      // Step 6: Clean up DOM
       document.body.removeChild(tempCert);
 
-      // Step 3: Convert base64 to file
-      const blob = await (await fetch(dataUrl)).blob();
-      const file = new File([blob], `Certificate_${adoptee.adopter}_${adoptee.cat_name}.png`, { type: 'image/png' });
+      // Step 7: Create filename with fallbacks
+      const adopterName = adoptee.adopter.replace(/\s+/g, '_') || 'Unknown_Adopter';
+      const catName = adoptee.cat_name.replace(/\s+/g, '_') || 'Unknown_Cat';
+      const file = new File(
+        [blob],
+        `Adoption_Certificate_${adopterName}_${catName}.png`,
+        { type: 'image/png' }
+      );
 
-      // Step 4: Upload to backend
+      // Step 8: Upload certificate
       const formData = new FormData();
       formData.append('certificate', file);
       formData.append('adoption_id', adoptee.adoption_id);
@@ -353,19 +390,18 @@ const AdoptersList = () => {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      console.log('Certificate auto-uploaded:', response.data);
-
-      // Step 5: Update the table visually
-      const updated = adopters.map(a =>
+      // Step 9: Update adopters state
+      const updatedAdopters = adopters.map((a) =>
         a.adoption_id === adoptee.adoption_id
           ? { ...a, certificate: response.data.certificateUrl }
           : a
       );
-      setAdopters(updated);
-      alert(`Certificate for ${adoptee.adopter} uploaded successfully!`);
+      setAdopters(updatedAdopters);
+
+      alert(`Certificate for ${adoptee.adopter} generated and uploaded successfully!`);
     } catch (error) {
-      console.error('Auto upload failed:', error);
-      alert('Failed to auto-upload certificate.');
+      console.error('Certificate generation failed:', error);
+      alert(`Failed to generate certificate: ${error.message}`);
     } finally {
       setIsGenerating(false);
     }
