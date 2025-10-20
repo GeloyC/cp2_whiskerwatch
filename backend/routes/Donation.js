@@ -195,104 +195,6 @@ DonationRoute.post(
 );
 
 
-// DonationRoute.post(
-//   '/donation_application',
-//   upload_donationProof.single('proof_image'),
-//   async (req, res) => {
-//     const db = getDB();
-//     const { donator_id, description, items } = req.body;
-//     const file = req.file;
-
-//     try {
-//       if (!items) {
-//         console.error('Missing items field');
-//         return res.status(400).json({ message: 'Missing required fields: items' });
-//       }
-//       if (!description) {
-//         console.error('Missing description field');
-//         return res.status(400).json({ message: 'Missing required field: description' });
-//       }
-
-//       let parsedItems;
-//       try {
-//         parsedItems = JSON.parse(items);
-//       } catch (parseError) {
-//         console.error('Error parsing items:', parseError);
-//         return res.status(400).json({ message: 'Invalid items format' });
-//       }
-
-//       const validDonationTypes = ['Money', 'Food', 'Item', 'Other'];
-//       for (const item of parsedItems) {
-//         if (!item.donation_type || !validDonationTypes.includes(item.donation_type)) {
-//           console.error('Invalid donation_type:', item);
-//           return res.status(400).json({ message: `Invalid donation_type: ${item.donation_type || 'missing'}` });
-//         }
-//       }
-
-//       console.log('Request details:', { donator_id, description, parsedItems, file });
-
-//       const proofImageURL = file?.path || null;
-
-//       const [applicationResult] = await db.query(
-//         `INSERT INTO donation_application_items (
-//           donator_id, date_applied, status, proof_image, description,
-//           donation_type, amount, food_type, quantity
-//         ) VALUES (?, NOW(), 'Pending', ?, ?, ?, ?, ?, ?)
-//         `,
-//         [
-//           donator_id || null,
-//           proofImageURL,
-//           description,
-//           parsedItems[0].donation_type,
-//           parsedItems[0].amount || null,
-//           parsedItems[0].food_type ? parsedItems[0].food_type.join(',') : null,
-//           parsedItems[0].quantity || null,
-//         ]
-//       );
-
-//       const application_id = applicationResult.insertId;
-
-//       for (let i = 1; i < parsedItems.length; i++) {
-//         const item = parsedItems[i];
-//         await db.query(
-//           `INSERT INTO donation_application_items (
-//             application_id, donator_id, date_applied, status, proof_image, description,
-//             donation_type, amount, food_type, quantity
-//           ) VALUES (?, ?, NOW(), 'Pending', ?, ?, ?, ?, ?, ?)
-//           `,
-//           [
-//             application_id,
-//             donator_id || null,
-//             proofImageURL,
-//             item.description || null,
-//             item.donation_type,
-//             item.amount || null,
-//             item.food_type ? item.food_type.join(',') : null,
-//             item.quantity || null,
-//           ]
-//         );
-//       }
-
-//       if (donator_id) {
-//         await db.query(
-//           `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
-//           [
-//             donator_id,
-//             `Your donation has been submitted for review. We’ll notify you once it’s approved or rejected.`,
-//           ]
-//         );
-//       }
-
-//       res.status(201).json({
-//         message: 'Donation submitted successfully and pending review.',
-//         application_id,
-//       });
-//     } catch (err) {
-//       console.error('Detailed error:', err.message, err.stack);
-//       res.status(500).json({ message: 'Server error during donation submission.', error: err.message });
-//     }
-//   }
-// );
 
 DonationRoute.post(
   '/donation_application',
@@ -405,6 +307,207 @@ DonationRoute.post(
     }
   }
 );
+
+// Get the list of donation application
+DonationRoute.get('/donation_applications_pending', async (req, res) => {
+    const db = getDB();
+
+    try {
+        const [rows] = await db.query(`
+            SELECT
+                dai.application_id,
+                dai.item_id,
+                dai.donator_id,
+                IFNULL(CONCAT(u.firstname, ' ', u.lastname), 'Anonymous') AS donator_name,
+                dai.description,
+                dai.status,
+                DATE_FORMAT(dai.date_applied, '%Y-%m-%d') AS date_applied,
+                dai.donation_type,
+                dai.amount,
+                dai.food_type,
+                dai.quantity,
+                dai.proof_image
+            FROM
+                donation_application_items dai
+            LEFT JOIN users u ON dai.donator_id = u.user_id
+            WHERE
+                dai.status = 'Pending'
+            ORDER BY
+                dai.application_id, dai.item_id;
+        `);
+
+        // Group items by the main application_id to present them logically in the frontend
+        const applications = {};
+        rows.forEach(row => {
+            const id = row.application_id;
+            if (!applications[id]) {
+                // Initialize the main application object with shared data
+                applications[id] = {
+                    application_id: id,
+                    donator_id: row.donator_id,
+                    donator_name: row.donator_name,
+                    date_applied: row.date_applied,
+                    status: row.status,
+                    // Take the description from the first item, or an aggregate description
+                    description: row.description || 'Multiple items donated.',
+                    items: []
+                };
+            }
+            // Add the item details
+            applications[id].items.push({
+                item_id: row.item_id,
+                donation_type: row.donation_type,
+                amount: row.amount,
+                food_type: row.food_type,
+                quantity: row.quantity,
+                description: row.description,
+                proof_image: row.proof_image,
+            });
+        });
+
+        return res.json(Object.values(applications));
+
+    } catch (err) {
+        console.error('Error fetching pending applications:', err);
+        return res.status(500).json({ error: 'Failed to fetch donation applications' });
+    }
+});
+
+
+// Post the accepted/rejected donated
+DonationRoute.post('/donation_review', async (req, res) => {
+    const db = getDB();
+    // Get the application_id and the decision (e.g., 'Accepted' or 'Rejected')
+    const { application_id, decision, admin_remarks = null } = req.body;
+
+    if (!application_id || !decision || !['Accepted', 'Rejected'].includes(decision)) {
+        return res.status(400).json({ message: 'Invalid application ID or decision.' });
+    }
+
+    // Start a transaction for data consistency
+    const connection = await db.getConnection();
+    await connection.beginTransaction();
+
+    try {
+        // 1. Fetch all items belonging to this application_id
+        const [applicationItems] = await connection.query(
+            `SELECT * FROM donation_application_items WHERE application_id = ?`,
+            [application_id]
+        );
+
+        if (applicationItems.length === 0) {
+            await connection.rollback();
+            return res.status(404).json({ message: 'Donation application not found.' });
+        }
+
+        const donator_id = applicationItems[0].donator_id; // Donator ID is the same for all items
+        const firstItem = applicationItems[0];
+        const proofImageURL = firstItem.proof_image;
+        let notificationMessage = '';
+        let totalPointsEarned = 0;
+
+        if (decision === 'Accepted') {
+            // A. INSERT into 'donation' table (the main header)
+            const [donationResult] = await connection.query(
+                `INSERT INTO donation (donator_id, proofimage, description) VALUES (?, ?, ?)`,
+                [donator_id, proofImageURL, firstItem.description || 'Application accepted']
+            );
+            const donation_id = donationResult.insertId;
+
+            // B. INSERT all items into 'donation_items' table
+            for (const item of applicationItems) {
+                totalPointsEarned += 10; // Earn points for each item
+
+                await connection.query(
+                    `INSERT INTO donation_items
+                      (donation_id, donation_type, amount, food_type, quantity, description, proof_image)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                    [
+                      donation_id, 
+                      item.donation_type, 
+                      item.amount, 
+                      item.food_type, 
+                      item.quantity, 
+                      item.description, 
+                      item.proof_image
+                    ]
+                );
+            }
+
+            // C. Update Whiskermeter points and badge (reuse your logic)
+            if (donator_id && totalPointsEarned > 0) {
+                // Update whiskermeter
+                await connection.query(`
+                  INSERT INTO whiskermeter (user_id, points) VALUES (?, ?)
+                    ON DUPLICATE KEY UPDATE points = points + ?, last_updated = CURRENT_TIMESTAMP`,
+                  [donator_id, totalPointsEarned, totalPointsEarned]
+                );
+
+                // Get new points and update badge
+                const [[{ points }]] = await connection.query(
+                    `SELECT points FROM whiskermeter WHERE user_id = ?`,
+                    [donator_id]
+                );
+                
+                let newBadge = 'Toe Bean Trainee';
+                if (points >= 500) newBadge = 'The Catnip Captain';
+                else if (points >= 300) newBadge = 'Meowtain Mover';
+                else if (points >= 200) newBadge = 'Furmidable Friend';
+                else if (points >= 100) newBadge = 'Snuggle Scout';
+
+                await connection.query(
+                    `UPDATE users SET badge = ? WHERE user_id = ?`,
+                    [newBadge, donator_id]
+                );
+
+                const badgeMessage = `Congratulations on achieving a badge of ${newBadge}. Keep on going!`;
+                await connection.query(
+                    `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
+                    [donator_id, badgeMessage]
+                );
+
+                notificationMessage = `Your donation application (ID: ${application_id}) has been **Accepted**! You earned ${totalPointsEarned} points. Thank you for your kindness!`;
+            } else {
+                notificationMessage = `Your anonymous donation application (ID: ${application_id}) has been **Accepted**! Thank you for your kindness!`;
+            }
+
+        } else if (decision === 'Rejected') {
+            notificationMessage = `Your donation application (ID: ${application_id}) has been **Rejected**. Admin Remarks: ${admin_remarks || 'No reason provided.'}.`;
+        }
+        
+        // D. Update 'donation_application_items' status and admin remarks
+        await connection.query(`
+          UPDATE donation_application_items 
+            SET status = ?, admin_remarks = ?, reviewed_at = CURRENT_TIMESTAMP 
+            WHERE application_id = ?`,
+          [decision, admin_remarks, application_id]
+        );
+
+        // E. Send final notification (if not anonymous)
+        if (donator_id) {
+          await connection.query(
+            `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
+            [donator_id, notificationMessage]
+          );
+        }
+
+        // F. Commit the transaction
+        await connection.commit();
+        res.status(200).json({ 
+            message: `Donation application ${application_id} ${decision.toLowerCase()} successfully.`,
+            pointsEarned: totalPointsEarned
+        });
+
+    } catch (err) {
+        await connection.rollback();
+        console.error('Donation review transaction error:', err);
+        res.status(500).json({ message: 'Server error during donation review.', error: err.message });
+    } finally {
+        connection.release();
+    }
+});
+
+
 
 DonationRoute.get('/donation_list', async (req, res) => {
   const db = getDB();
