@@ -884,21 +884,27 @@ AdminRoute.get('/adopters/month', async (req, res) => {
 })
 
 
-AdminRoute.get('/adopters_certificate/:user_id', async (req, res) => {
+AdminRoute.get('/adopters_certificate/:adoption_id', async (req, res) => {
     const db = getDB();
-    const user_id = req.params.user_id;
+    const adoption_id = req.params.adoption_id;
 
     try {
         const [rows] = await db.query(
-            'SELECT certificate FROM adoption WHERE adopter_id = ?',
-            [user_id]
+        'SELECT certificate FROM adoption WHERE adoption_id = ?',
+        [adoption_id]
         );
-        res.json(rows); // returns an array of certificates
+
+        if (rows.length === 0) {
+        return res.status(404).json({ message: 'No certificate found' });
+        }
+
+        res.json(rows[0]); // now returns correct certificate for that specific adoption
     } catch (err) {
-        console.error(err);
+        console.error('Error fetching certificate:', err);
         res.status(500).json({ error: 'Database error' });
     }
 });
+
 
 
 
