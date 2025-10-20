@@ -72,7 +72,7 @@ const Donation = () => {
                   </tr>
                 </thead>
 
-                <tbody className='hidden xl:flex lg:flex flex-col w-full overflow-y-scroll scrollbar-thin h-[575px] gap-1'>
+                {/* <tbody className='hidden xl:flex lg:flex flex-col w-full overflow-y-scroll scrollbar-thin h-[575px] gap-1'>
                   {filteredDonations.map((donate) => (
                     <tr key={donate.item_id} className='grid grid-cols-[15%_15%_30%_20%_20%] justify-items-start place-items-center w-full bg-[#FFF] p-3 rounded-[10px] text-[#2F2F2F] border-b-1 border-b-[#595959]'>
                       <td>{donate.donation_type}</td>
@@ -85,7 +85,36 @@ const Donation = () => {
                       <td>{donate.date_donated}</td>
                     </tr>
                   ))}
-                </tbody>
+                </tbody> */}
+
+                <tbody className='hidden xl:flex lg:flex flex-col w-full overflow-y-scroll scrollbar-thin h-[575px] gap-1'>
+                  {filteredDonations.map((donate) => (
+                    <tr key={donate.item_id} className='grid grid-cols-[15%_15%_30%_20%_20%] justify-items-start place-items-center w-full bg-[#FFF] p-3 rounded-[10px] text-[#2F2F2F] border-b-1 border-b-[#595959]'>
+                      <td>{donate.donation_type}</td>
+                        {/* Use the new combined field for display */}
+                      <td>{donate.quantity_display}</td> 
+                      <td>
+                        {/* If it's a Money donation AND the image URL exists, 
+                            display the link. Otherwise, display the text description.
+                        */}
+                        {(donate.donation_type === 'Money' && donate.donation_image) ? (
+                            <a 
+                                href={donate.donation_image} 
+                                target='_blank' 
+                                rel='noopener noreferrer'
+                                className='underline hover:text-[#DC8801]'
+                            >
+                                View transaction receipt
+                            </a>
+                        ) : (
+                            <span>{donate.item_description || 'N/A'}</span>
+                        )}
+                      </td>
+                      <td>{donate.donator_name}</td>
+                      <td>{donate.date_donated}</td>
+                      </tr>
+                    ))}
+                  </tbody>
               </table>
             </div>
         </div>

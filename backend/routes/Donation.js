@@ -582,41 +582,79 @@ DonationRoute.post('/donation_review', async (req, res) => {
 
 
 
-DonationRoute.get('/donation_list', async (req, res) => {
-  const db = getDB();
+// DonationRoute.get('/donation_list', async (req, res) => {
+//   const db = getDB();
 
-  try {
-    const [rows] = await db.query(`
-      SELECT
-        di.item_id,
-        u.user_id AS donator_id,
-        di.donation_type,
+//   try {
+//     const [rows] = await db.query(`
+//       SELECT
+//         di.item_id,
+//         u.user_id AS donator_id,
+//         di.donation_type,
 
-        CASE
-            WHEN di.donation_type = 'Money' THEN di.amount
-            ELSE di.quantity
-        END AS quantity,
+//         CASE
+//             WHEN di.donation_type = 'Money' THEN di.amount
+//             ELSE di.quantity
+//         END AS quantity,
 
-        di.description AS item_description,
-        d.proofimage AS donation_image,
-        CONCAT(u.firstname, ' ', u.lastname) AS donator_name,
-        DATE_FORMAT(d.date_donated, '%Y-%m-%d') AS date_donated
-      FROM
-        donation_items di
-      JOIN donation d ON di.donation_id = d.donation_id
-      JOIN users u ON d.donator_id = u.user_id
-      ORDER BY d.date_donated DESC;
-    `);
+//         di.description AS item_description,
+//         d.proofimage AS donation_image,
+//         CONCAT(u.firstname, ' ', u.lastname) AS donator_name,
+//         DATE_FORMAT(d.date_donated, '%Y-%m-%d') AS date_donated
+//       FROM
+//         donation_items di
+//       JOIN donation d ON di.donation_id = d.donation_id
+//       JOIN users u ON d.donator_id = u.user_id
+//       ORDER BY d.date_donated DESC;
+//     `);
 
-    console.log(rows)
-    return res.json(rows);
+//     console.log(rows)
+//     return res.json(rows);
     
-  } catch (err) {
-    console.error('Error fetching cat profile:', err);
-    return res.status(500).json({ error: 'Failed to fetch cat profile' });
-  }
-});
+//   } catch (err) {
+//     console.error('Error fetching cat profile:', err);
+//     return res.status(500).json({ error: 'Failed to fetch cat profile' });
+//   }
+// });
 
+
+DonationRoute.get('/donation_list', async (req, res) => {
+    const db = getDB();
+
+    try {
+        const [rows] = await db.query(`
+          SELECT
+            di.item_id,
+            d.donation_id,
+            d.donator_id,
+            di.donation_type,
+
+            CASE
+                WHEN di.donation_type = 'Money' THEN CONCAT('PHP ', di.amount)
+                ELSE di.quantity
+            END AS quantity_display,
+
+            IFNULL(di.description, d.description) AS item_description,
+            
+            d.proofimage AS donation_image,
+            
+            IFNULL(CONCAT(u.firstname, ' ', u.lastname), 'Anonymous') AS donator_name,
+            
+            DATE_FORMAT(d.date_donated, '%Y-%m-%d') AS date_donated
+          FROM
+              donation_items di
+          JOIN donation d ON di.donation_id = d.donation_id
+          LEFT JOIN users u ON d.donator_id = u.user_id
+          ORDER BY d.date_donated DESC;
+        `);
+
+        return res.json(rows);
+        
+    } catch (err) {
+        console.error('Error fetching donation list:', err);
+        return res.status(500).json({ error: 'Failed to fetch accepted donation data' });
+    }
+});
 
 DonationRoute.get('/money_donations_summary', async (req, res) => {
   const db = getDB();
