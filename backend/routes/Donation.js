@@ -300,8 +300,7 @@ DonationRoute.post(
   async (req, res) => {
     const db = getDB();
     
-    // donator_id comes from frontend as string 'null' or a number string.
-    // Convert to actual null if it's not a valid ID.
+    // Convert 'null' string to actual null, otherwise use the provided ID string
     const donator_id = (req.body.donator_id && req.body.donator_id !== 'null') 
                        ? req.body.donator_id 
                        : null; 
@@ -311,13 +310,9 @@ DonationRoute.post(
 
     try {
       if (!items) {
-        console.error('Missing items field');
         return res.status(400).json({ message: 'Missing required fields: items' });
       }
 
-      // 💥 REMOVE the check for top-level 'description' as it's not sent from frontend:
-      // if (!description) { ... } 
-      
       let parsedItems;
       try {
         parsedItems = JSON.parse(items);
@@ -332,40 +327,55 @@ DonationRoute.post(
 
       const validDonationTypes = ['Money', 'Food', 'Item', 'Other'];
       const proofImageURL = file?.path || null;
-      let firstApplicationId = null;
+      let application_id; // This will hold the ID for the entire transaction
 
-      // 🎯 Iterate through ALL items and insert them
-      for (let i = 0; i < parsedItems.length; i++) {
-        const item = parsedItems[i];
+      // 1. 🎯 INSERT A PLACEHOLDER ROW TO GENERATE THE application_id
+      // We use the first item's data for the initial placeholder row, 
+      // but ensure application_id is set to the generated ID afterwards.
+      // NOTE: This initial INSERT will be corrected in the loop below.
+      const firstItem = parsedItems[0];
+      const initialDescription = firstItem.description || null;
+      
+      const [placeholderResult] = await db.query(
+        `INSERT INTO donation_application_items (
+          donator_id, date_applied, status, proof_image, description,
+          donation_type, amount, food_type, quantity
+        ) VALUES (?, NOW(), 'Pending', ?, ?, 'Placeholder', NULL, NULL, NULL)
+        `,
+        [donator_id, proofImageURL, initialDescription]
+      );
+      
+      application_id = placeholderResult.insertId;
 
+      // 2. ✏️ DELETE the placeholder row to prepare for the actual item inserts
+      // This is a common pattern when using a single table for header and details.
+      await db.query(`DELETE FROM donation_application_items WHERE id = ?`, [application_id]);
+
+
+      // 3. 🔄 LOOP through all items and insert them using the generated application_id
+      for (const item of parsedItems) {
         if (!item.donation_type || !validDonationTypes.includes(item.donation_type)) {
           console.error('Invalid donation_type:', item);
+          // If validation fails, we might want to clean up the placeholder (if not deleted already)
           return res.status(400).json({ message: `Invalid donation_type: ${item.donation_type || 'missing'}` });
         }
         
-        // Extract specific fields for the item's type, setting to null if not present
+        // Extract fields for the current item
         const itemDescription = item.description || null;
-        const itemAmount = item.amount || null; // Used for Money
-        // food_type is an array from the frontend, join it for DB
+        const itemAmount = item.amount || null; 
         const itemFoodType = item.food_type ? item.food_type.join(',') : null; 
         const itemQuantity = item.quantity || null;
 
-        // The first successful insert provides the main application_id
-        // which can be optionally stored for other rows if needed (though not
-        // strictly required if each row is a full item application).
-        // Since you were trying to link them, we'll keep the application_id concept.
-        
-        const [insertResult] = await db.query(
+        await db.query(
           `INSERT INTO donation_application_items (
             application_id, donator_id, date_applied, status, proof_image, description,
             donation_type, amount, food_type, quantity
           ) VALUES (?, ?, NOW(), 'Pending', ?, ?, ?, ?, ?, ?)
           `,
           [
-            // Set application_id to NULL on the first insert, and the generated ID for subsequent ones
-            firstApplicationId, 
+            // ⭐️ Use the generated application_id here
+            application_id, 
             donator_id,
-            // Only 'Money' needs the proof_image, but we store it anyway if provided.
             proofImageURL, 
             itemDescription,
             item.donation_type,
@@ -374,39 +384,22 @@ DonationRoute.post(
             itemQuantity,
           ]
         );
-        
-        // 💾 For the first item, capture the insertId to link subsequent items
-        if (i === 0) {
-            firstApplicationId = insertResult.insertId;
-        }
-        
-        // 🔄 Update the application_id for the first inserted row to itself.
-        // This is a necessary step if your schema requires `application_id` to link 
-        // the multiple items in a single request, but the initial insert 
-        // doesn't have the ID yet. This is an unusual, but required, design fix.
-        if (i === 0) {
-             await db.query(
-                `UPDATE donation_application_items SET application_id = ? WHERE id = ?`,
-                [firstApplicationId, firstApplicationId]
-            );
-        }
-
       }
       
-      // ✅ Only send notification if a donator_id is explicitly present (not anonymous)
+      // 4. ✅ Only send notification if a donator_id is present (not anonymous)
       if (donator_id) {
         await db.query(
           `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
           [
             donator_id,
-            `Your donation has been submitted for review. We’ll notify you once it’s approved or rejected.`,
+            `Your donation has been submitted for review. We’ve notify you once it’s approved or rejected.`,
           ]
         );
       }
 
       res.status(201).json({
         message: 'Donation submitted successfully and pending review.',
-        application_id: firstApplicationId, // Return the ID of the first/main application
+        application_id: application_id, 
       });
     } catch (err) {
       console.error('Detailed error:', err.message, err.stack);
