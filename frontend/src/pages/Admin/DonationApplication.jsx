@@ -71,6 +71,8 @@ import AdminSideBar from '../../components/AdminSideBar';
 import axios from 'axios'; // Make sure you have axios installed: npm install axios
 
 const DonationApplication = () => {
+    const url = `https://whiskerwatch-0j6g.onrender.com`;
+
     const [searchQuery, setSearchQuery] = useState('');
     const [applications, setApplications] = useState([]); // State to hold fetched data
     const [loading, setLoading] = useState(true);
@@ -82,7 +84,7 @@ const DonationApplication = () => {
         setError(null);
         try {
             // NOTE: Update the URL to your correct backend endpoint
-            const response = await axios.get('/api/donation_applications_pending'); 
+            const response = await axios.get(`${url}/donate/donation_applications_pending`); 
             setApplications(response.data);
         } catch (err) {
             console.error("Fetch Error:", err);
@@ -105,7 +107,7 @@ const DonationApplication = () => {
         
         try {
             // NOTE: Update the URL to your correct backend endpoint
-            await axios.post('/api/donation_review', {
+            await axios.post(`${url}/donate/donation_review`, {
                 application_id,
                 decision, // 'Accepted' or 'Rejected'
                 admin_remarks,
