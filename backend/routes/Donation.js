@@ -196,7 +196,7 @@ DonationRoute.post(
 
 
 DonationRoute.post(
-  '/donation_application',
+    '/donate',
   upload_donationProof.single('proof_image'),
   async (req, res) => {
     const db = getDB();
@@ -208,37 +208,72 @@ DonationRoute.post(
       if (!items) {
         return res.status(400).json({ message: 'Missing required fields: items' });
       }
+      if (!description) {
+        return res.status(400).json({ message: 'Missing required field: description' });
+      }
 
-      // Parse the items JSON sent from the frontend
-      const parsedItems = JSON.parse(items);
+      // Parse the items JSON
+      let parsedItems;
+      try {
+        parsedItems = JSON.parse(items);
+      } catch (parseError) {
+        console.error('Error parsing items:', parseError);
+        return res.status(400).json({ message: 'Invalid items format' });
+      }
+
+      // Validate donation_type
+      const validDonationTypes = ['Money', 'Food', 'Item', 'Other'];
+      for (const item of parsedItems) {
+        if (!item.donation_type || !validDonationTypes.includes(item.donation_type)) {
+          console.error('Invalid or missing donation_type:', item);
+          return res.status(400).json({ message: `Invalid donation_type: ${item.donation_type || 'missing'}` });
+        }
+      }
+
+      // Log parsedItems
+      console.log('Parsed Items:', parsedItems);
+
       const proofImageURL = file?.path || null;
 
+      // Generate a unique application_id (since donation_application is removed)
       const [applicationResult] = await db.query(
-        `
-        INSERT INTO donation_application (donator_id, proof_image, description, status)
-        VALUES (?, ?, ?, 'pending')
+        `INSERT INTO donation_application_items (
+          donator_id, date_applied, status, proof_image, description,
+          donation_type, amount, food_type, quantity
+        ) VALUES (?, NOW(), 'Pending', ?, ?, ?, ?, ?, ?)
         `,
-        [donator_id || null, proofImageURL, description]
+        [
+          donator_id || null,
+          proofImageURL,
+          description,
+          parsedItems[0].donation_type,
+          parsedItems[0].amount || null,
+          parsedItems[0].food_type ? parsedItems[0].food_type.join(',') : null,
+          parsedItems[0].quantity || null,
+        ]
       );
 
       const application_id = applicationResult.insertId;
 
-      for (const item of parsedItems) {
-        const {
-          donation_type,
-          amount = null,
-          food_type = null,
-          quantity = null,
-          description = null,
-        } = item;
-
+      // Insert remaining items (if multiple)
+      for (let i = 1; i < parsedItems.length; i++) {
+        const item = parsedItems[i];
         await db.query(
-          `
-          INSERT INTO donation_application_items
-          (application_id, donation_type, amount, food_type, quantity, description, proof_image)
-          VALUES (?, ?, ?, ?, ?, ?, ?)
+          `INSERT INTO donation_application_items (
+            application_id, donator_id, date_applied, status, proof_image, description,
+            donation_type, amount, food_type, quantity
+          ) VALUES (?, ?, NOW(), 'Pending', ?, ?, ?, ?, ?, ?)
           `,
-          [application_id, donation_type, amount, food_type ? food_type.join(',') : null, quantity, description, proofImageURL]
+          [
+            application_id,
+            donator_id || null,
+            proofImageURL,
+            item.description || null,
+            item.donation_type,
+            item.amount || null,
+            item.food_type ? item.food_type.join(',') : null,
+            item.quantity || null,
+          ]
         );
       }
 
@@ -253,12 +288,12 @@ DonationRoute.post(
       }
 
       res.status(201).json({
-        message: 'Donation application submitted successfully and pending review.',
+        message: 'Donation submitted successfully and pending review.',
         application_id,
       });
     } catch (err) {
-      console.error('Donation application error:', err);
-      res.status(500).json({ message: 'Server error during donation application submission.' });
+      console.error('Donation submission error:', err);
+      res.status(500).json({ message: 'Server error during donation submission.' });
     }
   }
 );
