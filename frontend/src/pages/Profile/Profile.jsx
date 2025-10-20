@@ -32,31 +32,72 @@ const Profile = () => {
     const MAX_POINTS = 500;
     const progressHeightPercent = Math.min((points / MAX_POINTS) * 100, 100);
 
+    // useEffect(() => {
+    //     const fetchProfile = async () => {
+    //         try {
+    //             const response = await axios.get(`${url}/user/profile`, {
+    //                 withCredentials: true, // This automatically sends your cookie
+    //             });
+
+    //             setProfile(response.data);
+    //             setOriginalProfile(response.data);
+
+    //             // Fetch certificates using user_id from the response
+    //             if (response.data.user_id) {
+    //                 const certificateResponse = await axios.get(
+    //                 `${url}/admin/adopters_certificate/${response.data.user_id}`,
+    //                     { withCredentials: true }
+    //                 );
+    //                 setUserCertificates(certificateResponse.data);
+    //             }
+
+    //         } catch (err) {
+    //         console.error("Error fetching user:", err.response?.data || err.message);
+    //         }
+    //     };
+
+    //     fetchProfile();
+    // }, []);
+
     useEffect(() => {
-        const fetchProfile = async () => {
+        const fetchProfileAndCertificates = async () => {
             try {
-                const response = await axios.get(`${url}/user/profile`, {
-                    withCredentials: true, // This automatically sends your cookie
+                // Fetch profile info
+                const profileResponse = await axios.get(`${url}/user/profile`, {
+                    withCredentials: true,
                 });
+                setProfile(profileResponse.data);
+                setOriginalProfile(profileResponse.data);
 
-                setProfile(response.data);
-                setOriginalProfile(response.data);
+                // Fetch adoption applications
+                if (profileResponse.data.user_id) {
+                    const appResponse = await axios.get(`${url}/user/show_application/${profileResponse.data.user_id}`);
+                    setApplications(appResponse.data);
 
-                // Fetch certificates using user_id from the response
-                if (response.data.user_id) {
-                    const certificateResponse = await axios.get(
-                    `${url}/admin/adopters_certificate/${response.data.user_id}`,
-                        { withCredentials: true }
+                    // Fetch each certificate based on adoption_id
+                    const certs = await Promise.all(
+                        appResponse.data.map(async (app) => {
+                            try {
+                                const certResponse = await axios.get(
+                                    `${url}/admin/adopters_certificate/${app.adoption_id}`,
+                                    { withCredentials: true }
+                                );
+                                return { adoption_id: app.adoption_id, certificate: certResponse.data.certificate };
+                            } catch (err) {
+                                return { adoption_id: app.adoption_id, certificate: null };
+                            }
+                        })
                     );
-                    setUserCertificates(certificateResponse.data);
+
+                    setUserCertificates(certs);
                 }
 
             } catch (err) {
-            console.error("Error fetching user:", err.response?.data || err.message);
+                console.error("Error fetching user profile or certificates:", err.response?.data || err.message);
             }
         };
 
-        fetchProfile();
+        fetchProfileAndCertificates();
     }, []);
 
 
@@ -276,23 +317,43 @@ const Profile = () => {
                                                     <div className='flex flex-col w-full'>
                                                         <div className='flex flex-col items-center pt-2 pb-2 gap-2 w-full'>
                                                             {/* Show certificates first if they exist */}
-                                                            {userCertificates.length > 0 && userCertificates.map((cert, index) => (
-                                                                cert.certificate ? (
-                                                                    <a
+                                                            {userCertificates.length > 0 && userCertificates.some(cert => cert.certificate) && (
+                                                                <div className="flex flex-col gap-4 w-full items-center">
+                                                                    <label className="font-bold text-lg text-[#2F2F2F] self-start">
+                                                                    My Adoption Certificates
+                                                                    </label>
+
+                                                                    {userCertificates.map((cert, index) => (
+                                                                    cert.certificate ? (
+                                                                        <div
                                                                         key={index}
-                                                                        href={cert.certificate}
-                                                                        target='_blank'
-                                                                        download={`certificate_${index + 1}.png`}
-                                                                        rel='noopener noreferrer'
-                                                                        className='flex items-center justify-between self-start min-w-[300px] gap-3 p-2 pl-4 pr-4 bg-[#E3E697] text-[#2F2F2F] rounded-[10px] hover:underline border-dashed border-2 border-[#99A339]'
-                                                                    >
-                                                                        View Certificate #{index + 1}
-                                                                        <div className='w-[25px] h-auto'>
-                                                                            <img src="/assets/icons/document-black.png" alt="" />
+                                                                        className="relative flex flex-col items-center bg-[#fff] shadow-md rounded-[10px] border border-[#99A339] overflow-hidden"
+                                                                        >
+                                                                        {/* Background with lower opacity */}
+                                                                        <div className="absolute inset-0 bg-black opacity-20"></div>
+
+                                                                        {/* Actual certificate image */}
+                                                                        <img
+                                                                            src={cert.certificate}
+                                                                            alt={`Certificate ${index + 1}`}
+                                                                            className="w-[800px] h-auto object-contain rounded-[10px] relative z-10"
+                                                                        />
+
+                                                                        <a
+                                                                            href={cert.certificate}
+                                                                            download={`certificate_${index + 1}.png`}
+                                                                            target="_blank"
+                                                                            rel="noopener noreferrer"
+                                                                            className="absolute bottom-4 right-4 bg-[#E3E697] text-[#2F2F2F] px-3 py-2 rounded-[8px] border-2 border-dashed border-[#99A339] hover:underline z-20"
+                                                                        >
+                                                                            Download
+                                                                        </a>
                                                                         </div>
-                                                                    </a>
-                                                                ) : null
-                                                            ))}
+                                                                    ) : null
+                                                                    ))}
+                                                                </div>
+                                                                )}
+
 
                                                             {/* Show pending applications only if no certificates */}
                                                             {userCertificates.length === 0 && applications.length > 0 && applications.map((app) => (
