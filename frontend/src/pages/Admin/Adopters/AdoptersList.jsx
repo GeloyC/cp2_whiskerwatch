@@ -11,6 +11,8 @@ const AdoptersList = () => {
   const { user, logout, loading: sessionLoading } = useSession();
   const [adopters, setAdopters] = useState([]);
   const [certView, setCertView] = useState(false);
+  const [certificateUrl, setCertificateUrl] = useState(null);
+
   
 
   useEffect(() => {
@@ -143,27 +145,8 @@ const AdoptersList = () => {
 // };
   const [selectedAdoptee, setSelectedAdoptee] = useState(null);
 
-  const handleViewCert = (adoptee) => {
-    setSelectedAdoptee(adoptee);
-  };
-
   const handleCloseCert = () => {
     setSelectedAdoptee(null);
-  };
-
-  const handleDownloadCert = async () => {
-    const certificateNode = document.getElementById('certificate-block');
-    if (!certificateNode) return;
-
-    try {
-      const dataUrl = await toPng(certificateNode);
-      const link = document.createElement('a');
-      link.download = `Adoption_Certificate_${selectedAdoptee.cat_name}_${selectedAdoptee.adopter}.png`;
-      link.href = dataUrl;
-      link.click();
-    } catch (error) {
-      console.error('Error generating certificate image:', error);
-    }
   };
 
   const handleUploadCertificate = async (e, adoptee) => {
@@ -242,6 +225,23 @@ const AdoptersList = () => {
   };
 
 
+  const handleViewCert = async (adoptee) => {
+    setSelectedAdoptee(adoptee);
+    setCertificateUrl(null);
+
+    try {
+      const response = await axios.get(`${url}/admin/adopters_certificate/${adoptee.adopter_id}`);
+      if (response.data && response.data.certificate) {
+        setCertificateUrl(response.data.certificate);
+        console.log('Existing certificate found:', response.data.certificate);
+      } else {
+        console.log('No existing certificate found for this user.');
+      }
+    } catch (error) {
+      console.log('No existing certificate found:', error.response?.data || error.message);
+    }
+  };
+
 
 
   return (
@@ -301,11 +301,30 @@ const AdoptersList = () => {
                         </div>
 
                         <div className='flex gap-4 mt-4 pt-2'>
-                          <button onClick={handleCloseCert} className='bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-500'>Close</button>
-                          <button onClick={handleUploadCert} className='bg-[#DC8801] text-white px-4 py-2 rounded-lg hover:bg-[#b76d00]'>
-                            Upload Certificate
+                          <button
+                            onClick={handleCloseCert}
+                            className='bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-500'
+                          >
+                            Close
                           </button>
 
+                          {!certificateUrl ? (
+                            <button
+                              onClick={handleUploadCert}
+                              className='bg-[#DC8801] text-white px-4 py-2 rounded-lg hover:bg-[#b76d00]'
+                            >
+                              Upload Certificate
+                            </button>
+                          ) : (
+                            <a
+                              href={certificateUrl}
+                              target='_blank'
+                              rel='noopener noreferrer'
+                              className='bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700'
+                            >
+                              View Uploaded Certificate
+                            </a>
+                          )}
                         </div>
                       </div>
                     )}
