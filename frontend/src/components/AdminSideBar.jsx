@@ -132,7 +132,7 @@ const AdminSideBar = ({ className }) => {
           {error}
         </div>
       )}
-      <div className={`flex items-center justify-center gap-4 w-auto h-auto box-border ${sidebarShow ? 'pl-3 pr-12' : ''} pt-4 pb-4 cursor-pointer bg-white border-b-2 border-b-[#DC8801]`}>
+      <div className={`flex items-center justify-center gap-4 w-auto h-auto box-border ${sidebarShow ? 'pl-3 pr-5' : ''} pt-4 pb-4 cursor-pointer bg-white border-b-2 border-b-[#DC8801]`}>
         <div className={sidebarShow ? 'flex justify-center items-center w-[120px] h-auto p-1' : 'hidden'}>
           <img onClick={() => navigate('/dashboard')} src="/assets/whiskerwatchlogo-no textmarks.png" alt="account" />
         </div>
@@ -149,8 +149,8 @@ const AdminSideBar = ({ className }) => {
         </button>
       </div>
 
-      <div className={`flex flex-col ${!sidebarShow ? 'items-start justify-start' : ''} justify-between h-full overflow-hidden w-full p-1`}>
-        <div className='flex h-full overflow-y-scroll overflow-x-hidden scrollbar-thin w-full h-[900px]'>
+      <div className={`flex flex-col ${!sidebarShow ? 'items-start justify-start' : ' overflow-x-hidden'} justify-between  h-full w-full p-1`}>
+        <div className='flex h-full overflow-y-scroll scrollbar-thin w-full h-[900px]'>
           <div className="flex flex-col justify-start w-full">
             <Link to="/dashboard" className={location.pathname === '/dashboard' ? sideItemStyleCurrent : sideItemStyle}>
               <div className="flex flex-row items-center gap-4">
@@ -367,9 +367,9 @@ const AdminSideBar = ({ className }) => {
             </button>
           )}
 
-          <div className={`absolute ${sidebarShow ? 'left-75 bottom-12' : 'left-15 bottom-5'} flex flex-col w-auto gap-2 box-border bg-[#FFF] shadow-md rounded-[15px] rounded-bl-[0px] z-[9999]`}>
+          <div  className={`absolute ${sidebarShow ? 'left-68 bottom-13 rounded-br-[0px]' : 'left-10 bottom-10 rounded-bl-[0px]'} flex flex-col w-auto gap-2 box-border bg-[#94b946] shadow-md rounded-[15px] z-[9999]`}>
             {isLoggedIn ? (
-              <div ref={menuRef} className={isVisible ? 'flex flex-col w-fit p-2 gap-2' : 'hidden'}>
+              <div  ref={menuRef} className={isVisible ? 'flex flex-col w-fit p-2 gap-2' : 'hidden'}>
                 <Link to="/home" className="text-[#000] text-center p-3 pl-6 pr-6 w-full bg-[#f0f2c8] hover:bg-[#E3E697] active:bg-[#f0f2c8] active:text-[#FFF] rounded-[10px]">
                   <label className="w-full whitespace-nowrap">Home</label>
                 </Link>

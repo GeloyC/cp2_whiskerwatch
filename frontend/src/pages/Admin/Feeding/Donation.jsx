@@ -32,7 +32,51 @@ const Donation = () => {
     (donate.item_description?.toLowerCase() || '').includes(searchQuery.toLowerCase())
   );
 
+  const exportToCSV = () => {
+    if (filteredDonations.length === 0) {
+        alert("No data to export.");
+        return;
+    }
 
+    const headers = [
+        "Donation Type",
+        "Quantity/Amount",
+        "Description",
+        "Donated By",
+        "Date Donated",
+        "Proof Image URL"
+    ];
+    
+    // Map data fields to the order of the headers
+    const dataRows = filteredDonations.map(donate => [
+        donate.donation_type,
+        `"${donate.quantity_display || 'N/A'}"`, 
+        `"${donate.item_description || 'N/A'}"`, 
+        `"${donate.donator_name}"`,
+        donate.date_donated,
+        `"${donate.donation_image || ''}"`
+    ]);
+
+    const csvContent = headers.join(',') + '\n' + 
+    dataRows.map(row => row.join(',')).join('\n');
+    
+    // 2. Create a Blob and URL for download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    
+    // Create a filename with the current date
+    const filename = `donations_export_${new Date().toISOString().slice(0, 10)}.csv`;
+    
+    link.setAttribute('href', URL.createObjectURL(blob));
+    link.setAttribute('download', filename);
+    
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    alert(`Data exported successfully to ${filename}!`);
+  };
 
   // if (sessionLoading) return <div className="flex items-center justify-center p-10 w-full h-screen">Loading session...</div>;
   // if (!user) return <div className="flex items-center justify-center p-10 w-full h-screen">No active session.</div>;
@@ -58,6 +102,13 @@ const Donation = () => {
                 <form className='flex gap-2'>
                   <input type="search" placeholder='Search' className='bg-[#FFF] p-2 min-w-[400px] border-1 border-[#595959] rounded-[15px]' value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}/>
                 </form>
+
+                <button onClick={exportToCSV} className='flex items-center gap-2 bg-[#2F2F2F] text-[#FFF] px-5 py-2 cursor-pointer rounded-full hover:bg-[#4E4E4E]'>
+                  Export Data
+                  <div className='size-6'>
+                    <img src="/assets/icons/download.png" alt="" />
+                  </div>
+                </button>
               </div>
 
 
