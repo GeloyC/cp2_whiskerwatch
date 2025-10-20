@@ -174,11 +174,13 @@ const Donate = () => {
       items: donationItems,
     };
 
+    console.log('Donation: ',donationPayLoad)
+
 
     try {
       const formData = new FormData();
 
-      formData.append('donator_id', user.user_id);
+      formData.append('donator_id', user.user_id || null);
       if (screenshotImage) {
         formData.append('proof_image', screenshotFile);
       }
