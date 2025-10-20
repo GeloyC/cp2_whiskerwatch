@@ -178,9 +178,9 @@ const DonationApplication = () => {
                     </div>
 
                     {/* DYNAMIC TABLE */}
-                    <table className='hidden xl:flex lg:flex flex-col w-full gap-2'>
+                    <table className='hidden xl:flex lg:flex flex-col w-full gap-'>
                         <thead className='flex w-full'>
-                            <tr className='grid grid-cols-[10%_15%_45%_15%_15%] justify-items-start place-items-start w-full bg-[#DC8801] p-3 rounded-[15px] text-[#FFF]'>
+                            <tr className='grid grid-cols-[10%_15%_35%_25%_10%] justify-items-start place-items-start w-full bg-[#DC8801] p-3 rounded-[15px] text-[#FFF]'>
                                 <th>App. ID</th>
                                 <th>Donator</th>
                                 <th>Items/Description</th>
@@ -189,20 +189,20 @@ const DonationApplication = () => {
                             </tr>
                         </thead>
 
-                        <tbody>
+                        <tbody className='flex flex-col gap-1 item-center justify-center'>
                             {filteredApplications.length > 0 ? filteredApplications.map((app) => (
-                                <tr key={app.application_id} className='grid grid-cols-[10%_15%_45%_15%_15%] justify-items-start place-items-start w-full bg-[#FFF] p-3 rounded-[10px] text-[#2F2F2F] border-b-1 border-b-[#595959]'>
-                                    <td className='text-sm font-semibold'>{app.application_id}</td>
-                                    <td className='text-sm'>{app.donator_name}</td>
+                                <tr key={app.application_id} className='grid grid-cols-[10%_15%_35%_25%_10%] justify-items-start place-items-center w-full bg-[#FFF] p-3 rounded-[10px] text-[#2F2F2F] border-b-1 border-b-[#595959] pb-2'>
+                                    <td className='text-md font-bold'>{app.application_id}</td>
+                                    <td className='text-md'>{app.donator_name}</td>
                                     <td>
                                         <div className='flex flex-col text-sm'>
                                             <p className='font-bold mb-1'>Items ({app.items.length}):</p>
                                             <ul className='list-disc list-inside ml-2 text-xs'>
                                                 {app.items.map((item, index) => (
-                                                    <li key={index} className='truncate'>
-                                                        **{item.donation_type}**: 
+                                                    <span key={index} className='truncate'>
+                                                        {item.donation_type}: 
                                                         {item.donation_type === 'Money' ? ` PHP${item.amount}` : item.quantity ? ` ${item.quantity}` : ' Item'}
-                                                    </li>
+                                                    </span>
                                                 ))}
                                             </ul>
                                             <p className='mt-2 italic truncate max-w-full' title={app.description}>
@@ -221,8 +221,8 @@ const DonationApplication = () => {
                                             )}
                                         </div>
                                     </td>
-                                    <td className='flex flex-col justify-center'>
-                                        <p className='text-xs text-gray-500 mb-1'>{app.date_applied}</p>
+                                    <td className='flex flex-row items-center justify-center gap-2'>
+                                        <p className='text-sm text-gray-500'>{app.date_applied}</p>
                                         <span className={`px-3 py-1 rounded-[5px] font-bold text-center text-xs ${getStatusClass(app.status)}`}>
                                             {app.status}
                                         </span>

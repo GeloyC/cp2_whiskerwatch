@@ -309,24 +309,95 @@ DonationRoute.post(
 );
 
 // Get the list of donation application
+// DonationRoute.get('/donation_applications_pending', async (req, res) => {
+//     const db = getDB();
+
+//     try {
+//         const [rows] = await db.query(`
+//           SELECT
+//             dai.application_id,
+//             dai.item_id,
+//             dai.donator_id,
+//             IFNULL(CONCAT(u.firstname, ' ', u.lastname), 'Anonymous') AS donator_name,
+//             dai.status,
+//             DATE_FORMAT(dai.date_applied, '%Y-%m-%d') AS date_applied,
+//             dai.donation_type,
+//             dai.amount,
+//             dai.food_type,
+//             dai.quantity,
+//             dai.proof_image,
+//               CASE
+//                   WHEN dai.donation_type = 'Money' AND dai.proof_image IS NOT NULL 
+//                       THEN CONCAT('Proof: ', dai.proof_image)
+//                   ELSE dai.description
+//               END AS display_description 
+//           FROM
+//               donation_application_items dai
+//           LEFT JOIN users u ON dai.donator_id = u.user_id
+//           WHERE
+//               dai.status = 'Pending'
+//           ORDER BY
+//               dai.application_id, dai.item_id;
+//         `);
+
+//         // Group items by the main application_id to present them logically in the frontend
+//         const applications = {};
+//         rows.forEach(row => {
+//             const id = row.application_id;
+//             if (!applications[id]) {
+//                 // Initialize the main application object with shared data
+//                 applications[id] = {
+//                     application_id: id,
+//                     donator_id: row.donator_id,
+//                     donator_name: row.donator_name,
+//                     date_applied: row.date_applied,
+//                     status: row.status,
+//                     // Take the description from the first item, or an aggregate description
+//                     description: row.description || 'Multiple items donated.',
+//                     items: []
+//                 };
+//             }
+//             // Add the item details
+//             applications[id].items.push({
+//                 item_id: row.item_id,
+//                 donation_type: row.donation_type,
+//                 amount: row.amount,
+//                 food_type: row.food_type,
+//                 quantity: row.quantity,
+//                 description: row.description,
+//                 proof_image: row.proof_image,
+//             });
+//         });
+
+//         return res.json(Object.values(applications));
+
+//     } catch (err) {
+//         console.error('Error fetching pending applications:', err);
+//         return res.status(500).json({ error: 'Failed to fetch donation applications' });
+//     }
+// });
 DonationRoute.get('/donation_applications_pending', async (req, res) => {
     const db = getDB();
 
     try {
         const [rows] = await db.query(`
             SELECT
-                dai.application_id,
-                dai.item_id,
-                dai.donator_id,
-                IFNULL(CONCAT(u.firstname, ' ', u.lastname), 'Anonymous') AS donator_name,
-                dai.description,
-                dai.status,
-                DATE_FORMAT(dai.date_applied, '%Y-%m-%d') AS date_applied,
-                dai.donation_type,
-                dai.amount,
-                dai.food_type,
-                dai.quantity,
-                dai.proof_image
+              dai.application_id,
+              dai.item_id,
+              dai.donator_id,
+              IFNULL(CONCAT(u.firstname, ' ', u.lastname), 'Anonymous') AS donator_name,
+              dai.status,
+              DATE_FORMAT(dai.date_applied, '%Y-%m-%d') AS date_applied,
+              dai.donation_type,
+              dai.amount,
+              dai.food_type,
+              dai.quantity,
+              dai.proof_image,
+                CASE
+                    WHEN dai.donation_type = 'Money' AND dai.proof_image IS NOT NULL 
+                        THEN CONCAT('Proof: ', dai.proof_image)
+                    ELSE dai.description
+                END AS display_description 
             FROM
                 donation_application_items dai
             LEFT JOIN users u ON dai.donator_id = u.user_id
@@ -336,7 +407,7 @@ DonationRoute.get('/donation_applications_pending', async (req, res) => {
                 dai.application_id, dai.item_id;
         `);
 
-        // Group items by the main application_id to present them logically in the frontend
+        // Group items by the main application_id
         const applications = {};
         rows.forEach(row => {
             const id = row.application_id;
@@ -348,8 +419,8 @@ DonationRoute.get('/donation_applications_pending', async (req, res) => {
                     donator_name: row.donator_name,
                     date_applied: row.date_applied,
                     status: row.status,
-                    // Take the description from the first item, or an aggregate description
-                    description: row.description || 'Multiple items donated.',
+                    // Use the main application description from the first item
+                    description: row.display_description || 'Multiple items donated.', 
                     items: []
                 };
             }
@@ -360,7 +431,8 @@ DonationRoute.get('/donation_applications_pending', async (req, res) => {
                 amount: row.amount,
                 food_type: row.food_type,
                 quantity: row.quantity,
-                description: row.description,
+                // Use the modified description for the item
+                description: row.display_description, 
                 proof_image: row.proof_image,
             });
         });
@@ -372,6 +444,7 @@ DonationRoute.get('/donation_applications_pending', async (req, res) => {
         return res.status(500).json({ error: 'Failed to fetch donation applications' });
     }
 });
+
 
 
 // Post the accepted/rejected donated
