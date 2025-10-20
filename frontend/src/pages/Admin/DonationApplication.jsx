@@ -208,7 +208,7 @@ const DonationApplication = () => {
                                                 {/* <p className='font-bold mb-1'>Items ({app.items.length}):</p> */}
                                                 <span className='list-disc list-inside ml-2 text-sm'>
                                                     {app.items.map((item, index) => (
-                                                        <span key={index} className='truncate'>
+                                                        <span key={index} className='truncate pr-2'>
                                                             {item.donation_type}: 
                                                             {item.donation_type === 'Money' 
                                                                 ? ` PHP ${item.amount}` 

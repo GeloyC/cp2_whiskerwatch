@@ -491,6 +491,17 @@ DonationRoute.post('/donation_review', async (req, res) => {
             for (const item of applicationItems) {
                 totalPointsEarned += 10; // Earn points for each item
 
+                let safeFoodType = null;
+                if (item.donation_type === 'Food') {
+                  if (item.food_type && item.food_type.includes('Wet')) {
+                    safeFoodType = 'Wet';
+                  } else if (item.food_type && item.food_type.includes('Dry')) {
+                    safeFoodType = 'Dry'
+                  } else {
+                    safeFoodType = null;
+                  }
+                }
+
                 await connection.query(
                     `INSERT INTO donation_items
                       (donation_id, donation_type, amount, food_type, quantity, description, proof_image)
@@ -499,7 +510,7 @@ DonationRoute.post('/donation_review', async (req, res) => {
                       donation_id, 
                       item.donation_type, 
                       item.amount, 
-                      item.food_type, 
+                      safeFoodType, 
                       item.quantity, 
                       item.description, 
                       item.proof_image

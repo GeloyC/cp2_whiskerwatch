@@ -242,7 +242,7 @@ const Donate = () => {
             <div className='flex flex-col bg-[#FFF] p-5 rounded-t-[10px]'> 
                 <div className='bg-[#FFF] w-full flex flex-col justify-center items-center xl:flex-row lg:flex-row md:flex-row xl:justify-between lg:justify-between md:justify-between p-3 xl:rounded-t-[10px] lg:rounded-t-[10px] md:rounded-t-[10px] sm:rounded-t-[0px]'>
                   <label className='text-[#889132] text-[24px] font-bold'>DONATION FORM</label>
-                  <label htmlFor="anonymous_donation" className='flex items-center gap-2'>
+                  <label htmlFor="anonymous_donation" className='flex items-center gap-2 bg-[#F9F7DC] rounded-[10px] border-dashed border-2 border-[#BABABA] px-2 py-1'>
                     <input type="checkbox" id="anonymous_donation" checked={isAnonymous} onChange={(e) => setIsAnonymous(e.target.checked)}/>
                     Anonymous Donation
                   </label>
