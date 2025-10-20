@@ -80,8 +80,8 @@ const Home = () => {
     // Format human age (also month-only if < 1 year)
     const formattedHumanAge =
       humanYearsInt === 0
-        ? `${humanMonths} month${humanMonths !== 1 ? "s" : ""} in human years`
-        : `${humanYearsInt} year${humanYearsInt !== 1 ? "s" : ""}${humanMonths > 0 ? ` and ${humanMonths} month${humanMonths !== 1 ? "s" : ""}` : ""} in human years`;
+        ? `${humanMonths} month${humanMonths !== 1 ? "s" : ""} in human age`
+        : `${humanYearsInt} year${humanYearsInt !== 1 ? "s" : ""}${humanMonths > 0 ? ` and ${humanMonths} month${humanMonths !== 1 ? "s" : ""}` : ""} in human age`;
 
     return { formattedCatAge, formattedHumanAge };
   };
@@ -127,52 +127,109 @@ const Home = () => {
             
 
               <div className='flex flex-col items-center justify-center p-15 xl:px-0 lg:px-0 md:px-0 sm:px-0 gap-4 bg-[#F9F7DC] bg-[url(src/assets/background-paws.png)] bg-cover bg-fit bg-repeat w-[500px] md::w-auto xl:px-20 lg:px-20 xl:w-auto lg:w-auto md:w-auto sm:w-full'>
-                <div className='grid grid-cols-[auto_auto_auto_auto] scrollbar-thin overflow-x-scroll overflow-y-hidden w-full xl:w-full lg:w-full sm:grid-cols-4 md:w-full  sm:w-full xl:grid xl:grid-cols-[auto_auto_auto_auto] lg:grid-cols-[auto_auto_auto_auto] md:grid-cols-[auto_auto] sm:grid-cols-[auto_auto] gap-2 xl:px-[5%] lg:px-[5%]'>
+                <div className='grid grid-cols-[auto_auto_auto_auto] scrollbar-thin overflow-x-scroll overflow-y-hidden xl:overflow-visible lg:overflow-visible md:overflow-visible w-full xl:w-full lg:w-full sm:grid-cols-4 md:w-full  sm:w-full xl:grid xl:grid-cols-[auto_auto_auto_auto] lg:grid-cols-[auto_auto_auto_auto] md:grid-cols-[auto_auto] sm:grid-cols-[auto_auto] gap-2 xl:px-[5%] lg:px-[5%]'>
                   {catList.map((cat) => (
-                    <div key={cat.cat_id} onClick={() => navigate(`/catprofile/${cat.cat_id}`)}
-                    className='w-[300px] xl:w-full lg:w-full md:w-full sm:w-full grid grid-rows-[auto_auto] rounded-[25px] border-2 border-[#FFF] bg-white hover:border-2 hover:border-[#B5C04A] hover:scale-102 active:scale-98 transition-all duration-100'>
-                      <div className='overflow-hidden flex rounded-t-[25px] w-auto h-[250px] xl:w-full lg:w-full md:w-full '>
-                        <img 
-                        src={cat.thumbnail} 
-                        alt={`cat image ${cat.cat_id}`} 
-                        className='overflow-hidden w-[300px] sm:w-full h-auto object-cover'/>
-                      </div>
+                    // <div key={cat.cat_id} onClick={() => navigate(`/catprofile/${cat.cat_id}`)}
+                    // className='w-[300px] xl:w-full lg:w-full md:w-full sm:w-full grid grid-rows-[auto_auto] rounded-[25px] border-2 border-[#FFF] bg-white hover:border-2 hover:border-[#B5C04A] active:scale-98 transition-all duration-100'>
+                    //   <div className='overflow-hidden flex rounded-t-[25px] w-auto h-[250px] xl:w-full lg:w-full md:w-full '>
+                    //     <img 
+                    //     src={cat.thumbnail} 
+                    //     alt={`cat image ${cat.cat_id}`} 
+                    //     className='overflow-hidden w-[300px] sm:w-full h-auto object-cover'/>
+                    //   </div>
       
-                      <div className='flex flex-col justify-center p-3 overflow-hidden'> 
-                        <div className='flex flex-col gap-4'>
-                          <div className='grid grid-rows-2'>
-                            <label className='flex items-end gap-2 text-[30px] font-bold text-[#889132]'>
+                    //   <div className='flex flex-col justify-center p-3 overflow-hidden'> 
+                    //     <div className='flex flex-col gap-4'>
+                    //       <div className='grid grid-rows-2'>
+                    //         <label className='flex items-end gap-2 text-[30px] font-bold text-[#889132]'>
                               
+                    //           {cat.name}
+                    //         </label>
+      
+                    //         <div className="flex flex-row flex-wrap gap-3 border-dashed border-b-2 border-b-[#B5C04A]">
+                    //           <label className="flex flex-row items-center font-bold text-[12px] gap-[5px]">
+                    //             <div className="flex items-center justify-center w-[20px] h-auto">
+                    //               <img
+                    //                 src="/assets/icons/genders-black.png"
+                    //                 alt="female sign"
+                    //                 className="object-cover"
+                    //               />
+                    //             </div>
+                    //             {cat.gender}
+                    //           </label>
+                    //           <label className="flex flex-row items-center font-bold text-[12px] gap-[5px]">
+                    //             <div className="flex items-center justify-center w-[15px] h-auto">
+                    //               <img src="/assets/icons/hourglass.png" alt="hourglas" />
+                    //             </div>
+                    //             <div className="flex flex-wrap items-center gap-1">
+                    //               <strong>{cat.formattedCatAge} old</strong>
+                    //               <span>({cat.formattedHumanAge})</span>
+                    //             </div>
+                    //           </label>
+                    //         </div>
+                    //       </div>
+                        
+                    //       <p className='pl-2 text-[14px] text-[#555555] leading-tight text-justify break-words whitespace-normal h-[40px]'>
+                    //         {cat.description.length > 50 ? cat.description.slice(0, 50) + '...' : cat.description}
+                    //       </p>
+      
+                    //     </div>
+                    //   </div>
+                    // </div>
+                    <div
+                      key={cat.cat_id}
+                      onClick={() => navigate(`/catprofile/${cat.cat_id}`)}
+                      className="w-full xl:minax-w-[300px] lg:min-w-300px max-h-[450px] grid grid-cols-2 lg:grid-cols-none lg:grid-rows-[auto_auto] md:grid-cols-none md:grid-rows-[auto_auto] border-2 border-white overflow-hidden rounded-[25px] bg-white hover:shadow-lg hover:border-[#889132] hover:scale-101 active:scale-95 transition-all duration-100"
+                    >
+                      <div className="overflow-hidden xl:rounded-t-[25px] lg:rounded-t-[25px] w-full h-[250px]">
+                        <img
+                          src={cat.thumbnail}
+                          alt={`cat image ${cat.cat_id}`}
+                          className="overflow-hidden w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="flex flex-col justify-start w-full gap-2 p-2">
+                        <div className="flex flex-col gap-4">
+                          <div className="flex flex-col">
+                            <label className="flex items-end leading-tight gap-2 text-[30px] font-bold text-[#889132]">
                               {cat.name}
                             </label>
-      
-                            <div className="flex flex-row flex-wrap gap-3 border-dashed border-b-2 border-b-[#B5C04A]">
-                              <label className="flex flex-row items-center font-bold text-[12px] gap-[5px]">
-                                <div className="flex items-center justify-center w-[20px] h-auto">
+                            <div className="flex flex-row flex-wrap gap-3 py-2 border-dashed border-b-2 border-b-[#B5C04A]">
+
+                              <label className="flex flex-row items-start text-[12px] gap-[6px] leading-none">
+                                <div className="flex items-center justify-start w-[15px] h-[15px] flex-shrink-0">
                                   <img
-                                    src="/assets/icons/genders-black.png"
-                                    alt="female sign"
-                                    className="object-cover"
+                                    src="/assets/icons/hourglass.png"
+                                    alt="hourglass"
+                                    className="w-full h-full object-contain"
                                   />
-                                </div>
-                                {cat.gender}
-                              </label>
-                              <label className="flex flex-row items-center font-bold text-[12px] gap-[5px]">
-                                <div className="flex items-center justify-center w-[15px] h-auto">
-                                  <img src="/assets/icons/hourglass.png" alt="hourglas" />
                                 </div>
                                 <div className="flex flex-wrap items-center gap-1">
                                   <strong>{cat.formattedCatAge} old</strong>
                                   <span>({cat.formattedHumanAge})</span>
                                 </div>
                               </label>
+
+                              <label className="flex flex-row items-center font-bold text-[12px] gap-[5px]">
+                                <div className="flex items-center justify-center w-[20px] h-auto">
+                                  <img
+                                    src="/assets/icons/genders-black.png"
+                                    alt="gender sign"
+                                    className="object-cover"
+                                  />
+                                </div>
+                                {cat.gender}
+                              </label>
+
                             </div>
                           </div>
-                        
-                          <p className='pl-2 text-[14px] text-[#555555] leading-tight text-justify break-words whitespace-normal h-[40px]'>
-                            {cat.description.length > 50 ? cat.description.slice(0, 50) + '...' : cat.description}
-                          </p>
-      
+                          <textarea
+                            rows={5}
+                            disabled
+                            className="resize-none pl-2 text-[12px] xl:text-[13px] lg:text-[13px] md:text-[13px] h-[40px] text-[#555555] leading-tight break-words whitespace-normal"
+                          >
+                            {cat.description.length > 50 ? cat.description.slice(0, 60) + '...' : cat.description}
+                          </textarea>
                         </div>
                       </div>
                     </div>

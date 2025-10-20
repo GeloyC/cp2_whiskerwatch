@@ -87,8 +87,8 @@ const CatAdoption = () => {
     // Format human age (also month-only if < 1 year)
     const formattedHumanAge =
       humanYearsInt === 0
-        ? `${humanMonths} month${humanMonths !== 1 ? "s" : ""} in human years`
-        : `${humanYearsInt} year${humanYearsInt !== 1 ? "s" : ""}${humanMonths > 0 ? ` and ${humanMonths} month${humanMonths !== 1 ? "s" : ""}` : ""} in human years`;
+        ? `${humanMonths} month${humanMonths !== 1 ? "s" : ""} in human age`
+        : `${humanYearsInt} year${humanYearsInt !== 1 ? "s" : ""}${humanMonths > 0 ? ` and ${humanMonths} month${humanMonths !== 1 ? "s" : ""}` : ""} in human age`;
 
     return { formattedCatAge, formattedHumanAge };
   };
@@ -142,7 +142,7 @@ const CatAdoption = () => {
               <div
                 key={cat.cat_id}
                 onClick={() => navigate(`/catprofile/${cat.cat_id}`)}
-                className="w-full xl:minax-w-[300px] lg:min-w-300px max-h-[450px] grid grid-cols-2 lg:grid-cols-none lg:grid-rows-[auto_auto] md:grid-cols-none md:grid-rows-[auto_auto] border-2 border-white overflow-hidden rounded-[25px] bg-white hover:shadow-lg hover:border-[#889132] hover:scale-103 active:scale-95 transition-all duration-100"
+                className="w-full xl:minax-w-[300px] lg:min-w-300px max-h-[450px] grid grid-cols-2 lg:grid-cols-none lg:grid-rows-[auto_auto] md:grid-cols-none md:grid-rows-[auto_auto] border-2 border-white overflow-hidden rounded-[25px] bg-white hover:shadow-lg hover:border-[#889132] hover:scale-101 active:scale-95 transition-all duration-100"
               >
                 <div className="overflow-hidden xl:rounded-t-[25px] lg:rounded-t-[25px] w-full h-[250px]">
                   <img

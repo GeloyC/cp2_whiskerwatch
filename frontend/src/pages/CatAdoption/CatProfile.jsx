@@ -43,24 +43,75 @@ const CatProfile = () => {
     useEffect(() => {
         const fetchCat = async () => {
             try {
-                const response = await axios.get(`${url}/cat/catlist`);
-                const cats = response.data;
+            const response = await axios.get(`${url}/cat/catlist`);
+            const cats = response.data;
 
-                setCatInfo(cats);
+            // Find the cat that matches the URL param
+            const foundCat = cats.find(cat => cat.cat_id.toString() === cat_id);
 
-                // Find index of the cat matching the cat_id in the URL
-                const index = cats.findIndex(cat => cat.cat_id.toString() === cat_id);
+            if (!foundCat) {
+                console.error('Cat not found for ID:', cat_id);
+                return;
+            }
 
-                // If cat found, use its index, otherwise default to 0
-                setCurrentCatIndex(index !== -1 ? index : 0);
+            // Calculate the cat's age and human equivalent
+            const ageData = calculateCatAgeFromBirthDate(foundCat.birthday);
+
+            // Combine all cat info with formatted age fields
+            setCatInfo({
+                ...foundCat,
+                formattedCatAge: ageData.formattedCatAge,
+                formattedHumanAge: ageData.formattedHumanAge,
+            });
+
+            console.log('Fetched cat:', foundCat);
             } catch (err) {
-                console.error('Error fetching cat profiles:', err);
+            console.error('Error fetching cat profiles:', err);
             }
         };
+
         fetchCat();
     }, [cat_id]);
 
 
+    const calculateCatAgeFromBirthDate = (birthDateStr) => {
+        const currentDate = new Date();
+        const birthDate = new Date(birthDateStr);
+
+        if (isNaN(birthDate.getTime())) return { error: "Invalid date format" };
+        if (birthDate > currentDate) return { error: "Birth date is in the future" };
+
+        const diffMs = currentDate - birthDate;
+        const diffDays = diffMs / (1000 * 60 * 60 * 24);
+        const diffYears = Math.floor(diffDays / 365.25);
+        const diffMonths = Math.floor((diffDays % 365.25) / 30.44);
+
+        // Format cat age
+        const formattedCatAge =
+        diffYears === 0
+            ? `${diffMonths} month${diffMonths !== 1 ? "s" : ""}`
+            : `${diffYears} year${diffYears !== 1 ? "s" : ""}${diffMonths > 0 ? ` and ${diffMonths} month${diffMonths !== 1 ? "s" : ""}` : ""}`;
+
+        // Convert to human years (same logic as before)
+        const catAgeInYears = diffYears + diffMonths / 12;
+        const humanYears =
+        catAgeInYears <= 1
+            ? catAgeInYears * 15
+            : catAgeInYears <= 2
+            ? 15 + (catAgeInYears - 1) * 9
+            : 24 + (catAgeInYears - 2) * 4;
+
+        const humanYearsInt = Math.floor(humanYears);
+        const humanMonths = Math.round((humanYears % 1) * 12);
+
+        // Format human age (also month-only if < 1 year)
+        const formattedHumanAge =
+        humanYearsInt === 0
+            ? `${humanMonths} month${humanMonths !== 1 ? "s" : ""} in human age`
+            : `${humanYearsInt} year${humanYearsInt !== 1 ? "s" : ""}${humanMonths > 0 ? ` and ${humanMonths} month${humanMonths !== 1 ? "s" : ""}` : ""} in human age`;
+
+        return { formattedCatAge, formattedHumanAge };
+    };
 
     // useEffect(() => {
     //     const fetchCatImage = async () => {
@@ -226,7 +277,9 @@ const CatProfile = () => {
                                                 </div>
                                                 <div className='text-[14px]'>
                                                     <label className='font-bold pr-2'>Age:</label>
-                                                    <label>{currentCat.age} years old</label>
+                                                    <label>
+                                                        {currentCat.formattedCatAge} old ({currentCat.formattedHumanAge})
+                                                    </label>
                                                 </div>  
                                             </div>
                                             <div className='flex flex-row items-center gap-1 border-b-1 border-b-[#B5C04A] pb-1 pt-1'>

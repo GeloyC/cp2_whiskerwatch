@@ -79,14 +79,14 @@ const Donate = () => {
     }
   }
 
-  const addFoodQuantity = () => { setFoodQuantity((prev) => parseInt(prev) + 1); }
-  const subtractFoodQuantity = () => { setFoodQuantity((prev) => Math.max(1, parseInt(prev) - 1)); }
+  const handleNumericChange = (setter) => (e) => {
+    const value = e.target.value;
 
-  const addItemQuantity = () => { setItemQuantity((prev) => parseInt(prev) + 1); }
-  const subtractItemQuantity = () => { setItemQuantity((prev) => Math.max(1, parseInt(prev) - 1)); }
-
-  const addOtherQuantity = () => { setOtherQuantity((prev) => parseInt(prev) + 1); }
-  const subtractOtherQuantity = () => { setOtherQuantity((prev) => Math.max(1, parseInt(prev) - 1)); }
+    // Allow only positive integers or empty
+    if (/^\d*\.?\d*$/.test(value) || value === "") {
+      setter(value);
+    }
+  };
   
   
   const validateForm = () => {
@@ -167,13 +167,6 @@ const Donate = () => {
       })
     }
 
-    if(donateItem.other) {
-      donationItems.push({
-        donation_type: 'Other',
-        quantity: otherQuantity,
-        description: othersDescription,
-      })
-    }
 
     const donationPayLoad = {
       donator_id: user.user_id, 
@@ -263,19 +256,12 @@ const Donate = () => {
                       />
                       Item
                     </label>
-                    <label htmlFor="donate_other" className='cursor-pointer flex gap-5 p-2 rounded-[10px] bg-[#FFF] w-full border-2 border-[#2F2F2F]'>
-                      <input type="checkbox" id='donate_other' 
-                        checked={donateItem.other}
-                        onChange={handleCheckboxChange}
-                      />
-                      Others
-                    </label>
                   </div>
                 </div>
             </div>
 
             {!successMessage ? (
-              <form className='flex flex-col w-auto rounded-[10px] xl:gap-2 lg:gap-2 md:gap-2'>
+              <form className='flex flex-col w-auto rounded-[10px]'>
 
                 
                 <div className= 'flex flex-col rounded-[10px] w-full'>
@@ -314,14 +300,14 @@ const Donate = () => {
 
                   {donateItem.food && (
                     <div className='flex flex-col w-full gap-1 p-5 bg-[#FFF] border-t-2 border-dashed border-t-[#bababa]'> {/* FOOD WINDOW */}
-                      <label className='flex justify-center items-center text-[#2F2F2F] text-[24px] font-bold w-full'>FOOD</label>
+                      <label className='flex justify-center items-center text-[#2F2F2F] text-[24px] font-bold w-full'>FOOD DONATION</label>
                       <div className='w-full flex flex-col gap-2'>
                         <div className='flex flex-col gap-4 w-full'>  
                           <div className='flex flex-col w-full gap-2'>
-                            <label className='text-[#595959] leading-tight'>Type of food you want to donate</label>
-                            <div className='flex items-center'>
-                              <div className='flex gap-2'>
-                                <label htmlFor="food_wet" className='flex gap-2 p-2 border-1 border-[#A3A3A3] rounded-[10px] w-full'>
+                            <div className='flex flex-col items-start'>
+                              <label className='text-[#595959] text-[14px] leading-tight'>Select a food type (you can select both)</label>
+                              <div className='flex gap-2 w-full'>
+                                <label htmlFor="food_wet" className='flex gap-2 p-2 border-1 border-[#A3A3A3] rounded-[5px] w-full'>
                                   <input type="checkbox" name="donation_food" id="food_wet" 
                                   value={'Wet'} 
                                   onChange={handleFoodtypeCheckbox}/>
@@ -333,22 +319,17 @@ const Donate = () => {
                                   Dry
                                 </label>
                               </div>
-                              <div className='flex flex-col gap-2'>
-                                {/* <label>Quantity</label>
-                                <div className='grid grid-cols-3 rounded-[10px] border-1 border-[#DC8801] w-full overflow-hidden'>
-                                  <button type='button' onClick={subtractFoodQuantity} className='cursor-pointer flex items-center justify-center w-full p-2 hover:bg-[#fec260] w-full object-cover'>
-                                    <div className='w-[20px] h-[20px]'>
-                                      <img src="/assets/icons/subtract.png" alt="" className='w-full h-full object-contain'/>
-                                    </div>
-                                  </button>
-                                  <input type="number" className='text-center w-auto' value={foodQuantity} onChange={(e) => setFoodQuantity(Number(e.target.value))}/>
-                                  <button type='button' onClick={addFoodQuantity} className='cursor-pointer flex items-center justify-center p-2 hover:bg-[#fec260] w-full'>
-                                    <div className='w-[20px] h-[20px]'>
-                                      <img src="/assets/icons/plus.png" alt="" className='w-full h-full object-contain'/>
-                                    </div>
-                                  </button>
-                                </div> */}
-                                <input type="text" placeholder='Quantity' className='p-2 border-1 border-[#A3A3A3] rounded-[5px]'/>
+                            </div>
+                            <div className='flex flex-col w-full'>
+                              <label className='text-[#595959] text-[14px] leading-tight'>Quantity (please specify how much food you're donating)</label>
+                              <div className='flex gap-2 items-center w-full'> 
+                                <input type="text" placeholder='Quantity' value={foodQuantity} onChange={handleNumericChange(setFoodQuantity)} className='p-2 border-1 border-[#A3A3A3] rounded-[5px] w-full'/>
+
+                                <select name="" id="" className='p-2 border-1 border-[#A3A3A3] rounded-[5px]'>
+                                  <option hidden>Select a unit of measurement (kg/g)</option>
+                                  <option value="kilograms">kilograms (kg)</option>
+                                  <option value="grams">grams (g)</option>
+                                </select>
                               </div>
                             </div>
                           </div>
@@ -369,73 +350,26 @@ const Donate = () => {
                   )}
                   
                   {donateItem.item && (
-                    <div className='flex flex-col w-full gap-1 p-5 bg-[#FFF] border-t-2 border-dashed border-t-[#bababa]'> {/* ITEM WINDOW */}
-                      <label className='flex justify-center items-center text-[#2F2F2F] text-[24px] font-bold w-full'>ITEM</label>
-                      <div className='xl:grid xl:grid-cols-2 lg:grid lg:grid-cols-2 md:grid md:grid-cols-2 w-full flex flex-col gap-2'>
+                    <div className='flex flex-col w-full gap-4 p-5 bg-[#FFF] border-t-2 border-dashed border-t-[#bababa]'> {/* ITEM WINDOW */}
+                      <label className='flex justify-between items-center w-full'>
+                        <span className='text-[#2F2F2F] text-[24px] font-bold'>ITEM DONATION</span>
+                        <span>You can donate cleaning supplies, food bowls, etc.</span>
+                      </label>
+                      <div className='flex flex-col gap-2'>
                         <div className='flex flex-col gap-2'>
-                          <div className='flex flex-col gap-2 w-full'>
-                            <label>Quantity</label>
-                            <div className='grid grid-cols-3 rounded-[10px] border-1 border-[#DC8801] w-full overflow-hidden'>
-                              <button type='button' onClick={subtractItemQuantity} className='cursor-pointer flex items-center justify-center w-full p-2 hover:bg-[#fec260] w-full object-cover'>
-                                <div className='w-[20px] h-[20px]'>
-                                  <img src="/assets/icons/subtract.png" alt="" className='w-full h-full object-contain'/>
-                                </div>
-                              </button>
-                              <input type="number" className='text-center w-auto' value={itemQuantity} onChange={(e) => setItemQuantity(Number(e.target.value))}/>
-                              <button type='button' onClick={addItemQuantity} className='cursor-pointer flex items-center justify-center p-2 hover:bg-[#fec260] w-full'>
-                                <div className='w-[20px] h-[20px]'>
-                                  <img src="/assets/icons/plus.png" alt="" className='w-full h-full object-contain'/>
-                                </div>
-                              </button>
-                            </div>
+                          <div className='flex flex-col w-full text-[14px]'>
+                            <label>Quantity (please specify how many items you're donating )</label>
+                            <input type="text" placeholder='Quantity' value={itemQuantity} onChange={handleNumericChange(setItemQuantity)} className='p-2 border-1 border-[#A3A3A3] rounded-[5px] w-full'/>
                           </div>
-
-                        </div>
-
-                        <div>
-                          <label htmlFor="">Description</label>
-                          <textarea 
-                            name="" 
-                            id="" 
-                            placeholder='Add a description' 
-                            rows={5} value={itemDescription} onChange={(e) => setItemDescription(e.target.value)}
-                            className='resize-none p-2 border-1 border-[#A3A3A3] rounded-[10px] w-full'
-                          ></textarea>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {donateItem.other && (
-                    <div className='flex flex-col w-full gap-1 p-5 bg-[#FFF] border-t-2 border-dashed border-t-[#bababa]'> {/* OTHER WINDOW */}
-                      <label className='flex justify-center items-center text-[#2F2F2F] text-[24px] font-bold w-full'>OTHERS</label>
-                      <div className='xl:grid xl:grid-cols-2 lg:grid lg:grid-cols-2 md:grid md:grid-cols-2 w-full flex flex-col gap-2'>
-                        <div className='flex flex-col gap-2'>
-                          <label>Quantity</label>
-                          <div className='grid grid-cols-3 rounded-[10px] border-1 border-[#DC8801] w-full overflow-hidden'>
-                            <button type='button' onClick={subtractOtherQuantity} className='cursor-pointer flex items-center justify-center w-full p-2 hover:bg-[#fec260] w-full object-cover'>
-                              <div className='w-[20px] h-[20px]'>
-                                <img src="/assets/icons/subtract.png" alt="" className='w-full h-full object-contain'/>
-                              </div>
-                            </button>
-                            <input type="number" className='text-center w-auto' value={otherQuantity} onChange={(e) => setOtherQuantity(Number(e.target.value))}/>
-                            <button type='button' onClick={addOtherQuantity} className='cursor-pointer flex items-center justify-center p-2 hover:bg-[#fec260] w-full'>
-                              <div className='w-[20px] h-[20px]'>
-                                <img src="/assets/icons/plus.png" alt="" className='w-full h-full object-contain'/>
-                              </div>
-                            </button>
+                          
+                          <div className='flex flex-col w-full'>
+                            <label className='text-[14px]'>Description (Please provide a specific description of your item donation)</label>
+                            <textarea 
+                              placeholder='Add a description' 
+                              rows={5} value={itemDescription} onChange={(e) => setItemDescription(e.target.value)}
+                              className='resize-none p-2 border-1 border-[#A3A3A3] rounded-[10px] w-full'
+                            ></textarea>
                           </div>
-                        </div>
-
-                        <div>
-                          <label htmlFor="">Description</label>
-                          <textarea 
-                            name="" 
-                            id="" 
-                            placeholder='Add a description' 
-                            rows={5} value={othersDescription} onChange={(e) => setOthersDescription(e.target.value)}
-                            className='resize-none p-2 border-1 border-[#A3A3A3] rounded-[10px] w-full'
-                          ></textarea>
                         </div>
                       </div>
                     </div>
@@ -447,8 +381,8 @@ const Donate = () => {
                   <label className='text-[#DC8801] italic text-center p-2 rounded-[10px] w-full bg-[#ffefd5]'>{error}</label>
                 )}
                 
-                <button type='button' onClick={handleSubmit} className={donateItem.money || donateItem.food || donateItem.item || donateItem.other ? 'cursor-pointer self-center min-w-[100px] w-full xl:w-auto lg:w-auto md:w-auto h-auto bg-[#B5C04A] text-[#FFF] xl:rounded-[10px] py-5 xl:py-2 lg:py-2 md:py-2 active:bg-[#CFDA34]' : 'hidden'}>
-                  Submit
+                <button type='button' onClick={handleSubmit} className={donateItem.money || donateItem.food || donateItem.item || donateItem.other ? 'cursor-pointer w-full xl:w-auto lg:w-auto md:w-auto h-auto bg-[#B5C04A] text-[#FFF] py-5 xl:py-3 lg:py-3 md:py-2 active:bg-[#CFDA34]' : 'hidden'}>
+                  Submit donation
                 </button>
               </form>
             ) : (
