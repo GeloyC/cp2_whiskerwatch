@@ -44,6 +44,7 @@ const allowedOrigins = [
   "https://cp2-whiskerwatch.vercel.app",
   "https://www.whiskerwatch.site",
   "https://whiskerwatch-0j6g.onrender.com",
+  "https://whiskerwatch-frontend.onrender.com",
   "http://localhost:5173"
 ];
 

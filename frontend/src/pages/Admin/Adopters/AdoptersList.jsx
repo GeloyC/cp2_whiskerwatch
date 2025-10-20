@@ -3,12 +3,15 @@ import { Link } from 'react-router-dom';
 import AdminSideBar from '../../../components/AdminSideBar';
 import { useSession } from '../../../context/SessionContext';
 import axios from 'axios';
+import { toPng } from 'html-to-image';
 
 const AdoptersList = () => {
   const url = `https://whiskerwatch-0j6g.onrender.com`;
     
   const { user, logout, loading: sessionLoading } = useSession();
   const [adopters, setAdopters] = useState([]);
+  const [certView, setCertView] = useState(false);
+  
 
   useEffect(() => {
     const fetchAdopter = async () => {
@@ -138,7 +141,30 @@ const AdoptersList = () => {
 //         alert(`Failed to upload certificate: ${error.response?.data?.error || 'Unknown error'}`);
 //     }
 // };
+  const [selectedAdoptee, setSelectedAdoptee] = useState(null);
 
+  const handleViewCert = (adoptee) => {
+    setSelectedAdoptee(adoptee);
+  };
+
+  const handleCloseCert = () => {
+    setSelectedAdoptee(null);
+  };
+
+  const handleDownloadCert = async () => {
+    const certificateNode = document.getElementById('certificate-block');
+    if (!certificateNode) return;
+
+    try {
+      const dataUrl = await toPng(certificateNode);
+      const link = document.createElement('a');
+      link.download = `Adoption_Certificate_${selectedAdoptee.cat_name}_${selectedAdoptee.adopter}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (error) {
+      console.error('Error generating certificate image:', error);
+    }
+  };
 
   const handleUploadCertificate = async (e, adoptee) => {
     const file = e.target.files?.[0];
@@ -219,21 +245,26 @@ const AdoptersList = () => {
                   <td>{adoptee.adoption_date}</td>
                   <td>{adoptee.contactnumber}</td>
                   <td className='flex items-center justify-start gap-2'>
-                    <Link className='flex items-center justify-between self-start gap-3 p-1 pl-4 pr-4 bg-[#FDF5D8] text-[#2F2F2F] rounded-[10px] hover:underline border-dashed border-2 border-[#595959]'>
+                    <button onClick={() => handleViewCert(adoptee)} className='flex items-center justify-between self-start gap-3 p-1 pl-4 pr-4 bg-[#FDF5D8] text-[#2F2F2F] rounded-[10px] hover:underline border-dashed border-2 border-[#595959]'>
                       View Certificate
-                    </Link>
+                    </button>
 
                     {/* CERTIFICATE */}
-                    <div className='absolute inset-0 flex flex-col items-center justify-center p-10'> 
-                      <div>
-                        adas
+                    {selectedAdoptee && (
+                      <div className='absolute inset-0 flex flex-col items-center justify-center p-10 bg-black/50'>
+                        <div id="certificate-block" className='relative flex flex-col items-center bg-[#FFF] bg-[url(/assets/AdoptionCertificate/Signed_Adoption_Certificate.png)] bg-cover bg-center w-[1020px] h-[650px]'>
+                          <label className='absolute top-73 text-4xl font-bold'>{selectedAdoptee.cat_name}</label>
+                          <label className='absolute top-94 right-40 text-xl font-bold'>{selectedAdoptee.adopter}</label>
+                          <label className='absolute top-102 right-140 text-xl font-bold'>{selectedAdoptee.adoption_date}</label>
+                        </div>
+
+                        <div className='flex gap-4 mt-4 pt-2'>
+                          <button onClick={handleCloseCert} className='bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-500'>Close</button>
+                          <button onClick={handleDownloadCert} className='bg-[#DC8801] text-white px-4 py-2 rounded-lg hover:bg-[#b76d00]'>Download</button>
+                        </div>
                       </div>
-                      <div className='flex flex-col items-center bg-[#FFF] bg-[url(/assets/AdoptionCertificate/Signed_Adoption_Certificate.png)] bg-cover bg-fit bg-repeat w-[1020px] h-[650px]'>
-                        <label className='fixed top-97 font-bold text-4xl'>{adoptee.cat_name}</label>
-                        <label className='fixed top-119 right-127 font-bold text-2xl'>{adoptee.adopter}</label>
-                        <label className='fixed top-127 right-200 font-bold text-xl'>{adoptee.adoption_date}</label>
-                      </div>
-                    </div>
+                    )}
+
                   </td>
                 </tr>
               ))}
