@@ -404,7 +404,6 @@
 
 // export default Donate
 
-
 import React, { useState } from 'react';
 import NavigationBar from '../components/NavigationBar';
 import Footer from '../components/Footer';
@@ -444,7 +443,7 @@ const Donate = () => {
     }));
   };
 
-  // Handle file upload
+  // Handle file upload with name sanitization
   const handleUploadScreenshot = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -456,8 +455,10 @@ const Donate = () => {
         setError('Please upload a PNG, JPEG, or PDF file.');
         return;
       }
+      // Sanitize file name: replace spaces with underscores
+      const sanitizedName = file.name.replace(/\s+/g, '_');
       setScreenshotFile(file);
-      setScreenshotName(file.name);
+      setScreenshotName(sanitizedName);
     }
   };
 
@@ -525,6 +526,10 @@ const Donate = () => {
   // Handle form submission
   const handleSubmit = async () => {
     if (!validateForm()) return;
+
+    // Log Food and Item field values for debugging
+    console.log('Food field values:', { foodType, foodQuantity, foodDescription });
+    console.log('Item field values:', { itemQuantity, itemDescription });
 
     const donationItems = [];
 
@@ -594,7 +599,10 @@ const Donate = () => {
       setIsAnonymous(false);
     } catch (err) {
       console.error('Donation submission failed:', err);
-      setError(err.response?.data?.message || 'Donation submission failed. Something went wrong.');
+      console.error('Full error response:', err.response?.data);
+      setError(
+        err.response?.data?.message || 'Donation submission failed. Please try again or contact support.'
+      );
     }
   };
 
@@ -772,15 +780,16 @@ const Donate = () => {
                   )}
 
                   {donateItem.item && (
-                    <div className="flex flex-col w-full gap-4 p-5 bg-[#FFF] border-t-2 border-dashed border-t-[#bababa]">
-                      <label className="flex justify-between items-center w-full">
-                        <span className="text-[#2F2F2F] text-[24px] font-bold">ITEM DONATION</span>
-                        <span>You can donate cleaning supplies, food bowls, etc.</span>
+                    <div className="flex flex-col w-full gap-1 p-5 bg-[#FFF] border-t-2 border-dashed border-t-[#bababa]">
+                      <label className="flex justify-center items-center text-[#2F2F2F] text-[24px] font-bold w-full">
+                        ITEM DONATION
                       </label>
-                      <div className="flex flex-col gap-2">
+                      <div className="w-full flex flex-col gap-2">
                         <div className="flex flex-col gap-2">
-                          <div className="flex flex-col w-full text-[14px]">
-                            <label>Quantity (please specify how many items you're donating)</label>
+                          <div className="flex flex-col w-full">
+                            <label className="text-[#595959] text-[14px]">
+                              Quantity (please specify how many items you're donating)
+                            </label>
                             <input
                               type="number"
                               min="1"
@@ -792,7 +801,7 @@ const Donate = () => {
                             />
                           </div>
                           <div className="flex flex-col w-full">
-                            <label className="text-[14px]">
+                            <label className="text-[#595959] text-[14px]">
                               Description (Please provide a specific description of your item donation)
                             </label>
                             <textarea
