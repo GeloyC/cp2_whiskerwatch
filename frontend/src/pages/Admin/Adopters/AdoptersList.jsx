@@ -310,18 +310,18 @@ const AdoptersList = () => {
 
                     {/* CERTIFICATE */}
                     {selectedAdoptee && (
-                      <div className='absolute inset-0 flex flex-col items-center justify-center p-10 bg-black/20'>
-                        {/* HTML certificate preview (always shown) */}
+                      <div className='absolute inset-0 flex flex-col items-center justify-center p-10 bg-black/30 backdrop-blur-sm'>
+                        {/* Certificate Preview */}
                         <div
                           id="certificate-block"
                           className='relative flex flex-col items-center bg-[#FFF] bg-[url(/assets/AdoptionCertificate/Signed_Adoption_Certificate.png)] bg-cover bg-center w-[1020px] h-[650px] rounded-xl shadow-lg'
                         >
-                          <label className='absolute top-73 text-4xl font-bold'>{selectedAdoptee.cat_name}</label>
+                          <label className='absolute top-72 text-4xl font-bold'>{selectedAdoptee.cat_name}</label>
                           <label className='absolute top-94 right-40 text-xl font-bold'>{selectedAdoptee.adopter}</label>
                           <label className='absolute top-102 right-140 text-xl font-bold'>{selectedAdoptee.adoption_date}</label>
                         </div>
 
-                        {/* Controls under preview: always Close + (View Certificate #1 OR Upload) */}
+                        {/* Buttons below the certificate */}
                         <div className='flex gap-4 mt-4 pt-2'>
                           <button
                             onClick={handleCloseCert}
@@ -330,7 +330,7 @@ const AdoptersList = () => {
                             Close
                           </button>
 
-                          {Array.isArray(certificateUrl) && certificateUrl.length > 0 ? (
+                          {certificateUrl && certificateUrl.length > 0 ? (
                             <a
                               href={certificateUrl[0]}
                               target='_blank'
@@ -338,7 +338,11 @@ const AdoptersList = () => {
                               className='bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2'
                             >
                               View Certificate #1
-                              <img src="/assets/icons/document-black.png" alt="" className="w-5 h-auto" />
+                              <img
+                                src="/assets/icons/document-black.png"
+                                alt=""
+                                className="w-5 h-auto"
+                              />
                             </a>
                           ) : (
                             <button
