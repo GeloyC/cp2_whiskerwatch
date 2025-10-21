@@ -324,16 +324,15 @@ const Profile = () => {
                                                                                 key={index}
                                                                                     className="relative flex flex-col items-center bg-[#fff] shadow-md rounded-[10px] border border-[#99A339] overflow-hidden"
                                                                                 >
-                                                                                <div className="absolute inset-0 bg-black opacity-20"></div>
-                                                                                <a
-                                                                                    href={cert.certificate}
-                                                                                    download={`certificate_${index + 1}.png`}
-                                                                                    target="_blank"
-                                                                                    rel="noopener noreferrer"
-                                                                                    className="absolute bottom-4 right-4 bg-[#E3E697] text-[#2F2F2F] px-3 py-2 rounded-[8px] border-2 border-dashed border-[#99A339] hover:underline z-20"
-                                                                                >
-                                                                                    View certificate #{index + 1}
-                                                                                </a>
+                                                                                    <a
+                                                                                        href={cert.certificate}
+                                                                                        download={`certificate_${index + 1}.png`}
+                                                                                        target="_blank"
+                                                                                        rel="noopener noreferrer"
+                                                                                        className="absolute bottom-4 right-4 bg-[#E3E697] text-[#2F2F2F] px-3 py-2 rounded-[8px] border-2 border-dashed border-[#99A339] hover:underline z-20"
+                                                                                    >
+                                                                                        View certificate #{index + 1}
+                                                                                    </a>
                                                                             </div>
                                                                         ) : null
                                                                     ))}
