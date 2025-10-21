@@ -319,10 +319,10 @@ const Profile = () => {
                                                                     </label>
 
                                                                     {userCertificates.map((cert, index) => (
-                                                                        cert.certificate ? (
+                                                                        
                                                                             <div
                                                                                 key={index}
-                                                                                    className="relative flex flex-col items-center bg-[#fff] shadow-md rounded-[10px] border border-[#99A339] overflow-hidden"
+                                                                                    className="relative flex flex-col items-center bg-[#fff] shadow-md rounded-[10px] border border-[#99A339]"
                                                                                 >
                                                                                     <a
                                                                                         href={cert.certificate}
@@ -334,7 +334,7 @@ const Profile = () => {
                                                                                         View certificate #{index + 1}
                                                                                     </a>
                                                                             </div>
-                                                                        ) : null
+                                                                        
                                                                     ))}
                                                                 </div>
                                                             )}
