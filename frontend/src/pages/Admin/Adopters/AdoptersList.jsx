@@ -227,7 +227,7 @@ const AdoptersList = () => {
 
   const handleViewCert = async (adoptee) => {
     try {
-      const response = await axios.get(`${url}/admin/adopters_certificate_by_adoption/${adoptee.adoption_id}`);
+      const response = await axios.get(`${url}/admin/adoption_certificate/${adoptee.adoption_id}`);
 
       let certUrls = [];
       if (Array.isArray(response.data)) {
@@ -295,16 +295,45 @@ const AdoptersList = () => {
                     </button>
 
                     {/* CERTIFICATE */}
+                    {/* CERTIFICATE MODAL/POPUP */}
                     {selectedAdoptee && (
-                      <div className='absolute inset-0 flex flex-col items-center justify-center p-10 bg-black/30 backdrop-blur-sm'>
-                        {/* Certificate Preview */}
+                      <div className='absolute inset-0 flex flex-col items-center justify-center p-10 bg-black/30 backdrop-blur-sm z-50'>
+                        {/* Certificate Preview / Display Block */}
                         <div
                           id="certificate-block"
-                          className='relative flex flex-col items-center bg-[#FFF] bg-[url(/assets/AdoptionCertificate/Signed_Adoption_Certificate.png)] bg-cover bg-center w-[1020px] h-[650px] rounded-xl shadow-lg'
+                          className='relative flex flex-col items-center bg-[#FFF] w-[1020px] h-[650px] rounded-xl shadow-lg overflow-hidden'
                         >
-                          <label className='absolute top-72 text-4xl font-bold'>{selectedAdoptee.cat_name}</label>
-                          <label className='absolute top-94 right-40 text-xl font-bold'>{selectedAdoptee.adopter}</label>
-                          <label className='absolute top-102 right-140 text-xl font-bold'>{selectedAdoptee.adoption_date}</label>
+                          {certificateUrl && certificateUrl.length > 0 ? (
+                            // Option 1: Display the actual uploaded certificate (Image/PDF link)
+                            // Note: For a PDF, you might need to use an <iframe> or a PDF viewer library.
+                            // Assuming the uploaded certificate is an image (PNG/JPG) for simple display.
+                            <img
+                              src={certificateUrl[0]}
+                              alt={`Uploaded Certificate for ${selectedAdoptee.adopter}`}
+                              className="w-full h-full object-contain"
+                            />
+                          ) : (
+                            // Option 2: Display the HTML preview for capture/upload
+                            <div className='relative w-full h-full bg-[url(/assets/AdoptionCertificate/Signed_Adoption_Certificate.png)] bg-cover bg-center'>
+                              {/* NOTE: The absolute positioning (top-72, right-40, etc.) relies on custom 
+                                Tailwind config or very specific styling relative to the background image. 
+                                Adjust these values based on where the text should appear on your template image.
+                              */}
+                              <label className='absolute top-[320px] left-[45%] transform -translate-x-1/2 text-4xl font-bold text-[#000000]'>
+                                {selectedAdoptee.cat_name}
+                              </label>
+                              
+                              <label className='absolute top-[420px] right-[250px] text-xl font-bold text-[#000000]'>
+                                {selectedAdoptee.adopter}
+                              </label>
+                              
+                              <label className='absolute top-[480px] right-[250px] text-xl font-bold text-[#000000]'>
+                                {selectedAdoptee.adoption_date}
+                              </label>
+                              
+                              {/* You might add more details here if your template requires them */}
+                            </div>
+                          )}
                         </div>
 
                         {/* Buttons below the certificate */}
@@ -316,6 +345,7 @@ const AdoptersList = () => {
                             Close
                           </button>
 
+                          {/* Conditional buttons based on certificateUrl state */}
                           {certificateUrl && certificateUrl.length > 0 ? (
                             <a
                               href={certificateUrl[0]}
@@ -327,7 +357,7 @@ const AdoptersList = () => {
                               <img
                                 src="/assets/icons/document-black.png"
                                 alt=""
-                                className="w-5 h-auto"
+                                className="w-5 h-auto invert" // Added 'invert' if the icon is meant to be white on a green background
                               />
                             </a>
                           ) : (
@@ -335,7 +365,7 @@ const AdoptersList = () => {
                               onClick={handleUploadCert}
                               className='bg-[#DC8801] text-white px-4 py-2 rounded-lg hover:bg-[#b76d00]'
                             >
-                              Upload Certificate
+                              Upload Certificate (Generate from Preview)
                             </button>
                           )}
                         </div>
