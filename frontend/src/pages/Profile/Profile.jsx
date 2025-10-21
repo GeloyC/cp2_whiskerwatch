@@ -477,7 +477,7 @@ const Profile = () => {
 
                             <div className='flex flex-col gap-4 bg-[#ffdfab] bg-[url(/src/assets/background-paws.png)] w-full bg-cover bg-fit bg-repeat p-10 rounded-b-[10px]'>
                                 {/* WHISKER METER */}
-                                <div className='flex flex-row items-center justify-between w-full'>
+                                <div className='flex flex-col xl:flex-row lg:flex-row  items-center justify-center xl:justify-between lg:justify-between w-full'>
                                     <label className='font-bold text-[#2F2F2F] text-2xl text-center'>WHISKERMETER TRACKER</label>
                                     
                                     <Link to="/leaderboard" className='flex items-center gap-3 bg-[#B5C04A] px-3 py-1 rounded-[10px] hover:bg-[#C2CB6A] active:bg-[#B5C04A]'>
