@@ -297,28 +297,20 @@ const AdoptersList = () => {
                     {/* CERTIFICATE */}
                     {/* CERTIFICATE MODAL/POPUP */}
                     {selectedAdoptee && (
-                      <div className='absolute inset-0 flex flex-col items-center justify-center p-10 bg-black/30 backdrop-blur-sm z-50'>
+                      <div className='absolute inset-0 flex flex-col items-center justify-center p-10 bg-black/30 bg-opacity-50 z-50'>
                         {/* Certificate Preview / Display Block */}
                         <div
                           id="certificate-block"
                           className='relative flex flex-col items-center bg-[#FFF] w-[1020px] h-[650px] rounded-xl shadow-lg overflow-hidden'
                         >
                           {certificateUrl && certificateUrl.length > 0 ? (
-                            // Option 1: Display the actual uploaded certificate (Image/PDF link)
-                            // Note: For a PDF, you might need to use an <iframe> or a PDF viewer library.
-                            // Assuming the uploaded certificate is an image (PNG/JPG) for simple display.
                             <img
                               src={certificateUrl[0]}
                               alt={`Uploaded Certificate for ${selectedAdoptee.adopter}`}
                               className="w-full h-full object-contain"
                             />
                           ) : (
-                            // Option 2: Display the HTML preview for capture/upload
                             <div className='relative w-full h-full bg-[url(/assets/AdoptionCertificate/Signed_Adoption_Certificate.png)] bg-cover bg-center'>
-                              {/* NOTE: The absolute positioning (top-72, right-40, etc.) relies on custom 
-                                Tailwind config or very specific styling relative to the background image. 
-                                Adjust these values based on where the text should appear on your template image.
-                              */}
                               <label className='absolute top-[320px] left-[45%] transform -translate-x-1/2 text-4xl font-bold text-[#000000]'>
                                 {selectedAdoptee.cat_name}
                               </label>
@@ -346,21 +338,7 @@ const AdoptersList = () => {
                           </button>
 
                           {/* Conditional buttons based on certificateUrl state */}
-                          {certificateUrl && certificateUrl.length > 0 ? (
-                            <a
-                              href={certificateUrl[0]}
-                              target='_blank'
-                              rel='noopener noreferrer'
-                              className='bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2'
-                            >
-                              View Certificate #1
-                              <img
-                                src="/assets/icons/document-black.png"
-                                alt=""
-                                className="w-5 h-auto invert" // Added 'invert' if the icon is meant to be white on a green background
-                              />
-                            </a>
-                          ) : (
+                          {certificateUrl && certificateUrl.length > 0 && (
                             <button
                               onClick={handleUploadCert}
                               className='bg-[#DC8801] text-white px-4 py-2 rounded-lg hover:bg-[#b76d00]'
