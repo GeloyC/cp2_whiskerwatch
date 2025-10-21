@@ -884,14 +884,14 @@ AdminRoute.get('/adopters/month', async (req, res) => {
 })
 
 
-AdminRoute.get('/adopters_certificate/:adoption_id', async (req, res) => {
+AdminRoute.get('/adopters_certificate/:adopter_id', async (req, res) => {
     const db = getDB();
-    const adoption_id = req.params.adoption_id;
+    const adopter_id = req.params.adopter_id;
 
     try {
         const [rows] = await db.query(
-        'SELECT certificate FROM adoption WHERE adoption_id = ?',
-        [adoption_id]
+        'SELECT certificate FROM adoption WHERE adopter_id = ?',
+        [adopter_id]
         );
 
         if (rows.length === 0) {

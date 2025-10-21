@@ -62,43 +62,38 @@ const Profile = () => {
     useEffect(() => {
         const fetchProfileAndCertificates = async () => {
             try {
-                // Fetch profile info
                 const profileResponse = await axios.get(`${url}/user/profile`, {
                     withCredentials: true,
                 });
                 setProfile(profileResponse.data);
                 setOriginalProfile(profileResponse.data);
 
-                // Fetch adoption applications
-                if (profileResponse.data.user_id) {
-                    const appResponse = await axios.get(`${url}/user/show_application/${profileResponse.data.user_id}`);
+                if (user?.user_id) {
+                    const appResponse = await axios.get(`${url}/user/show_application/${user.user_id}`, {
+                        withCredentials: true,
+                    });
                     setApplications(appResponse.data);
-
-                    // Fetch each certificate based on adoption_id
-                    const certs = await Promise.all(
-                        appResponse.data.map(async (app) => {
-                            try {
-                                const certResponse = await axios.get(
-                                    `${url}/admin/adopters_certificate/${app.adoption_id}`,
-                                    { withCredentials: true }
-                                );
-                                return { adoption_id: app.adoption_id, certificate: certResponse.data.certificate };
-                            } catch (err) {
-                                return { adoption_id: app.adoption_id, certificate: null };
-                            }
-                        })
-                    );
-
-                    setUserCertificates(certs);
                 }
 
+                if (user?.user_id) {
+                    const certResponse = await axios.get(
+                        `${url}/admin/adopters_certificate/${user.user_id}`,
+                        { withCredentials: true }
+                    );
+
+                    const certData = Array.isArray(certResponse.data)
+                        ? certResponse.data
+                        : [certResponse.data];
+
+                    setUserCertificates(certData);
+                }
             } catch (err) {
                 console.error("Error fetching user profile or certificates:", err.response?.data || err.message);
             }
         };
 
         fetchProfileAndCertificates();
-    }, []);
+    }, [user]);
 
 
     const handleImageChange = (e) => {
