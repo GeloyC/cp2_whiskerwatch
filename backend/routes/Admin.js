@@ -895,10 +895,10 @@ AdminRoute.get('/adopters_certificate/:adopter_id', async (req, res) => {
         );
 
         if (rows.length === 0) {
-        return res.status(404).json({ message: 'No certificate found' });
+            return res.status(404).json({ message: 'No certificate found' });
         }
 
-        res.json(rows[0]); // now returns correct certificate for that specific adoption
+        res.json(rows); // now returns correct certificate for that specific adoption
     } catch (err) {
         console.error('Error fetching certificate:', err);
         res.status(500).json({ error: 'Database error' });
