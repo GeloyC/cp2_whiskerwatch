@@ -227,18 +227,24 @@ const AdoptersList = () => {
 
   const handleViewCert = async (adoptee) => {
     setSelectedAdoptee(adoptee);
-    setCertificateUrl(null);
+    setCertificateUrl([]); // handle multiple
 
     try {
       const response = await axios.get(`${url}/admin/adopters_certificate/${adoptee.adopter_id}`);
-      if (response.data && response.data.certificate) {
-        setCertificateUrl(response.data.certificate);
-        console.log('Existing certificate found:', response.data.certificate);
+
+      if (Array.isArray(response.data) && response.data.length > 0) {
+        const certUrls = response.data
+          .map((item) => item.certificate)
+          .filter((c) => c && c.trim() !== '');
+        setCertificateUrl(certUrls);
+        console.log('Certificates found:', certUrls);
       } else {
-        console.log('No existing certificate found for this user.');
+        console.log('No existing certificates found for this adopter.');
+        setCertificateUrl([]);
       }
     } catch (error) {
-      console.log('No existing certificate found:', error.response?.data || error.message);
+      console.error('Error fetching certificates:', error.response?.data || error.message);
+      setCertificateUrl([]);
     }
   };
 
