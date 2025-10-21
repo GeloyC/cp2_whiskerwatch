@@ -1129,9 +1129,10 @@ UserRoute.post('/adoption/form', uploadAdoptionForm.single('file'), async (req, 
 
 
     const message = 'Your adoption application has been submitted and is now pending review.';
+    const target_url = '/profile';
     await db.query(
-      `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
-      [user_id, message]
+      `INSERT INTO notifications (user_id, message, target_url) VALUES (?, ?)`,
+      [user_id, message, target_url]
     );
 
     return res.status(200).json({

@@ -216,10 +216,11 @@ AdminRoute.patch('/manage/update/:user_id', async (req, res) => {
         }
 
         let message = `Your role at WhiskerWatch is now updated to ${role}. Congratulations`;
+        let target_url = "/profile"
         
         await db.query(
-            `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
-            [user_id, message]
+            `INSERT INTO notifications (user_id, message, target_url) VALUES (?, ?)`,
+            [user_id, message, target_url]
         );
 
         res.status(200).json({ 
@@ -247,10 +248,11 @@ AdminRoute.patch('/manage/update_admin', async (req, res) => {
         `, [user_id])
 
         let message = `Your role at WhiskerWatch is now updated to admin. Congratulations`;
+        let target_url = "/profile"
         
         await db.query(
-            `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
-            [user_id, message]
+            `INSERT INTO notifications (user_id, message, target_url) VALUES (?, ?)`,
+            [user_id, message, target_url]
         );
 
         return res.json({ success: true, result: query });
@@ -424,23 +426,14 @@ AdminRoute.patch('/form/status_update/:application_id', verifyUser, async (req, 
                     `UPDATE users SET badge = ? WHERE user_id = ?`,
                     [newBadge, user_id]
                 );
-
-                let message = `Congratulations, you now have ${points} points. Keep on going!`;
-
-                await db.query(
-                    `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
-                    [user_id, message]
-                );
                 }
 
-            console.log('Volunteer record created for user_id:', user_id);
-            console.log('User Info:', { user_id, firstname, lastname, application_date });
-
             let message = `Your volunteer application is ${status}. Congratulations`;
+            let target_url = '/feeding'
             
             await db.query(
-                `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
-                [user_id, message]
+                `INSERT INTO notifications (user_id, message, target_url) VALUES (?, ?)`,
+                [user_id, message, target_url]
             );
 
         } else if (status === 'Rejected') {
@@ -518,10 +511,11 @@ AdminRoute.patch('/feeders/feeding_date', async (req, res) => {
 
 
         let message = `Your feeding date as volunteer is ${formattedDate}.`;
+        let target_url = '/feeding'
 
         await db.query(
-            `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
-            [feeder_id, message]
+            `INSERT INTO notifications (user_id, message, target_url) VALUES (?, ?)`,
+            [feeder_id, message, target_url]
         );
 
         return res.json({ success: true, message: 'Feeding date updated successfully' });
