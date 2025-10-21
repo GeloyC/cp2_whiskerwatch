@@ -320,13 +320,13 @@ const Profile = () => {
 
                                                                     {userCertificates.map((cert, index) => (
                                                                         <div className='flex flex-col w-full gap-1'>
-                                                                            <div key={index} className="flex flex-col items-start w-full shadow-md rounded-[10px]">
+                                                                            <div key={index} className="flex flex-col items-start w-full">
                                                                                     <a
                                                                                         href={cert.certificate}
                                                                                         download={`certificate_${index + 1}.png`}
                                                                                         target="_blank"
                                                                                         rel="noopener noreferrer"
-                                                                                        className="bg-[#E3E697] text-[#2F2F2F] px-3 py-2 rounded-[8px] border-2 border-dashed border-[#99A339] hover:underline z-20"
+                                                                                        className="bg-[#E3E697] w-full text-[#2F2F2F] px-3 py-2 rounded-[8px] border-2 border-dashed border-[#99A339] hover:underline z-20"
                                                                                     >
                                                                                         View certificate #{index + 1}
                                                                                     </a>
