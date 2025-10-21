@@ -81,11 +81,11 @@ const Profile = () => {
                         { withCredentials: true }
                     );
 
-                    // const certData = Array.isArray(certResponse.data)
-                    //     ? certResponse.data
-                    //     : [certResponse.data];
+                    const certData = Array.isArray(certResponse.data)
+                        ? certResponse.data
+                        : [certResponse.data];
 
-                    setUserCertificates(certResponse.data);
+                    setUserCertificates(certData);
                 }
             } catch (err) {
                 console.error("Error fetching user profile or certificates:", err.response?.data || err.message);
