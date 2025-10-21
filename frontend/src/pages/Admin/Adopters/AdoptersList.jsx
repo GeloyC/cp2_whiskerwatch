@@ -297,7 +297,7 @@ const AdoptersList = () => {
                     {/* CERTIFICATE */}
                     {/* CERTIFICATE MODAL/POPUP */}
                     {selectedAdoptee && (
-                      <div className='absolute inset-0 flex flex-col items-center justify-center p-10 bg-black/30 bg-opacity-50 z-50'>
+                      <div className='absolute inset-0 flex flex-col items-center justify-center p-10 bg-black/30 z-50'>
                         {/* Certificate Preview / Display Block */}
                         <div
                           id="certificate-block"
@@ -338,7 +338,7 @@ const AdoptersList = () => {
                           </button>
 
                           {/* Conditional buttons based on certificateUrl state */}
-                          {certificateUrl && certificateUrl.length > 0 && (
+                          {!certificateUrl && !certificateUrl.length > 0 && (
                             <button
                               onClick={handleUploadCert}
                               className='bg-[#DC8801] text-white px-4 py-2 rounded-lg hover:bg-[#b76d00]'
