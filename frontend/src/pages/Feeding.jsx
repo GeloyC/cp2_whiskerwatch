@@ -202,273 +202,307 @@ const Feeding = () => {
               !feedingDate && applicationStatus !== 'Pending' ? 'gap-3' : 'gap-0 xl:gap-3 lg:gap-3'
             } xl:py-10 lg:py-10`}
           >
-            {applicationStatus === 'Pending' ? (
-              <div className="flex flex-col gap-3 w-full xl:w-[875px] lg:w-[875px] bg-[#FFF] p-5 rounded-[15px]">
-                <div className="flex flex-row justify-between items-center p-3 bg-[#FFF] xl:rounded-[10px] lg:rounded-[10px] border-b-2 border-dashed border-b-[#bababa] xl:border-none lg:border-none">
-                  <label className="font-bold text-[#DC8801]">Application Status</label>
-                  <div className="flex items-center justify-center w-[30px] h-auto">
-                    <img src="/assets/icons/clipboard-white.png" alt="white clipboard" className="w-full h-auto" />
-                  </div>
-                </div>
-                <div className="flex flex-col items-center justify-center gap-4">
-                  <p className="text-[#2F2F2F] text-center">
-                    Your application to become a feeding volunteer is currently <strong>pending approval</strong>.
-                  </p>
-                  <p className="text-[#2F2F2F] text-center">
-                    Thank you for applying! We'll notify you once your application has been reviewed.
-                  </p>
-                  <label className="bg-[#E3E697] p-2 pl-4 pr-4 rounded-[10px] text-[#6b7228] border-dashed border-2 border-[#99A339]">
-                    Please check your notifications for updates.
-                  </label>
-                </div>
-              </div>
-            ) : !feedingDate ? (
-              <div className="hidden xl:flex lg:flex xl:flex-row lg:flex-row lg:w-[875px] gap-2 w-fit">
-                <div className="flex flex-row justify-between items-center p-3 bg-[#FFF] rounded-[15px]">
-                  <label className="font-bold text-[#DC8801]">Feeders Form</label>
-                  <div className="flex items-center justify-center w-[30px] h-auto">
-                    <img src="/assets/icons/clipboard-white.png" alt="white clipboard" className="w-full h-auto" />
-                  </div>
-                </div>
-                <div className="flex flex-row justify-between items-center p-3 border-dashed border-2 border-[#DC8801] rounded-[15px]">
-                  <label className="text-[#DC8801]">
-                    Please answer the following questions to submit a request and become a part of the feeders team!
-                  </label>
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-3 w-full xl:w-[875px] lg:w-[875px]">
-                <div className="flex flex-row justify-between items-center p-3 bg-[#FFF] xl:rounded-[10px] lg:rounded-[10px] border-b-2 border-dashed border-b-[#bababa] xl:border-none lg:border-none">
-                  <label className="font-bold text-[#DC8801]">Feeding Info</label>
-                  <div className="flex items-center justify-center w-[30px] h-auto">
-                    <img src="/assets/icons/clipboard-white.png" alt="white clipboard" className="w-full h-auto" />
-                  </div>
-                </div>
-              </div>
-            )}
-
-
-            {/* -------------------- CONTENT --------------------- */}
-            {!feedingDate && applicationStatus !== 'Pending' ? (
-              !submitMessage ? (
-                <form
-                  ref={printRef}
-                  className="xl:flex xl:flex-col lg:flex lg:flex-col justify-center gap-8 p-5 bg-[#FFF] rounded-[15px] xl:w-[875px] lg:w-[875px] h-fit"
-                >
-                  <div className="flex flex-col gap-2">
-                    <label>1. Why are you interested in becoming a feeder for the Siera Park Residences Cat Community?</label>
-                    <textarea
-                      placeholder="Answer here"
-                      rows={5}
-                      value={interestReason}
-                      onChange={(e) => setInterestReason(e.target.value)}
-                      className="p-2 border-1 border-[#252525] rounded-[8px] resize-none"
-                    ></textarea>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <label>2. Do you have any prior experience with feeding or caring for stray cats or community animals?</label>
-                    <div className="flex flex-row gap-2">
-                      <label htmlFor="feedingYes" className="flex items-center gap-2 p-2 border-1 border-[#252525] rounded-[8px]">
-                        <input
-                          type="radio"
-                          name="feedingExp"
-                          id="feedingYes"
-                          value="Yes"
-                          checked={feedingExperience === 'Yes'}
-                          onChange={() => handleExpSelected('Yes')}
-                        />
-                        Yes
-                      </label>
-                      <label htmlFor="feedingNo" className="flex items-center gap-2 p-2 border-1 border-[#252525] rounded-[8px]">
-                        <input
-                          type="radio"
-                          name="feedingExp"
-                          id="feedingNo"
-                          value="No"
-                          checked={feedingExperience === 'No'}
-                          onChange={() => handleExpSelected('No')}
-                        />
-                        No
+            {user?.role !== 'head_volunteer' ? (
+              <>
+                {applicationStatus === 'Pending' ? (
+                  <div className="flex flex-col gap-3 w-full xl:w-[875px] lg:w-[875px] bg-[#FFF] p-5 rounded-[15px]">
+                    <div className="flex flex-row justify-between items-center p-3 bg-[#FFF] xl:rounded-[10px] lg:rounded-[10px] border-b-2 border-dashed border-b-[#bababa] xl:border-none lg:border-none">
+                      <label className="font-bold text-[#DC8801]">Application Status</label>
+                      <div className="flex items-center justify-center w-[30px] h-auto">
+                        <img src="/assets/icons/clipboard-white.png" alt="white clipboard" className="w-full h-auto" />
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-center justify-center gap-4">
+                      <p className="text-[#2F2F2F] text-center">
+                        Your application to become a feeding volunteer is currently <strong>pending approval</strong>.
+                      </p>
+                      <p className="text-[#2F2F2F] text-center">
+                        Thank you for applying! We'll notify you once your application has been reviewed.
+                      </p>
+                      <label className="bg-[#E3E697] p-2 pl-4 pr-4 rounded-[10px] text-[#6b7228] border-dashed border-2 border-[#99A339]">
+                        Please check your notifications for updates.
                       </label>
                     </div>
-                    {feedingExperience === 'Yes' && (
-                      <div className={feedingExperience === 'No' ? 'hidden' : 'flex flex-col'}>
-                        <label htmlFor="feedingDescribe">if <strong>Yes</strong>, please describe your experience to us.</label>
+                  </div>
+                ) : !feedingDate ? (
+                  <div className="hidden xl:flex lg:flex xl:flex-row lg:flex-row lg:w-[875px] gap-2 w-fit">
+                    <div className="flex flex-row justify-between items-center p-3 bg-[#FFF] rounded-[15px]">
+                      <label className="font-bold text-[#DC8801]">Feeders Form</label>
+                      <div className="flex items-center justify-center w-[30px] h-auto">
+                        <img src="/assets/icons/clipboard-white.png" alt="white clipboard" className="w-full h-auto" />
+                      </div>
+                    </div>
+                    <div className="flex flex-row justify-between items-center p-3 border-dashed border-2 border-[#DC8801] rounded-[15px]">
+                      <label className="text-[#DC8801]">
+                        Please answer the following questions to submit a request and become a part of the feeders team!
+                      </label>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-3 w-full xl:w-[875px] lg:w-[875px]">
+                    <div className="flex flex-row justify-between items-center p-3 bg-[#FFF] xl:rounded-[10px] lg:rounded-[10px] border-b-2 border-dashed border-b-[#bababa] xl:border-none lg:border-none">
+                      <label className="font-bold text-[#DC8801]">Feeding Info</label>
+                      <div className="flex items-center justify-center w-[30px] h-auto">
+                        <img src="/assets/icons/clipboard-white.png" alt="white clipboard" className="w-full h-auto" />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* -------------------- CONTENT --------------------- */}
+                {!feedingDate && applicationStatus !== 'Pending' ? (
+                  !submitMessage ? (
+                    <form
+                      ref={printRef}
+                      className="xl:flex xl:flex-col lg:flex lg:flex-col justify-center gap-8 p-5 bg-[#FFF] rounded-[15px] xl:w-[875px] lg:w-[875px] h-fit"
+                    >
+                      <div className="flex flex-col gap-2">
+                        <label>1. Why are you interested in becoming a feeder for the Siera Park Residences Cat Community?</label>
                         <textarea
-                          name=""
-                          id="feedingDescribe"
                           placeholder="Answer here"
                           rows={5}
-                          value={experienceDetails}
-                          onChange={(e) => setExperienceDetails(e.target.value)}
+                          value={interestReason}
+                          onChange={(e) => setInterestReason(e.target.value)}
                           className="p-2 border-1 border-[#252525] rounded-[8px] resize-none"
                         ></textarea>
                       </div>
-                    )}
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <label htmlFor="">3. Which day of the week can you commit to feeding the cats?</label>
-                    <div className="flex flex-row gap-2">
-                      <select
-                        name="feedingDay"
-                        id="feedingDay"
-                        value={feedingDay}
-                        onChange={(e) => setFeedingDay(e.target.value)}
-                        className="flex items-center justify-center border-1 border-[#A3A3A3] rounded-[10px]"
-                      >
-                        <option hidden>Select a day</option>
-                        <option value="Monday">Monday</option>
-                        <option value="Tuesday">Tuesday</option>
-                        <option value="Wednesday">Wednesday</option>
-                        <option value="Thursday">Thursday</option>
-                        <option value="Friday">Friday</option>
-                        <option value="Saturday">Saturday</option>
-                        <option value="Sunday">Sunday</option>
-                      </select>
-                      <label className="text-[14px] text-[#626262] italic leading-tight">
-                        (There's no guarantee that day you choose will be your feeding day due to other active feeders. Coordinate with the Head volunteers for this matter.)
-                      </label>
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-4">
-                    <label>4. Feeding typically begins at 8:00 pm and may continue late into the evening. Are you comfortable with this schedule?</label>
-                    <div className="flex flex-row gap-2">
-                      <label htmlFor="eveningYes" className="flex items-center gap-2 p-2 border-1 border-[#252525] rounded-[8px]">
-                        <input
-                          type="radio"
-                          name="feedingNight"
-                          id="eveningYes"
-                          value="Yes"
-                          checked={feedingSchedule === 'Yes'}
-                          onChange={() => handleSchedSelected('Yes')}
-                        />
-                        Yes
-                      </label>
-                      <label htmlFor="eveningNo" className="flex items-center gap-2 p-2 border-1 border-[#252525] rounded-[8px]">
-                        <input
-                          type="radio"
-                          name="feedingNight"
-                          id="eveningNo"
-                          value="No"
-                          checked={feedingSchedule === 'No'}
-                          onChange={() => handleSchedSelected('No')}
-                        />
-                        No
-                      </label>
-                    </div>
-                    <div className={feedingSchedule === 'No' ? 'flex flex-col' : 'hidden'}>
-                      <label htmlFor="nightFeedConcern">if <strong>No</strong>, please explain if you have any concerns.</label>
-                      <textarea
-                        id="nightFeedConcern"
-                        placeholder="Answer here"
-                        rows={5}
-                        value={concernReason}
-                        onChange={(e) => setConcernReason(e.target.value)}
-                        className="p-2 border-1 border-[#252525] rounded-[8px] resize-none"
-                      ></textarea>
-                    </div>
-                  </div>
-                  {error && <label className="font-[14px] italic text-[#DC8801]">{error}</label>}
-                </form>
-              ) : (
-                <div className="flex items-center justify-center p-5 bg-[#FFF] rounded-[15px] w-full xl:w-[875px] lg:w-[875px] h-full">
-                  {error ? (
-                    <label className="font-[14px] italic text-[#DC8801]">{error}</label>
-                  ) : (
-                    <div className="text-center">
-                      <p className="text-[#DC8801] whitespace-pre-line">{submitMessage}</p>
-                      {submitMessage.includes('https://') && (
-                        <a
-                          href={submitMessage.match(/https:\/\/[^\s]+/)[0]}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 underline mt-2 inline-block"
-                        >
-                          View Uploaded Form
-                        </a>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )
-            ) : applicationStatus === 'Approved' ? (
-              <div className="flex flex-col justify-center gap-3 rounded-[15px] w-full xl:w-[875px] lg:w-[875px] bg-[#FFF] h-full">
-                <div className="flex flex-col items-center justify-start gap-2 w-full xl:h-auto lg:h-auto h-screen bg-[#FFF] px-5 py-10 rounded-[15px]">
-                  <label className="text-[20px] text-[#2F2F2F] pb-2 font-bold text-center">
-                    {!isFeedingDatePassed && !hasSubmittedReport
-                      ? `Hi ${`${user?.firstname} ${user?.lastname}`}, here's what you need to know ahead of your feeding schedule.`
-                      : `Hey ${user?.firstname} ${user?.lastname}, glad to have you. We're looking forward to our next feeding schedule with you!`}
-                  </label>
-                  <div className="w-full h-auto overflow-hidden object-fit rounded-[10px] pb-5">
-                    <img src="/assets/image/WhiskerWatch-FeedingMap 1.png" alt="feeding_map" className="w-full h-full object-cover" />
-                  </div>
-                  {!isFeedingDatePassed ? (
-                    <div className="flex flex-col gap-2 w-full items-start">
-                      <p>Congratulations, your feeding application is approved!</p>
-                      <p className="px-4 py-2 border-2 border-dashed border-[#94b946] bg-[#dce1a9] text-[#889132] rounded-[10px]">
-                        Your given feeding schedule is at {feedingDate}.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col gap-4">
-                      {hasSubmittedReport ? (
-                        <div className="flex flex-col justify-center w-fit gap-4 rounded-[10px]">
-                          <p>
-                            Thank you so much for submitting a report for your recent feeding schedule ({feedingDate}). We appreciate your feedback.
-                          </p>
-                          <label className="bg-[#E3E697] p-2 pl-4 pr-4 rounded-[10px] text-[#6b7228] border-dashed border-2 border-[#99A339]">
-                            We're looking forward to another feeding session with you, just wait for your next feeding schedule to be updated. Thank you!
+                      <div className="flex flex-col gap-2">
+                        <label>2. Do you have any prior experience with feeding or caring for stray cats or community animals?</label>
+                        <div className="flex flex-row gap-2">
+                          <label htmlFor="feedingYes" className="flex items-center gap-2 p-2 border-1 border-[#252525] rounded-[8px]">
+                            <input
+                              type="radio"
+                              name="feedingExp"
+                              id="feedingYes"
+                              value="Yes"
+                              checked={feedingExperience === 'Yes'}
+                              onChange={() => handleExpSelected('Yes')}
+                            />
+                            Yes
+                          </label>
+                          <label htmlFor="feedingNo" className="flex items-center gap-2 p-2 border-1 border-[#252525] rounded-[8px]">
+                            <input
+                              type="radio"
+                              name="feedingExp"
+                              id="feedingNo"
+                              value="No"
+                              checked={feedingExperience === 'No'}
+                              onChange={() => handleExpSelected('No')}
+                            />
+                            No
                           </label>
                         </div>
-                      ) : (
-                        <div className="flex flex-col justify-center w-fit gap-4 rounded-[10px]">
-                          <p>
-                            Thank you so much for being part of WhiskerWatch feeding volunteers. Your support means a lot to us, and we know that our furry friends will appreciate the love.
-                          </p>
-                          <label className="bg-[#E3E697] p-2 pl-4 pr-4 rounded-[10px] text-[#6b7228] border-dashed border-2 border-[#99A339]">
-                            Please wait for your next feeding schedule.
-                          </label>
-                          {!hasSubmittedReport ? (
-                            <Link
-                              to={`/feeding/feedingreport/${user?.user_id}`}
-                              className="w-fit self-end bg-[#DC8801] text-[#FFF] font-bold p-2 rounded-[10px] cursor-pointer hover:scale-102 active:scale-98 transition-all duration-100"
-                            >
-                              Write a Feeding Report
-                            </Link>
-                          ) : (
-                            <div className="flex flex-col w-full justify-end">
-                              <button
-                                disabled
-                                className="w-fit self-end bg-[#2F2F2F] opacity-50 cursor-not-allowed text-[#FFF] font-bold p-2 rounded-[10px]"
-                              >
-                                Write a Feeding Report
-                              </button>
-                              <p className="text-[#8f8f8f] text-[12px] w-fit self-end">
-                                You've already submitted a report for your recent feeding.
-                              </p>
-                            </div>
-                          )}
+                        {feedingExperience === 'Yes' && (
+                          <div className={feedingExperience === 'No' ? 'hidden' : 'flex flex-col'}>
+                            <label htmlFor="feedingDescribe">if <strong>Yes</strong>, please describe your experience to us.</label>
+                            <textarea
+                              name=""
+                              id="feedingDescribe"
+                              placeholder="Answer here"
+                              rows={5}
+                              value={experienceDetails}
+                              onChange={(e) => setExperienceDetails(e.target.value)}
+                              className="p-2 border-1 border-[#252525] rounded-[8px] resize-none"
+                            ></textarea>
                           </div>
                         )}
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <label htmlFor="">3. Which day of the week can you commit to feeding the cats?</label>
+                        <div className="flex flex-row gap-2">
+                          <select
+                            name="feedingDay"
+                            id="feedingDay"
+                            value={feedingDay}
+                            onChange={(e) => setFeedingDay(e.target.value)}
+                            className="flex items-center justify-center border-1 border-[#A3A3A3] rounded-[10px]"
+                          >
+                            <option hidden>Select a day</option>
+                            <option value="Monday">Monday</option>
+                            <option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option>
+                            <option value="Thursday">Thursday</option>
+                            <option value="Friday">Friday</option>
+                            <option value="Saturday">Saturday</option>
+                            <option value="Sunday">Sunday</option>
+                          </select>
+                          <label className="text-[14px] text-[#626262] italic leading-tight">
+                            (There's no guarantee that day you choose will be your feeding day due to other active feeders. Coordinate with the Head volunteers for this matter.)
+                          </label>
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-4">
+                        <label>4. Feeding typically begins at 8:00 pm and may continue late into the evening. Are you comfortable with this schedule?</label>
+                        <div className="flex flex-row gap-2">
+                          <label htmlFor="eveningYes" className="flex items-center gap-2 p-2 border-1 border-[#252525] rounded-[8px]">
+                            <input
+                              type="radio"
+                              name="feedingNight"
+                              id="eveningYes"
+                              value="Yes"
+                              checked={feedingSchedule === 'Yes'}
+                              onChange={() => handleSchedSelected('Yes')}
+                            />
+                            Yes
+                          </label>
+                          <label htmlFor="eveningNo" className="flex items-center gap-2 p-2 border-1 border-[#252525] rounded-[8px]">
+                            <input
+                              type="radio"
+                              name="feedingNight"
+                              id="eveningNo"
+                              value="No"
+                              checked={feedingSchedule === 'No'}
+                              onChange={() => handleSchedSelected('No')}
+                            />
+                            No
+                          </label>
+                        </div>
+                        <div className={feedingSchedule === 'No' ? 'flex flex-col' : 'hidden'}>
+                          <label htmlFor="nightFeedConcern">if <strong>No</strong>, please explain if you have any concerns.</label>
+                          <textarea
+                            id="nightFeedConcern"
+                            placeholder="Answer here"
+                            rows={5}
+                            value={concernReason}
+                            onChange={(e) => setConcernReason(e.target.value)}
+                            className="p-2 border-1 border-[#252525] rounded-[8px] resize-none"
+                          ></textarea>
+                        </div>
+                      </div>
+                      {error && <label className="font-[14px] italic text-[#DC8801]">{error}</label>}
+                    </form>
+                  ) : (
+                    <div className="flex items-center justify-center p-5 bg-[#FFF] rounded-[15px] w-full xl:w-[875px] lg:w-[875px] h-full">
+                      {error ? (
+                        <label className="font-[14px] italic text-[#DC8801]">{error}</label>
+                      ) : (
+                        <div className="text-center">
+                          <p className="text-[#DC8801] whitespace-pre-line">{submitMessage}</p>
+                          {submitMessage.includes('https://') && (
+                            <a
+                              href={submitMessage.match(/https:\/\/[^\s]+/)[0]}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 underline mt-2 inline-block"
+                            >
+                              View Uploaded Form
+                            </a>
+                          )}
+                        </div>
+                      )}
                     </div>
-                  )}
+                  )
+                ) : applicationStatus === 'Approved' ? (
+                  <div className="flex flex-col justify-center gap-3 rounded-[15px] w-full xl:w-[875px] lg:w-[875px] bg-[#FFF] h-full">
+                    <div className="flex flex-col items-center justify-start gap-2 w-full xl:h-auto lg:h-auto h-screen bg-[#FFF] px-5 py-10 rounded-[15px]">
+                      <label className="text-[20px] text-[#2F2F2F] pb-2 font-bold text-center">
+                        {!isFeedingDatePassed && !hasSubmittedReport
+                          ? `Hi ${`${user?.firstname} ${user?.lastname}`}, here's what you need to know ahead of your feeding schedule.`
+                          : `Hey ${user?.firstname} ${user?.lastname}, glad to have you. We're looking forward to our next feeding schedule with you!`}
+                      </label>
+                      <div className="w-full h-auto overflow-hidden object-fit rounded-[10px] pb-5">
+                        <img src="/assets/image/WhiskerWatch-FeedingMap 1.png" alt="feeding_map" className="w-full h-full object-cover" />
+                      </div>
+                      {!isFeedingDatePassed ? (
+                        <div className="flex flex-col gap-2 w-full items-start">
+                          <p>Congratulations, your feeding application is approved!</p>
+                          <p className="px-4 py-2 border-2 border-dashed border-[#94b946] bg-[#dce1a9] text-[#889132] rounded-[10px]">
+                            Your given feeding schedule is at {feedingDate}.
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col gap-4">
+                          {hasSubmittedReport ? (
+                            <div className="flex flex-col justify-center w-fit gap-4 rounded-[10px]">
+                              <p>
+                                Thank you so much for submitting a report for your recent feeding schedule ({feedingDate}). We appreciate your feedback.
+                              </p>
+                              <label className="bg-[#E3E697] p-2 pl-4 pr-4 rounded-[10px] text-[#6b7228] border-dashed border-2 border-[#99A339]">
+                                We're looking forward to another feeding session with you, just wait for your next feeding schedule to be updated. Thank you!
+                              </label>
+                            </div>
+                          ) : (
+                            <div className="flex flex-col justify-center w-fit gap-4 rounded-[10px]">
+                              <p>
+                                Thank you so much for being part of WhiskerWatch feeding volunteers. Your support means a lot to us, and we know that our furry friends will appreciate the love.
+                              </p>
+                              <label className="bg-[#E3E697] p-2 pl-4 pr-4 rounded-[10px] text-[#6b7228] border-dashed border-2 border-[#99A339]">
+                                Please wait for your next feeding schedule.
+                              </label>
+                              {!hasSubmittedReport ? (
+                                <Link
+                                  to={`/feeding/feedingreport/${user?.user_id}`}
+                                  className="w-fit self-end bg-[#DC8801] text-[#FFF] font-bold p-2 rounded-[10px] cursor-pointer hover:scale-102 active:scale-98 transition-all duration-100"
+                                >
+                                  Write a Feeding Report
+                                </Link>
+                              ) : (
+                                <div className="flex flex-col w-full justify-end">
+                                  <button
+                                    disabled
+                                    className="w-fit self-end bg-[#2F2F2F] opacity-50 cursor-not-allowed text-[#FFF] font-bold p-2 rounded-[10px]"
+                                  >
+                                    Write a Feeding Report
+                                  </button>
+                                  <p className="text-[#8f8f8f] text-[12px] w-fit self-end">
+                                    You've already submitted a report for your recent feeding.
+                                  </p>
+                                </div>
+                              )}
+                              </div>
+                            )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : null}
+                {(interestReason || feedingExperience || feedingDay || feedingSchedule) && !submitMessage && applicationStatus !== 'Pending' && (
+                  <div className="flex gap-2 justify-end items-center">
+                    <button
+                      type="button"
+                      onClick={generateFeedingForm}
+                      disabled={loading}
+                      className={`self-end cursor-pointer w-auto text-center font-bold p-2 pl-5 pr-5 rounded-[15px] ${
+                        loading ? 'bg-gray-400' : 'bg-[#B5C04A] hover:bg-[#CFDA34] active:bg-[#B5C04A]'
+                      } text-white`}
+                    >
+                      {loading ? 'Submitting...' : 'Submit'}
+                    </button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className='flex flex-col items-center justify-center p-6 bg-[#FFF] w-[875px] gap-4 border-1 border-[#BABABA] rounded-[10px] '>
+                <div className='flex items-center justify-between w-full'>
+                  <label className='font-bold text-3xl text-[#2F2F2F]'>Hey {`${user?.username}`}!</label>
+                </div>
+
+                <div className='flex flex-col items-start w-full gap-4'>
+                  <div className='flex items-center justify-center object-cover w-full max-h-[200px] bg-[#BABABA] overflow-hidden rounded-[10px]'>
+                    <img src="/assets/icons/CatImages/feeding_page_image.jpg" alt="cat image" className='w-full h-full object-cover' />
+                  </div>
+
+                  <span className='text-[#2F2F2F]'>Welcome back! Your commitment to helping our cats find loving homes means the world to everyone at WhiskerWatch. Whether you're just joining the team or continuing your journey with us, we're thrilled to have your leadership and compassion on board!</span>
+
+                  <div className='font-bold pt-2 border-dashed border-t-2 border-t-[#BABABA]'>
+                    As a Head Volunteer, you are task to manage  cat adoption, feeding schedules and applications, and managing donations! Good luck!
+                  </div>
+
+                  <Link to="/dashboard" className='flex justify-between items-center gap-3 bg-[#DC8801] text-[#FFF] text-lg rounded-[5px] px-5 py-2 cursor-pointer hover:scale-102 active:scale-98 transition-all duration-100'>
+                    Visit dashboard 
+
+                    <div className='size-2 flex items-center justify-center'>
+                      <img src="/assets/icons/arrow-right-no-tail.png" alt="" />
+                    </div>
+                  </Link>
                 </div>
               </div>
-            ) : null}
-            {(interestReason || feedingExperience || feedingDay || feedingSchedule) && !submitMessage && applicationStatus !== 'Pending' && (
-              <div className="flex gap-2 justify-end items-center">
-                <button
-                  type="button"
-                  onClick={generateFeedingForm}
-                  disabled={loading}
-                  className={`self-end cursor-pointer w-auto text-center font-bold p-2 pl-5 pr-5 rounded-[15px] ${
-                    loading ? 'bg-gray-400' : 'bg-[#B5C04A] hover:bg-[#CFDA34] active:bg-[#B5C04A]'
-                  } text-white`}
-                >
-                  {loading ? 'Submitting...' : 'Submit'}
-                </button>
-              </div>
             )}
+
+
+
+
+
           </div>
           <Outlet />
         </div>
