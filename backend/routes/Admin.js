@@ -219,7 +219,7 @@ AdminRoute.patch('/manage/update/:user_id', async (req, res) => {
         let target_url = "/profile"
         
         await db.query(
-            `INSERT INTO notifications (user_id, message, target_url) VALUES (?, ?)`,
+            `INSERT INTO notifications (user_id, message, target_url) VALUES (?, ?, ?)`,
             [user_id, message, target_url]
         );
 
@@ -251,7 +251,7 @@ AdminRoute.patch('/manage/update_admin', async (req, res) => {
         let target_url = "/profile"
         
         await db.query(
-            `INSERT INTO notifications (user_id, message, target_url) VALUES (?, ?)`,
+            `INSERT INTO notifications (user_id, message, target_url) VALUES (?, ?, ?)`,
             [user_id, message, target_url]
         );
 
@@ -432,7 +432,7 @@ AdminRoute.patch('/form/status_update/:application_id', verifyUser, async (req, 
             let target_url = '/feeding'
             
             await db.query(
-                `INSERT INTO notifications (user_id, message, target_url) VALUES (?, ?)`,
+                `INSERT INTO notifications (user_id, message, target_url) VALUES (?, ?, ?)`,
                 [user_id, message, target_url]
             );
 
@@ -514,7 +514,7 @@ AdminRoute.patch('/feeders/feeding_date', async (req, res) => {
         let target_url = '/feeding'
 
         await db.query(
-            `INSERT INTO notifications (user_id, message, target_url) VALUES (?, ?)`,
+            `INSERT INTO notifications (user_id, message, target_url) VALUES (?, ?, ?)`,
             [feeder_id, message, target_url]
         );
 

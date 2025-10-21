@@ -61,8 +61,10 @@ const AssignNewAdmin = () => {
                 className='cursor-pointer p-2 pl-4 pr-4 rounded-[25px] bg-[#DC8801] active:bg-[#feaf2f] text-[#FFF] font-bold'>Search</button>
             </div>
 
-            <div className='flex flex-col gap-2 w-full h-auto'>
+            <div className='flex flex-col gap-2 w-full h-[250px] overflow-y-scroll scrollbar-thin'>
+                <div className='flex flex-col'>
 
+                </div>
                 {filteredItems.map((user) => (
                     <div key={user.user_id} className='flex items-center justify-start w-full gap-2'>
                         <div className='flex items-center w-auto gap-10 p-2 border-1 border-[#CCCCCC] rounded-[10px]'>
