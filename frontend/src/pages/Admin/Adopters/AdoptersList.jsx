@@ -338,12 +338,12 @@ const AdoptersList = () => {
                           </button>
 
                           {/* Conditional buttons based on certificateUrl state */}
-                          {certificateUrl && certificateUrl.length > 0 && (
+                          {(!certificateUrl || certificateUrl.length === 0) && selectedAdoptee && (
                             <button
                               onClick={handleUploadCert}
-                              className='bg-[#DC8801] text-white px-4 py-2 rounded-lg hover:bg-[#b76d00]'
+                              className='bg-[#94b946] text-white px-4 py-2 rounded-lg hover:bg-[#b76d00]'
                             >
-                              Upload Certificate (Generate from Preview)
+                              Generate & Upload Certificate
                             </button>
                           )}
                         </div>

@@ -300,6 +300,15 @@ const Profile = () => {
                                                             </div> 
                                                             Badge: 
                                                         </label>
+                                                        <label>{profile.role}</label>
+                                                    </div>
+                                                    <div className='flex flex-row items-center gap-3 border-b-2 border-dashed border-[#bbc3c1] pt-2 pb-2'>
+                                                        <label className='flex flex-row items-center font-bold gap-[5px]'>
+                                                            <div className='w-[30px] h-auto'>
+                                                                <img src="/assets/icons/badge-orange.png" alt="" />
+                                                            </div> 
+                                                            Badge: 
+                                                        </label>
                                                         <label>{profile.badge}</label>
                                                     </div>
                                                     <label className='leading-tight text-[14px] pt-4 pb-2 text-[#645e5f]'>

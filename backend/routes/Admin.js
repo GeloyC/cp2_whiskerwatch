@@ -406,7 +406,7 @@ AdminRoute.patch('/form/status_update/:application_id', verifyUser, async (req, 
                 } else {
                     // Insert new whiskermeter row
                     await db.query(
-                    `INSERT INTO whiskermeter (user_id, points) VALUES (?, ?)`,
+                        `INSERT INTO whiskermeter (user_id, points) VALUES (?, ?)`,
                     [user_id, totalPointsEarned]
                     );
                 }
@@ -766,9 +766,10 @@ AdminRoute.patch('/adoption_form/status_update/:application_id', verifyUser, asy
 
             // Notify user
             const statusMessage = `Your adoption application is now ${status}. Congratulations! Please wait for your adoption certificate which you can view on your Profile page.`;
+            const target_url = "/profile"
             await db.query(
-                `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
-                [application.user_id, statusMessage]
+                `INSERT INTO notifications (user_id, message) VALUES (?, ?, ?)`,
+                [application.user_id, statusMessage, target_url]
             );
 
             // Update whiskermeter points
