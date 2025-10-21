@@ -548,6 +548,7 @@ UserRoute.post("/login", async (req, res) => {
       firstname: user.firstname,
       lastname: user.lastname,
       username: user.username,
+      birthday: user.birthday,
       profile_image: user.profile_image || null,
     };
 
