@@ -314,22 +314,32 @@ const AdoptersList = () => {
                             Close
                           </button>
 
-                          {certificateUrl ? (
+                          {certificateUrl && certificateUrl.length > 0 ? (
+                            <div className="flex flex-col items-center gap-3">
+                              <label className="text-lg font-semibold text-[#2F2F2F]">Uploaded Certificates:</label>
+                              <div className="flex flex-wrap gap-3 justify-center">
+                                {certificateUrl.map((cert, index) => (
+                                  <a
+                                    key={index}
+                                    href={cert}
+                                    download
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-all"
+                                  >
+                                    View Certificate #{index + 1}
+                                    <img src="/assets/icons/document-black.png" alt="" className="w-5 h-auto" />
+                                  </a>
+                                ))}
+                              </div>
+                            </div>
+                          ) : (
                             <button
                               onClick={handleUploadCert}
-                              className='bg-[#DC8801] text-white px-4 py-2 rounded-lg hover:bg-[#b76d00]'
+                              className="bg-[#DC8801] text-white px-4 py-2 rounded-lg hover:bg-[#b76d00]"
                             >
                               Upload Certificate
                             </button>
-                          ) : (
-                            <a
-                              href={certificateUrl}
-                              target='_blank'
-                              rel='noopener noreferrer'
-                              className='bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700'
-                            >
-                              View Uploaded Certificate
-                            </a>
                           )}
                         </div>
                       </div>
