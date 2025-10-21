@@ -906,6 +906,30 @@ AdminRoute.get('/adopters_certificate/:adopter_id', async (req, res) => {
 });
 
 
+AdminRoute.get('/adoption_certificate/:adoption_id', async (req, res) => {
+    const db = getDB();
+    const adoption_id = req.params.adoption_id;
+
+    try {
+        const [rows] = await db.query(
+        'SELECT certificate FROM adoption WHERE adoption_id = ?',
+        [adoption_id]
+        );
+
+        if (!rows || rows.length === 0) {
+        return res.status(404).json({ message: 'No certificate found' });
+        }
+
+        // If you want to return a single object:
+        return res.json(rows[0]); // { certificate: 'https://...' }
+
+        // OR if you prefer returning an array (uncomment next line and comment above):
+        // return res.json(rows); // returns [{ certificate: '...' }]
+    } catch (err) {
+        console.error('Error fetching certificate by adoption_id:', err);
+        res.status(500).json({ error: 'Database error' });
+    }
+});
 
 
 AdminRoute.post("/upload_certificate", (req, res, next) => {

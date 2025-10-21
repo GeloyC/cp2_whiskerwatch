@@ -226,26 +226,35 @@ const AdoptersList = () => {
 
 
   const handleViewCert = async (adoptee) => {
+    // show the HTML preview immediately for the clicked row
     setSelectedAdoptee(adoptee);
-    setCertificateUrl([]); // reset to array form
+    setCertificateUrl([]); // reset previous
 
     try {
-      const response = await axios.get(`${url}/admin/adopters_certificate/${adoptee.adopter_id}`);
+      // Fetch certificate for this specific adoption (adoption_id)
+      // <-- IMPORTANT: backend should support a route that returns the certificate(s) for an adoption_id
+      const response = await axios.get(`${url}/admin/adopters_certificate/${adoptee.adoption_id}`);
 
-      // backend now returns an array of rows; convert to array of URLs
-      if (Array.isArray(response.data) && response.data.length > 0) {
-        const certUrls = response.data
-          .map(item => item.certificate)
-          .filter(c => c && c.trim() !== '');
-        setCertificateUrl(certUrls);
-        console.log('Certificates found:', certUrls);
+      // Backend may return either an object {certificate: "..."} or an array of rows.
+      // Normalize to an array of urls:
+      let certUrls = [];
+
+      if (!response || !response.data) {
+        certUrls = [];
+      } else if (Array.isArray(response.data)) {
+        certUrls = response.data.map(r => r.certificate).filter(Boolean);
+      } else if (typeof response.data === 'object' && response.data.certificate) {
+        certUrls = [response.data.certificate];
       } else {
-        // no certificates
-        setCertificateUrl([]);
-        console.log('No existing certificates found for this adopter.');
+        certUrls = [];
       }
+
+      setCertificateUrl(certUrls);
+      console.log(`Certificates for adoption_id=${adoptee.adoption_id}:`, certUrls);
+
     } catch (error) {
-      console.error('Error fetching certificates:', error.response?.data || error.message);
+      // show empty and log
+      console.error('Error fetching certificate for adoption_id:', adoptee.adoption_id, error.response?.data || error.message);
       setCertificateUrl([]);
     }
   };
