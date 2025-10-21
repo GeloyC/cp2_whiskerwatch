@@ -472,7 +472,7 @@ const Feeding = () => {
                 )}
               </>
             ) : (
-              <div className='flex flex-col items-center justify-center p-3 xl:p-6 lg:p-6 bg-[#FFF] w-full xl:w-[875px] lg:w-[875px] md:w-[750px] gap-4 border-1 border-[#BABABA] rounded-[10px] '>
+              <div className='flex flex-col items-center justify-center p-7 bg-[#FFF] w-full h-full xl:h-fit lg:h-fit xl:w-[875px] lg:w-[875px] md:w-[750px] gap-4 rounded-[10px] '>
                 <div className='flex items-center justify-between w-full'>
                   <label className='font-bold text-3xl text-[#2F2F2F]'>Hey {`${user?.username}`}!</label>
                 </div>
