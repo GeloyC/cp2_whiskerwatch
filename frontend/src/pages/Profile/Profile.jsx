@@ -81,11 +81,11 @@ const Profile = () => {
                         { withCredentials: true }
                     );
 
-                    const certData = Array.isArray(certResponse.data)
-                        ? certResponse.data
-                        : [certResponse.data];
+                    // const certData = Array.isArray(certResponse.data)
+                    //     ? certResponse.data
+                    //     : [certResponse.data];
 
-                    setUserCertificates(certData);
+                    setUserCertificates(certResponse.data);
                 }
             } catch (err) {
                 console.error("Error fetching user profile or certificates:", err.response?.data || err.message);
@@ -325,11 +325,6 @@ const Profile = () => {
                                                                                     className="relative flex flex-col items-center bg-[#fff] shadow-md rounded-[10px] border border-[#99A339] overflow-hidden"
                                                                                 >
                                                                                 <div className="absolute inset-0 bg-black opacity-20"></div>
-                                                                                <img
-                                                                                    src={cert.certificate}
-                                                                                    alt={`Certificate ${index + 1}`}
-                                                                                    className="w-[800px] h-auto object-contain rounded-[10px] relative z-10"
-                                                                                />
                                                                                 <a
                                                                                     href={cert.certificate}
                                                                                     download={`certificate_${index + 1}.png`}
