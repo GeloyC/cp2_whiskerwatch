@@ -319,35 +319,31 @@ const Profile = () => {
                                                                     </label>
 
                                                                     {userCertificates.map((cert, index) => (
-                                                                    cert.certificate ? (
-                                                                        <div
-                                                                        key={index}
-                                                                        className="relative flex flex-col items-center bg-[#fff] shadow-md rounded-[10px] border border-[#99A339] overflow-hidden"
-                                                                        >
-                                                                        {/* Background with lower opacity */}
-                                                                        <div className="absolute inset-0 bg-black opacity-20"></div>
-
-                                                                        {/* Actual certificate image */}
-                                                                        <img
-                                                                            src={cert.certificate}
-                                                                            alt={`Certificate ${index + 1}`}
-                                                                            className="w-[800px] h-auto object-contain rounded-[10px] relative z-10"
-                                                                        />
-
-                                                                        <a
-                                                                            href={cert.certificate}
-                                                                            download={`certificate_${index + 1}.png`}
-                                                                            target="_blank"
-                                                                            rel="noopener noreferrer"
-                                                                            className="absolute bottom-4 right-4 bg-[#E3E697] text-[#2F2F2F] px-3 py-2 rounded-[8px] border-2 border-dashed border-[#99A339] hover:underline z-20"
-                                                                        >
-                                                                            Download
-                                                                        </a>
-                                                                        </div>
-                                                                    ) : null
+                                                                        cert.certificate ? (
+                                                                            <div
+                                                                                key={index}
+                                                                                    className="relative flex flex-col items-center bg-[#fff] shadow-md rounded-[10px] border border-[#99A339] overflow-hidden"
+                                                                                >
+                                                                                <div className="absolute inset-0 bg-black opacity-20"></div>
+                                                                                <img
+                                                                                    src={cert.certificate}
+                                                                                    alt={`Certificate ${index + 1}`}
+                                                                                    className="w-[800px] h-auto object-contain rounded-[10px] relative z-10"
+                                                                                />
+                                                                                <a
+                                                                                    href={cert.certificate}
+                                                                                    download={`certificate_${index + 1}.png`}
+                                                                                    target="_blank"
+                                                                                    rel="noopener noreferrer"
+                                                                                    className="absolute bottom-4 right-4 bg-[#E3E697] text-[#2F2F2F] px-3 py-2 rounded-[8px] border-2 border-dashed border-[#99A339] hover:underline z-20"
+                                                                                >
+                                                                                    View certificate #{index + 1}
+                                                                                </a>
+                                                                            </div>
+                                                                        ) : null
                                                                     ))}
                                                                 </div>
-                                                                )}
+                                                            )}
 
 
                                                             {/* Show pending applications only if no certificates */}
