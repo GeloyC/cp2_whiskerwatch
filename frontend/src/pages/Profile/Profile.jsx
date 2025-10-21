@@ -319,11 +319,8 @@ const Profile = () => {
                                                                     </label>
 
                                                                     {userCertificates.map((cert, index) => (
-                                                                        
-                                                                            <div
-                                                                                key={index}
-                                                                                    className="flex flex-col items-start bg-[#FFF] w-full shadow-md rounded-[10px] border border-[#99A339]"
-                                                                                >
+                                                                        <div className='flex flex-col w-full gap-1'>
+                                                                            <div key={index} className="flex flex-col items-start w-full shadow-md rounded-[10px] border border-[#99A339]">
                                                                                     <a
                                                                                         href={cert.certificate}
                                                                                         download={`certificate_${index + 1}.png`}
@@ -334,6 +331,7 @@ const Profile = () => {
                                                                                         View certificate #{index + 1}
                                                                                     </a>
                                                                             </div>
+                                                                        </div>
                                                                         
                                                                     ))}
                                                                 </div>
