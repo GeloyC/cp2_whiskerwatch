@@ -226,36 +226,22 @@ const AdoptersList = () => {
 
 
   const handleViewCert = async (adoptee) => {
-    // show the HTML preview immediately for the clicked row
-    setSelectedAdoptee(adoptee);
-    setCertificateUrl([]); // reset previous
-
     try {
-      // Fetch certificate for this specific adoption (adoption_id)
-      // <-- IMPORTANT: backend should support a route that returns the certificate(s) for an adoption_id
-      const response = await axios.get(`${url}/admin/adopters_certificate/${adoptee.adoption_id}`);
+      const response = await axios.get(`${url}/admin/adopters_certificate_by_adoption/${adoptee.adoption_id}`);
 
-      // Backend may return either an object {certificate: "..."} or an array of rows.
-      // Normalize to an array of urls:
       let certUrls = [];
-
-      if (!response || !response.data) {
-        certUrls = [];
-      } else if (Array.isArray(response.data)) {
+      if (Array.isArray(response.data)) {
         certUrls = response.data.map(r => r.certificate).filter(Boolean);
-      } else if (typeof response.data === 'object' && response.data.certificate) {
+      } else if (response.data?.certificate) {
         certUrls = [response.data.certificate];
-      } else {
-        certUrls = [];
       }
 
       setCertificateUrl(certUrls);
-      console.log(`Certificates for adoption_id=${adoptee.adoption_id}:`, certUrls);
-
+      setSelectedAdoptee(adoptee); // Move AFTER the fetch
     } catch (error) {
-      // show empty and log
-      console.error('Error fetching certificate for adoption_id:', adoptee.adoption_id, error.response?.data || error.message);
+      console.error('Error fetching certificate:', error);
       setCertificateUrl([]);
+      setSelectedAdoptee(adoptee);
     }
   };
 
@@ -331,13 +317,6 @@ const AdoptersList = () => {
                           </button>
 
                           {certificateUrl && certificateUrl.length > 0 ? (
-                            <button
-                              onClick={handleUploadCert}
-                              className='bg-[#DC8801] text-white px-4 py-2 rounded-lg hover:bg-[#b76d00]'
-                            >
-                              Upload Certificate
-                            </button>
-                          ) : (
                             <a
                               href={certificateUrl[0]}
                               target='_blank'
@@ -351,6 +330,13 @@ const AdoptersList = () => {
                                 className="w-5 h-auto"
                               />
                             </a>
+                          ) : (
+                            <button
+                              onClick={handleUploadCert}
+                              className='bg-[#DC8801] text-white px-4 py-2 rounded-lg hover:bg-[#b76d00]'
+                            >
+                              Upload Certificate
+                            </button>
                           )}
                         </div>
                       </div>
