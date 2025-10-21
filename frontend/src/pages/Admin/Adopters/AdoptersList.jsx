@@ -291,17 +291,17 @@ const AdoptersList = () => {
                   <td>{adoptee.contactnumber}</td>
                   <td className='flex items-center justify-start gap-2'>
                     <button onClick={() => handleViewCert(adoptee)} className='flex items-center justify-between self-start gap-3 p-1 pl-4 pr-4 bg-[#FDF5D8] text-[#2F2F2F] rounded-[10px] hover:underline border-dashed border-2 border-[#595959]'>
-                      Certificate
+                      View Certificate
                     </button>
 
                     {/* CERTIFICATE */}
                     {/* CERTIFICATE MODAL/POPUP */}
                     {selectedAdoptee && (
-                      <div className='absolute inset-0 bg-black/50 bg-opacity-50 flex flex-col items-center justify-center p-10 z-50'>
+                      <div className='absolute inset-0 bg-black/10  flex flex-col items-center justify-center p-10 z-50'>
                         {/* Certificate Preview / Display Block */}
                         <div
                           id="certificate-block"
-                          className='relative flex flex-col items-center bg-[#FFF] w-[1020px] h-[650px] rounded-xl shadow-lg overflow-hidden'
+                          className='relative flex flex-col items-center bg-[#FFF] w-[1020px] h-[650px] overflow-hidden'
                         >
                           {certificateUrl && certificateUrl.length > 0 ? (
                             <img
@@ -329,12 +329,12 @@ const AdoptersList = () => {
                         </div>
 
                         {/* Buttons below the certificate */}
-                        <div className='flex gap-4 mt-4 pt-2'>
+                        <div className='flex justify-end gap-4 mt-4 pt-2 w-auto'>
                           <button
                             onClick={handleCloseCert}
-                            className='bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-500'
+                            className='bg-[#FFF] text-[#2F2F2F] px-4 py-2 rounded-[10px] hover:bg-[#bababa] active:bg-[#2F2F2F] active:text-[#FFF]'
                           >
-                            Close
+                            Exit view
                           </button>
 
                           {/* Conditional buttons based on certificateUrl state */}
