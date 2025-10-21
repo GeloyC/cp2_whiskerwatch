@@ -313,23 +313,23 @@ const Profile = () => {
                                                         <div className='flex flex-col items-center pt-2 pb-2 gap-2 w-full'>
                                                             {/* Show certificates first if they exist */}
                                                             {userCertificates.length > 0 && userCertificates.some(cert => cert.certificate) && (
-                                                                <div className="flex flex-col gap-4 w-full items-center">
+                                                                <div className="flex flex-col gap-4 w-full items-start">
                                                                     <label className="font-bold text-lg text-[#2F2F2F] self-start">
-                                                                    My Adoption Certificates
+                                                                        My Adoption Certificates
                                                                     </label>
 
                                                                     {userCertificates.map((cert, index) => (
                                                                         
                                                                             <div
                                                                                 key={index}
-                                                                                    className="relative flex flex-col items-center bg-[#fff] shadow-md rounded-[10px] border border-[#99A339]"
+                                                                                    className="flex flex-col items-start bg-[#FFF] w-full shadow-md rounded-[10px] border border-[#99A339]"
                                                                                 >
                                                                                     <a
                                                                                         href={cert.certificate}
                                                                                         download={`certificate_${index + 1}.png`}
                                                                                         target="_blank"
                                                                                         rel="noopener noreferrer"
-                                                                                        className="absolute bottom-4 right-4 bg-[#E3E697] text-[#2F2F2F] px-3 py-2 rounded-[8px] border-2 border-dashed border-[#99A339] hover:underline z-20"
+                                                                                        className="bg-[#E3E697] text-[#2F2F2F] px-3 py-2 rounded-[8px] border-2 border-dashed border-[#99A339] hover:underline z-20"
                                                                                     >
                                                                                         View certificate #{index + 1}
                                                                                     </a>

@@ -308,7 +308,7 @@ const AdoptersList = () => {
                             Close
                           </button>
 
-                          {!certificateUrl ? (
+                          {certificateUrl ? (
                             <button
                               onClick={handleUploadCert}
                               className='bg-[#DC8801] text-white px-4 py-2 rounded-lg hover:bg-[#b76d00]'
