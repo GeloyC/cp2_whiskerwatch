@@ -331,6 +331,13 @@ const AdoptersList = () => {
                           </button>
 
                           {certificateUrl && certificateUrl.length > 0 ? (
+                            <button
+                              onClick={handleUploadCert}
+                              className='bg-[#DC8801] text-white px-4 py-2 rounded-lg hover:bg-[#b76d00]'
+                            >
+                              Upload Certificate
+                            </button>
+                          ) : (
                             <a
                               href={certificateUrl[0]}
                               target='_blank'
@@ -344,13 +351,6 @@ const AdoptersList = () => {
                                 className="w-5 h-auto"
                               />
                             </a>
-                          ) : (
-                            <button
-                              onClick={handleUploadCert}
-                              className='bg-[#DC8801] text-white px-4 py-2 rounded-lg hover:bg-[#b76d00]'
-                            >
-                              Upload Certificate
-                            </button>
                           )}
                         </div>
                       </div>
