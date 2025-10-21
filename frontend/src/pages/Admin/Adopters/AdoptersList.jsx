@@ -227,20 +227,22 @@ const AdoptersList = () => {
 
   const handleViewCert = async (adoptee) => {
     setSelectedAdoptee(adoptee);
-    setCertificateUrl([]); // handle multiple
+    setCertificateUrl([]); // reset to array form
 
     try {
       const response = await axios.get(`${url}/admin/adopters_certificate/${adoptee.adopter_id}`);
 
+      // backend now returns an array of rows; convert to array of URLs
       if (Array.isArray(response.data) && response.data.length > 0) {
         const certUrls = response.data
-          .map((item) => item.certificate)
-          .filter((c) => c && c.trim() !== '');
+          .map(item => item.certificate)
+          .filter(c => c && c.trim() !== '');
         setCertificateUrl(certUrls);
         console.log('Certificates found:', certUrls);
       } else {
-        console.log('No existing certificates found for this adopter.');
+        // no certificates
         setCertificateUrl([]);
+        console.log('No existing certificates found for this adopter.');
       }
     } catch (error) {
       console.error('Error fetching certificates:', error.response?.data || error.message);
@@ -300,12 +302,17 @@ const AdoptersList = () => {
                     {/* CERTIFICATE */}
                     {selectedAdoptee && (
                       <div className='absolute inset-0 flex flex-col items-center justify-center p-10 bg-black/20'>
-                        <div id="certificate-block" className='relative flex flex-col items-center bg-[#FFF] bg-[url(/assets/AdoptionCertificate/Signed_Adoption_Certificate.png)] bg-cover bg-center w-[1020px] h-[650px]'>
+                        {/* HTML certificate preview (always shown) */}
+                        <div
+                          id="certificate-block"
+                          className='relative flex flex-col items-center bg-[#FFF] bg-[url(/assets/AdoptionCertificate/Signed_Adoption_Certificate.png)] bg-cover bg-center w-[1020px] h-[650px] rounded-xl shadow-lg'
+                        >
                           <label className='absolute top-73 text-4xl font-bold'>{selectedAdoptee.cat_name}</label>
                           <label className='absolute top-94 right-40 text-xl font-bold'>{selectedAdoptee.adopter}</label>
                           <label className='absolute top-102 right-140 text-xl font-bold'>{selectedAdoptee.adoption_date}</label>
                         </div>
 
+                        {/* Controls under preview: always Close + (View Certificate #1 OR Upload) */}
                         <div className='flex gap-4 mt-4 pt-2'>
                           <button
                             onClick={handleCloseCert}
@@ -314,29 +321,20 @@ const AdoptersList = () => {
                             Close
                           </button>
 
-                          {certificateUrl && certificateUrl.length > 0 ? (
-                            <div className="flex flex-col items-center gap-3">
-                              <label className="text-lg font-semibold text-[#2F2F2F]">Uploaded Certificates:</label>
-                              <div className="flex flex-wrap gap-3 justify-center">
-                                {certificateUrl.map((cert, index) => (
-                                  <a
-                                    key={index}
-                                    href={cert}
-                                    download
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-all"
-                                  >
-                                    View Certificate #{index + 1}
-                                    <img src="/assets/icons/document-black.png" alt="" className="w-5 h-auto" />
-                                  </a>
-                                ))}
-                              </div>
-                            </div>
+                          {Array.isArray(certificateUrl) && certificateUrl.length > 0 ? (
+                            <a
+                              href={certificateUrl[0]}
+                              target='_blank'
+                              rel='noopener noreferrer'
+                              className='bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2'
+                            >
+                              View Certificate #1
+                              <img src="/assets/icons/document-black.png" alt="" className="w-5 h-auto" />
+                            </a>
                           ) : (
                             <button
                               onClick={handleUploadCert}
-                              className="bg-[#DC8801] text-white px-4 py-2 rounded-lg hover:bg-[#b76d00]"
+                              className='bg-[#DC8801] text-white px-4 py-2 rounded-lg hover:bg-[#b76d00]'
                             >
                               Upload Certificate
                             </button>
