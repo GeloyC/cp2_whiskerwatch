@@ -311,15 +311,15 @@ const AdoptersList = () => {
                             />
                           ) : (
                             <div className='relative w-full h-full bg-[url(/assets/AdoptionCertificate/Signed_Adoption_Certificate.png)] bg-cover bg-center'>
-                              <label className='absolute top-[320px] left-[45%] transform -translate-x-1/2 text-4xl font-bold text-[#000000]'>
+                              <label className='absolute top-73 left-130 transform -translate-x-1/2 text-4xl font-bold text-[#000000]'>
                                 {selectedAdoptee.cat_name}
                               </label>
                               
-                              <label className='absolute top-[420px] right-[250px] text-xl font-bold text-[#000000]'>
+                              <label className='absolute top-95 right-40 text-xl font-bold text-[#000000]'>
                                 {selectedAdoptee.adopter}
                               </label>
                               
-                              <label className='absolute top-[480px] right-[250px] text-xl font-bold text-[#000000]'>
+                              <label className='absolute top-103 left-80 text-xl font-bold text-[#000000]'>
                                 {selectedAdoptee.adoption_date}
                               </label>
                               
@@ -338,7 +338,7 @@ const AdoptersList = () => {
                           </button>
 
                           {/* Conditional buttons based on certificateUrl state */}
-                          {!certificateUrl && !certificateUrl.length > 0 && (
+                          {certificateUrl && certificateUrl.length > 0 && (
                             <button
                               onClick={handleUploadCert}
                               className='bg-[#DC8801] text-white px-4 py-2 rounded-lg hover:bg-[#b76d00]'
