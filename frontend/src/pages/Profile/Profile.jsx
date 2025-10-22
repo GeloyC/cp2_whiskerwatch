@@ -32,32 +32,6 @@ const Profile = () => {
     const MAX_POINTS = 500;
     const progressHeightPercent = Math.min((points / MAX_POINTS) * 100, 100);
 
-    // useEffect(() => {
-    //     const fetchProfile = async () => {
-    //         try {
-    //             const response = await axios.get(`${url}/user/profile`, {
-    //                 withCredentials: true, // This automatically sends your cookie
-    //             });
-
-    //             setProfile(response.data);
-    //             setOriginalProfile(response.data);
-
-    //             // Fetch certificates using user_id from the response
-    //             if (response.data.user_id) {
-    //                 const certificateResponse = await axios.get(
-    //                 `${url}/admin/adopters_certificate/${response.data.user_id}`,
-    //                     { withCredentials: true }
-    //                 );
-    //                 setUserCertificates(certificateResponse.data);
-    //             }
-
-    //         } catch (err) {
-    //         console.error("Error fetching user:", err.response?.data || err.message);
-    //         }
-    //     };
-
-    //     fetchProfile();
-    // }, []);
 
     useEffect(() => {
         const fetchProfileAndCertificates = async () => {
@@ -330,6 +304,7 @@ const Profile = () => {
                                                                     {userCertificates.map((cert, index) => (
                                                                         <div className='flex flex-col w-full gap-1'>
                                                                             <div key={index} className="flex flex-col items-start w-full">
+                                                                                {cert.certificate ? (
                                                                                     <a
                                                                                         href={cert.certificate}
                                                                                         download={`certificate_${index + 1}.png`}
@@ -339,9 +314,9 @@ const Profile = () => {
                                                                                     >
                                                                                         View certificate #{index + 1}
                                                                                     </a>
+                                                                                ) : null }
                                                                             </div>
                                                                         </div>
-                                                                        
                                                                     ))}
                                                                 </div>
                                                             )}

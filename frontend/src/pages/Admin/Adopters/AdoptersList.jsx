@@ -12,7 +12,8 @@ const AdoptersList = () => {
   const [adopters, setAdopters] = useState([]);
   const [certView, setCertView] = useState(false);
   const [certificateUrl, setCertificateUrl] = useState(null);
-
+  const [selectedAdoptee, setSelectedAdoptee] = useState(null);
+  const [loading, setLoading] = useState(false)
   
 
   useEffect(() => {
@@ -31,156 +32,44 @@ const AdoptersList = () => {
     fetchAdopter();
   }, []);
 
-  // const handleUploadCertificate = async (e, adoptee) => {
-  //   const file = e.target.files[0];
-  //   if (!file || !file.name) {
-  //     console.warn('No file selected or invalid file object.');
-  //     return;
-  //   }
-
-  //   // Safely extract file extension
-  //   const extension = file.name.includes('.') ? file.name.slice(file.name.lastIndexOf('.')) : '';
-  //   const filename = `Certificate_${adoptee.adopter}`;
-
-  //   const certificateForm = new FormData();
-  //   certificateForm.append('certificate', file, filename);
-  //   certificateForm.append('adoption_id', adoptee.adoption_id);
-
-  //   try {
-  //     const response = await axios.post(`${url}/admin/upload_certificate/:${adoptee.adoption_id}`, certificateForm, {
-  //       headers: {
-  //         'Content-Type': 'multipart/form-data',
-  //       },
-  //     });
-
-  //     // Update the adopter state with the new certificate URL
-  //     const updatedAdopters = adopters.map((a) =>
-  //       a.adoption_id === adoptee.adoption_id ? { ...a, certificate: response.data.certificateUrl } : a
-  //     );
-  //     setAdopters(updatedAdopters);
-  //   } catch (error) {
-  //     console.error('Upload failed:', error.response?.data || error.message);
-  //     alert('Failed to upload certificate. Please try again.');
-  //   }
-  // };
-
-  // const handleUploadCertificate = async (e, adoptee) => {
-  //   const file = e.target.files?.[0];
-  //   if (!file || !file.name) {
-  //     console.warn('No file selected or invalid file object.');
-  //     return;
-  //   }
-
-  //   const extension = file.name.includes('.') ? file.name.slice(file.name.lastIndexOf('.')) : '';
-  //   const filename = `Certificate_${adoptee.adopter.replace(/\s+/g, '_')}_${adoptee.adoption_id}${extension}`;
-
-  //   const certificateForm = new FormData();
-  //   certificateForm.append('certificate', file, filename);
-  //   certificateForm.append('adopter_id', adoptee.adopter_id); // Use adopter_id if available
-
-  //   try {
-  //     const response = await axios.post(`${url}/admin/upload_certificate`, certificateForm, {
-  //       headers: { 'Content-Type': 'multipart/form-data' },
-  //     });
-  //     console.log('Upload response:', response.data); // Debug
-  //     const updatedAdopters = adopters.map((a) =>
-  //       a.adopter_id === adoptee.adopter_id ? { ...a, certificate: response.data.certificateUrl } : a
-  //     );
-  //     setAdopters(updatedAdopters);
-  //   } catch (error) {
-  //     console.error('Upload failed:', error.response?.data || error.message);
-  //     alert('Failed to upload certificate. Please try again.');
-  //   }
-  // };
-
-
-//   const handleUploadCertificate = async (e, adoptee) => {
-//     const file = e.target.files?.[0];
-//     if (!file || !file.name) {
-//         console.warn('No file selected or invalid file object.');
-//         alert('Please select a valid file (jpg, png, or pdf).');
-//         return;
-//     }
-
-//     // Validate file type
-//     const validTypes = ['image/jpeg', 'image/png', 'application/pdf'];
-//     if (!validTypes.includes(file.type)) {
-//         console.warn('Invalid file type:', file.type);
-//         alert('Please select a jpg, png, or pdf file.');
-//         return;
-//     }
-
-//     if (!adoptee.adoption_id ) {
-//         console.error('Adopter ID is missing:', adoptee);
-//         alert('Adopter ID is missing. Please try again.');
-//         return;
-//     }
-
-//     const formData = new FormData();
-//     const filename = `Certificate_${adoptee.adopter.replace(/\s+/g, '_')}_${adoptee.adoption_id }${file.name.slice(file.name.lastIndexOf('.'))}`;
-//     formData.append('certificate', file, filename);
-//     formData.append('adopter_id', adoptee.adoption_id );
-
-//     try {
-//         console.log('Uploading certificate for:', { adoption_id : adoptee.adoption_id , filename });
-//         const response = await axios.post(`${url}/admin/upload_certificate`, formData, {
-//             headers: { 'Content-Type': 'multipart/form-data' },
-//         });
-//         console.log('Upload response:', response.data);
-
-//         // Update adopters state
-//         const updatedAdopters = adopters.map((a) =>
-//             a.adoption_id  === adoptee.adoption_id  ? { ...a, certificate: response.data.certificateUrl } : a
-//         );
-//         setAdopters(updatedAdopters);
-
-//         alert('Certificate uploaded successfully!');
-
-//         // Optional: Refresh adopters list like fetchCatImage()
-//         // await fetchAdopters(); // Uncomment if you have a fetchAdopters function
-//     } catch (error) {
-//         console.error('Upload failed:', error.response?.data || error.message);
-//         alert(`Failed to upload certificate: ${error.response?.data?.error || 'Unknown error'}`);
-//     }
-// };
-  const [selectedAdoptee, setSelectedAdoptee] = useState(null);
+  
 
   const handleCloseCert = () => {
     setSelectedAdoptee(null);
   };
 
-  const handleUploadCertificate = async (e, adoptee) => {
-    const file = e.target.files?.[0];
-    if (!file) {
-      alert("Please select a file.");
-      return;
-    }
+  // const handleUploadCertificate = async (e, adoptee) => {
+  //   const file = e.target.files?.[0];
+  //   if (!file) {
+  //     alert("Please select a file.");
+  //     return;
+  //   }
 
-    const filename = `Certificate_${
-      adoptee.adopter ? adoptee.adopter.replace(/\s+/g, '_') : 'unknown'
-    }_${adoptee.adoption_id}.png`;
+  //   const filename = `Certificate_${
+  //     adoptee.adopter ? adoptee.adopter.replace(/\s+/g, '_') : 'unknown'
+  //   }_${adoptee.adoption_id}.png`;
 
 
-    const formData = new FormData();
-    formData.append( "certificate", file,filename);
-    formData.append("adoption_id", adoptee.adoption_id);
+  //   const formData = new FormData();
+  //   formData.append( "certificate", file,filename);
+  //   formData.append("adoption_id", adoptee.adoption_id);
 
-    try {
-      const response = await axios.post(
-        "https://whiskerwatch-0j6g.onrender.com/admin/upload_certificate",
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
+  //   try {
+  //     const response = await axios.post(
+  //       "https://whiskerwatch-0j6g.onrender.com/admin/upload_certificate",
+  //       formData,
+  //       { headers: { "Content-Type": "multipart/form-data" } }
+  //     );
 
-      console.log('Upload response:', response.data);
+  //     console.log('Upload response:', response.data);
 
-      alert("Certificate uploaded successfully!");
-      window.location.reload();
-    } catch (err) {
-      console.error("Upload failed:", err.response?.data || err.message);
-      alert(`Upload failed: ${err.response?.data?.error || "Unknown error"}`);
-    }
-  };
+  //     alert("Certificate uploaded successfully!");
+  //     window.location.reload();
+  //   } catch (err) {
+  //     console.error("Upload failed:", err.response?.data || err.message);
+  //     alert(`Upload failed: ${err.response?.data?.error || "Unknown error"}`);
+  //   }
+  // };
 
 
   const handleUploadCert = async () => {
@@ -221,6 +110,8 @@ const AdoptersList = () => {
     } catch (error) {
       console.error('Upload failed:', error);
       alert('Failed to upload certificate. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -341,9 +232,9 @@ const AdoptersList = () => {
                           {(!certificateUrl || certificateUrl.length === 0) && selectedAdoptee && (
                             <button
                               onClick={handleUploadCert}
-                              className='bg-[#94b946] text-white px-4 py-2 rounded-lg hover:bg-[#b76d00]'
+                              className='bg-[#94b946] text-white px-4 py-2 rounded-lg hover:bg-[#889132] active:bg-[#94b946]'
                             >
-                              Generate & Upload Certificate
+                              {loading ? 'Sending...' : `Send Certificate to ${selectedAdoptee.adopter}`}
                             </button>
                           )}
                         </div>
