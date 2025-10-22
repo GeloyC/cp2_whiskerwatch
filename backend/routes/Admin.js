@@ -768,7 +768,7 @@ AdminRoute.patch('/adoption_form/status_update/:application_id', verifyUser, asy
             const statusMessage = `Your adoption application is now ${status}. Congratulations! Please wait for your adoption certificate which you can view on your Profile page.`;
             const target_url = "/profile"
             await db.query(
-                `INSERT INTO notifications (user_id, message) VALUES (?, ?, ?)`,
+                `INSERT INTO notifications (user_id, message, target_url) VALUES (?, ?, ?)`,
                 [application.user_id, statusMessage, target_url]
             );
 
@@ -808,9 +808,10 @@ AdminRoute.patch('/adoption_form/status_update/:application_id', verifyUser, asy
                 );
 
                 const badgeMessage = `Congratulations on achieving a badge of ${newBadge}. Keep on going!`;
+                const target_url = '/profile'
                 await db.query(
-                    `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
-                    [application.user_id, badgeMessage]
+                    `INSERT INTO notifications (user_id, message, target_url) VALUES (?, ?, ?)`,
+                    [application.user_id, badgeMessage, target_url]
                 );
             }
 
@@ -820,7 +821,7 @@ AdminRoute.patch('/adoption_form/status_update/:application_id', verifyUser, asy
                 [application.cat_id]
             );
 
-            const rejectedMessage = `Your adoption application is now ${status}. You can always apply again!`;
+            const rejectedMessage = `Your adoption application is ${status}. You can always apply again!`;
             await db.query(
                 `INSERT INTO notifications (user_id, message) VALUES (?, ?)`,
                 [application.user_id, rejectedMessage]
