@@ -25,6 +25,7 @@ const NavigationBar = () => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
+  const [showAgeAlert, setShowAgeAlert] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [MenuVisible, setMenuVisible] = useState(false);
 
@@ -59,15 +60,29 @@ const NavigationBar = () => {
   }, [user]); 
 
   // verify login for Donate & Feeding page
-  const verifyLoggedIn = (e, path) => {
-    e.preventDefault();
+  // const verifyLoggedIn = (e, path) => {
+  //   e.preventDefault();
 
-    if (!user) {
-      setShowAlert(true);
-    } else {
-      navigate(path);
-    }
-  }
+  //   if (!user) {
+  //     setShowAlert(true);
+  //   } else {
+  //     navigate(path);
+  //   }
+  // }
+  const verifyLoggedIn = (e, path) => {
+        e.preventDefault();
+        
+        if (!user) {
+            // Case 1: Not logged in
+            setShowAlert(true);
+        } else if (user.birthday && !isUserAbove18(user.birthday)) {
+            // Case 2: Logged in, but under 18 (assuming 'user.birthday' holds the date)
+            setShowAgeAlert(true);
+        } else {
+            // Case 3: Logged in and 18+
+            navigate(path);
+        }
+    };
 
 
   const toggleProfileMenu = () => {
@@ -227,6 +242,23 @@ const NavigationBar = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {showAgeAlert && (
+          <div className="fixed inset-0 flex justify-center bg-black/10 items-center z-50">
+              <div className="flex flex-col gap-3 bg-white p-6 rounded-[15px] text-center max-w-sm w-full">
+                  <h2 className="text-lg font-semibold mb-2 text-red-600">AGE RESTRICTION</h2>
+                  <p className="mb-2">
+                      You must be at least 18 years old to submit an adoption application.
+                  </p>
+                  <button
+                      onClick={() => setShowAgeAlert(false)}
+                      className="bg-[#DC8801] text-[#FFF] px-4 py-2 rounded-[10px] hover:scale-101 active:scale-98 transition-all duration-100"
+                  >
+                      Close
+                  </button>
+              </div>
+          </div>
       )}
 
       {/* Logout Confirmation Modal */}
