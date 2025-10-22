@@ -70,19 +70,33 @@ const NavigationBar = () => {
   //   }
   // }
   const verifyLoggedIn = (e, path) => {
-        e.preventDefault();
-        
-        if (!user) {
-            // Case 1: Not logged in
-            setShowAlert(true);
-        } else if (user.birthday && !isUserAbove18(user.birthday)) {
-            // Case 2: Logged in, but under 18 (assuming 'user.birthday' holds the date)
-            setShowAgeAlert(true);
-        } else {
-            // Case 3: Logged in and 18+
-            navigate(path);
-        }
-    };
+    e.preventDefault();
+    
+    if (!user) {
+        // Case 1: Not logged in
+        setShowAlert(true);
+    } else if (user.birthday && !isUserAbove18(user.birthday)) {
+        // Case 2: Logged in, but under 18 (assuming 'user.birthday' holds the date)
+        setShowAgeAlert(true);
+    } else {
+        // Case 3: Logged in and 18+
+        navigate(path);
+    }
+  };
+
+  const isUserAbove18 = (birthDateStr) => {
+    if (!birthDateStr) return false;
+    
+    const birthDate = new Date(birthDateStr);
+    const currentDate = new Date();
+    const ageLimit = new Date(
+        currentDate.getFullYear() - 18,
+        currentDate.getMonth(),
+        currentDate.getDate()
+    );
+    
+    return birthDate <= ageLimit;
+  };
 
 
   const toggleProfileMenu = () => {
