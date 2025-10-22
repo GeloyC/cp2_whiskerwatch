@@ -188,7 +188,7 @@ const AdoptersList = () => {
                     {/* CERTIFICATE */}
                     {/* CERTIFICATE MODAL/POPUP */}
                     {selectedAdoptee && (
-                      <div className='absolute inset-0 bg-black/10  flex flex-col items-center justify-center p-10 z-50'>
+                      <div className='absolute inset-0 bg-black/10 flex flex-col items-center justify-center p-10 z-50'>
                         {/* Certificate Preview / Display Block */}
                         <div
                           id="certificate-block"

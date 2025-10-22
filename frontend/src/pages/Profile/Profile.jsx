@@ -323,7 +323,7 @@ const Profile = () => {
 
 
                                                             {/* Show pending applications only if no certificates */}
-                                                            {userCertificates.length === 0 && applications.length > 0 && applications.map((app) => (
+                                                            {userCertificates.length > 0 && applications.length > 0 && applications.map((app) => (
                                                                 <div key={app.application_id} className='flex flex-col gap-2 p-5 rounded-[10px] border-dashed border-2 border-[#99A339] bg-[#FFF]'>
                                                                     <span className='flex flex-row w-full justify-between'>
                                                                         <label className='font-bold text-lg text-[#2F2F2F]'>
