@@ -16,6 +16,8 @@ const AdoptersList = () => {
   const [loading, setLoading] = useState(false)
   
 
+
+
   useEffect(() => {
     const fetchAdopter = async () => {
       try {
@@ -38,38 +40,6 @@ const AdoptersList = () => {
     setSelectedAdoptee(null);
   };
 
-  // const handleUploadCertificate = async (e, adoptee) => {
-  //   const file = e.target.files?.[0];
-  //   if (!file) {
-  //     alert("Please select a file.");
-  //     return;
-  //   }
-
-  //   const filename = `Certificate_${
-  //     adoptee.adopter ? adoptee.adopter.replace(/\s+/g, '_') : 'unknown'
-  //   }_${adoptee.adoption_id}.png`;
-
-
-  //   const formData = new FormData();
-  //   formData.append( "certificate", file,filename);
-  //   formData.append("adoption_id", adoptee.adoption_id);
-
-  //   try {
-  //     const response = await axios.post(
-  //       "https://whiskerwatch-0j6g.onrender.com/admin/upload_certificate",
-  //       formData,
-  //       { headers: { "Content-Type": "multipart/form-data" } }
-  //     );
-
-  //     console.log('Upload response:', response.data);
-
-  //     alert("Certificate uploaded successfully!");
-  //     window.location.reload();
-  //   } catch (err) {
-  //     console.error("Upload failed:", err.response?.data || err.message);
-  //     alert(`Upload failed: ${err.response?.data?.error || "Unknown error"}`);
-  //   }
-  // };
 
 
   const handleUploadCert = async () => {
@@ -137,6 +107,24 @@ const AdoptersList = () => {
   };
 
 
+  if (!user && user?.role !== 'admin' || user?.role !== 'head_volunteer') {
+    return (
+      <div className='flex flex-col items-center justify-center h-screen gap-5'>
+        <div className='size-20'>
+          <img src="/assets/icons/warning_admin.png" alt="" />
+        </div>
+        <span className='font-bold text-[#E1341E] text-2xl text-center'>YOU CAN'T ACCESS THIS PAGE!</span>
+        <Link to="/home" className='bg-[#B5C04A] px-3 py-1 rounded-[10px] hover:scale-101 active:scale-98 text-[#FFF]'>Go back Home page</Link>
+      </div>
+    )
+  } else if (sessionLoading) {
+    return (
+      <div className='flex flex-col items-center justify-center h-full'>
+        <span className='font-bold text-2xl text-[#2F2F2F]'>Loading ...</span>
+      </div>
+    )
+  }
+
 
   return (
     <div className='relative flex flex-col h-screen overflow-x-hidden'>
@@ -202,7 +190,7 @@ const AdoptersList = () => {
                             />
                           ) : (
                             <div className='relative w-full h-full bg-[url(/assets/AdoptionCertificate/Signed_Adoption_Certificate.png)] bg-cover bg-center'>
-                              <label className='absolute top-73 left-130 text-4xl font-bold text-[#000000]'>
+                              <label className='absolute top-73 left-110 text-4xl font-bold text-[#000000]'>
                                 {selectedAdoptee.cat_name}
                               </label>
                               

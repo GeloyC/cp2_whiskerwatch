@@ -34,12 +34,22 @@ const AdopterApplication = () => {
     return firstnameMatch && lastnameMatch;
   });
 
-  if (sessionLoading) {
-    return <div className="p-10">Loading session...</div>;
-  }
-
-  if (!user) {
-    return <div className="p-10">No active session.</div>;
+  if (!user && user?.role !== 'admin' || user?.role !== 'head_volunteer') {
+    return (
+      <div className='flex flex-col items-center justify-center h-screen gap-5'>
+        <div className='size-20'>
+          <img src="/assets/icons/warning_admin.png" alt="" />
+        </div>
+        <span className='font-bold text-[#E1341E] text-2xl text-center'>YOU CAN'T ACCESS THIS PAGE!</span>
+        <Link to="/home" className='bg-[#B5C04A] px-3 py-1 rounded-[10px] hover:scale-101 active:scale-98 text-[#FFF]'>Go back Home page</Link>
+      </div>
+    )
+  } else if (sessionLoading) {
+    return (
+      <div className='flex flex-col items-center justify-center h-full'>
+        <span className='font-bold text-2xl text-[#2F2F2F]'>Loading ...</span>
+      </div>
+    )
   }
 
   return (
