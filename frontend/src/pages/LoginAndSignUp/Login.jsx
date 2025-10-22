@@ -1184,9 +1184,9 @@ const Login = () => {
         <img src="/assets/stray-cat.jpg" alt="stray-cat" className="w-full h-full object-cover" />
       </div>
       <div className="flex flex-col items-center gap-10 w-full min-w-[200px] h-auto p-10">
-        <div className="max-w-[250px]">
+        <Link to="/home" className="max-w-[250px]">
           <img src="/assets/whiskerwatchlogo-vertical.png" alt="logo" />
-        </div>
+        </Link>
         {!resetPassForm && !forgotPassForm && (
           <form onSubmit={handleLogin} className="flex flex-col items-center gap-8">
             <label className="text-[#2F2F2F] text-[24px] font-bold">User Login</label>
