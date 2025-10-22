@@ -19,6 +19,7 @@ const SignUp = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [passwordMatchError, setPasswordMatchError] = useState(false);
     const [error, setError] = useState('');
+    const [ageError, setAgeError] = useState('')
     const [emailError, setEmailError] = useState('');
     const [usernameError, setUsernameError] = useState('');
     const [termShow, setTermShow] = useState(false);
@@ -30,45 +31,65 @@ const SignUp = () => {
 
     const handleChange = (setter) => (e) => setter(e.target.value);
 
+    const isUserAbove18 = (birthDateStr) => {
+        if (!birthDateStr) return false;
+        
+        const birthDate = new Date(birthDateStr);
+        const currentDate = new Date();
+        const ageLimit = new Date(
+            currentDate.getFullYear() - 18,
+            currentDate.getMonth(),
+            currentDate.getDate()
+        );
+        
+        return birthDate <= ageLimit;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         setLoading(true);
 
         if (password !== confirmPassword) {
-        setPasswordMatchError(true);
-        setError('Passwords need to match to proceed!');
-        setLoading(false);
-        return;
+            setPasswordMatchError(true);
+            setError('Passwords need to match to proceed!');
+            setLoading(false);
+            return;
         }
+
+        
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-        setEmailError('Please enter a valid email address');
-        setLoading(false);
-        return;
-        }
-
-        try {
-        await axios.post(`${url}/user/check_email`, { email });
-        setEmailError('');
-        } catch (err) {
-        if (err.response?.status === 409) {
-            setEmailError(err.response.data.message);
+            setEmailError('Please enter a valid email address');
             setLoading(false);
             return;
         }
+
+        try {
+            await axios.post(`${url}/user/check_email`, { email });
+            setEmailError('');
+        } catch (err) {
+            if (err.response?.status === 409) {
+                setEmailError(err.response.data.message);
+                setLoading(false);
+                return;
+            }
         }
 
         try {
-        await axios.post(`${url}/user/check_username`, { username });
-        setUsernameError('');
+            await axios.post(`${url}/user/check_username`, { username });
+            setUsernameError('');
         } catch (err) {
-        if (err.response?.status === 409) {
-            setUsernameError(err.response.data.message);
-            setLoading(false);
-            return;
+            if (err.response?.status === 409) {
+                setUsernameError(err.response.data.message);
+                setLoading(false);
+                return;
+            }
         }
+
+        if ( !isUserAbove18(birthday)) {
+            return setAgeError(`Only ages 18 years old and above are allowed to sign up.`)
         }
 
         try {
@@ -93,6 +114,8 @@ const SignUp = () => {
             setLoading(false);
         }
     };
+
+    
 
     // const handleVerifyOtp = async (e) => {
     //     e.preventDefault();
@@ -299,11 +322,10 @@ const SignUp = () => {
                 required
                 className="border-b-2 border-b-[#A8784F] p-2"
                 />
-                <div className="flex gap-2 items-center border-b-2 border-b-[#A8784F]">
-                    <label className="text-[#737373] whitespace-nowrap p-2">Date of Birth</label>
+                <div className="flex items-center border-b-2 border-b-[#A8784F]">
+                    <label className="text-[#737373] whitespace-nowrap p-2">Birthday</label>
                     <input
                         type="date"
-                        placeholder="Date of Birth"
                         value={birthday}
                         onChange={handleChange(setBirthday)}
                         required
@@ -359,19 +381,23 @@ const SignUp = () => {
 
                 <div className="flex flex-col items-center gap-3 col-span-2">
                 <div className="flex flex-col">
+                    <label className="text-[#DC8801] text-[14px] text-center px-2 py-1 font-bold">{error || emailError || usernameError || ageError}</label>
                     <span className='text-center text-[12px]'> 
                     By Continuing, you agree to our{' '}
                     <Link onClick={handleShowTerms} className="text-[#DC8801] underline hover:text-[#B67101] active:text-[#DC8801]">
                         Terms and Conditions
                     </Link>
                     </span>
-                    <label className="text-[#DC8801] text-[14px] text-center">{error || emailError || usernameError}</label>
                     <button
-                    type="submit"
-                    disabled={loading}
-                    className="p-2 px-4 bg-[#B5C04A] min-w-[125px] text-[#FFF] rounded-[50px] hover:bg-[#889132] active:scale-97 cursor-pointer"
-                    >
-                    {loading ? 'Signing Up...' : 'Sign Up'}
+                        type="submit"
+                        disabled={loading}
+                        className={`p-2 px-4 min-w-[125px] text-[#FFF] rounded-[50px] hover:bg-[#889132] active:scale-97 cursor-pointer 
+                            ${error || emailError || usernameError || ageError || passwordMatchError
+                                ? 'bg-[#E1341E] opacity-70 cursor-not-allowed'
+                                : 'bg-[#B5C04A] hover:bg-[#889132]'
+                            }`}
+                        >
+                        {loading ? 'Signing Up...' : 'Sign Up'}
                     </button>
                 </div>
                 <span className="text-center">
