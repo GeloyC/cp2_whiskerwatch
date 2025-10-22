@@ -34,7 +34,7 @@ const AdopterApplication = () => {
     return firstnameMatch && lastnameMatch;
   });
 
-  if (!user && user?.role !== 'admin' || user?.role !== 'head_volunteer') {
+  if (user?.role !== 'admin' && user?.role !== 'head_volunteer') {
     return (
       <div className='flex flex-col items-center justify-center h-screen gap-5'>
         <div className='size-20'>
@@ -50,8 +50,6 @@ const AdopterApplication = () => {
         <span className='font-bold text-2xl text-[#2F2F2F]'>Loading ...</span>
       </div>
     )
-  } else {
-    {console.log(user)}
   }
 
   return (
