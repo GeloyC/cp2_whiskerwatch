@@ -3,11 +3,13 @@ import AdminSideBar from '../../../components/AdminSideBar'
 import { Link, Outlet } from 'react-router-dom'
 import axios from 'axios'
 import AssignNewAdmin from './AssignNewAdmin'
+import { useSession } from '../../../context/SessionContext';
 
 export const AdminList = () => {
   const url = `https://whiskerwatch-0j6g.onrender.com`;
     
 
+  const {user, loading: sessionLoading} = useSession();
   const [assignVisible, setAssignVisible] = useState(false);
   const [updateRoleVisible, setUpdateRoleVisible] = useState(false);
   

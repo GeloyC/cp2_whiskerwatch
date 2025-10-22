@@ -79,7 +79,7 @@ const FeedingVolunteers = () => {
   })
 
 
-  if (!user && user?.role !== 'admin' || user?.role !== 'head_volunteer') {
+  if (user?.role !== 'admin' || user?.role !== 'head_volunteer') {
     return (
         <div className='flex flex-col items-center justify-center h-screen gap-5'>
         <div className='size-20'>

@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react'
 import AdminSideBar from '../../../components/AdminSideBar'
 import { Link } from 'react-router-dom'
 import axios from 'axios';
+import { useSession } from '../../../context/SessionContext';
 
 const AllUsers = () => {
   const url = `https://whiskerwatch-0j6g.onrender.com`;
     
 
+  const {user, loading: sessionLoading} = useSession();
   const [users, setUsers] = useState([]);
   const [searchInput, setSearchInput] = useState('');
 
@@ -29,7 +31,7 @@ const AllUsers = () => {
       .toLowerCase().includes(searchInput.toLowerCase())
   })  
 
-  if (!user && user?.role !== 'admin' || user?.role !== 'head_volunteer') {
+  if (user?.role !== 'admin' || user?.role !== 'head_volunteer') {
     return (
         <div className='flex flex-col items-center justify-center h-screen gap-5'>
         <div className='size-20'>
