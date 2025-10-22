@@ -202,7 +202,7 @@ const AdoptersList = () => {
                             />
                           ) : (
                             <div className='relative w-full h-full bg-[url(/assets/AdoptionCertificate/Signed_Adoption_Certificate.png)] bg-cover bg-center'>
-                              <label className='absolute top-73 left-130 transform -translate-x-1/2 text-4xl font-bold text-[#000000]'>
+                              <label className='absolute top-73 left-130 text-4xl font-bold text-[#000000]'>
                                 {selectedAdoptee.cat_name}
                               </label>
                               

@@ -89,6 +89,7 @@ const SignUp = () => {
         }
 
         if ( !isUserAbove18(birthday)) {
+            setLoading(false);
             return setAgeError(`Only ages 18 years old and above are allowed to sign up.`)
         }
 
@@ -327,7 +328,10 @@ const SignUp = () => {
                     <input
                         type="date"
                         value={birthday}
-                        onChange={handleChange(setBirthday)}
+                        onChange={(e) => {
+                            setBirthday(e.target.value);
+                            if (ageError) setAgeError('');
+                        }}
                         required
                         className="p-2 w-full"
                     />
