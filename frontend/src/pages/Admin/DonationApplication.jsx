@@ -69,6 +69,7 @@
 import React, { useState, useEffect } from 'react';
 import AdminSideBar from '../../components/AdminSideBar';
 import axios from 'axios'; // Make sure you have axios installed: npm install axios
+import { Link } from 'react-router-dom';
 
 const DonationApplication = () => {
     const url = `https://whiskerwatch-0j6g.onrender.com`;
@@ -150,23 +151,23 @@ const DonationApplication = () => {
     };
 
 
-    if (!user && user?.role !== 'admin' || user?.role !== 'head_volunteer') {
-        return (
-            <div className='flex flex-col items-center justify-center h-screen gap-5'>
-            <div className='size-20'>
-                <img src="/assets/icons/warning_admin.png" alt="" />
-            </div>
-            <span className='font-bold text-[#E1341E] text-2xl text-center'>YOU CAN'T ACCESS THIS PAGE!</span>
-            <Link to="/home" className='bg-[#B5C04A] px-3 py-1 rounded-[10px] hover:scale-101 active:scale-98 text-[#FFF]'>Go back Home page</Link>
-            </div>
-        )
-    } else if (sessionLoading) {
-        return (
-            <div className='flex flex-col items-center justify-center h-full'>
-            <span className='font-bold text-2xl text-[#2F2F2F]'>Loading ...</span>
-            </div>
-        )
-    }
+    // if (!user && user?.role !== 'admin' || user?.role !== 'head_volunteer') {
+    //     return (
+    //         <div className='flex flex-col items-center justify-center h-screen gap-5'>
+    //         <div className='size-20'>
+    //             <img src="/assets/icons/warning_admin.png" alt="" />
+    //         </div>
+    //         <span className='font-bold text-[#E1341E] text-2xl text-center'>YOU CAN'T ACCESS THIS PAGE!</span>
+    //         <Link to="/home" className='bg-[#B5C04A] px-3 py-1 rounded-[10px] hover:scale-101 active:scale-98 text-[#FFF]'>Go back Home page</Link>
+    //         </div>
+    //     )
+    // } else if (sessionLoading) {
+    //     return (
+    //         <div className='flex flex-col items-center justify-center h-full'>
+    //         <span className='font-bold text-2xl text-[#2F2F2F]'>Loading ...</span>
+    //         </div>
+    //     )
+    // }
 
 
     return (
